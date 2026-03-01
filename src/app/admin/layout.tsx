@@ -15,10 +15,12 @@ import {
   X,
   ChevronRight,
   FolderTree,
+  Image,
 } from 'lucide-react';
 
 const sidebarLinks = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
+  { name: 'Hero Slider', href: '/admin/slides', icon: Image },
   { name: 'Sản phẩm', href: '/admin/products', icon: Package },
   { name: 'Danh mục', href: '/admin/categories', icon: FolderTree },
   { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },

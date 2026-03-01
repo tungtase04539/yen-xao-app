@@ -4,61 +4,89 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
-const slides = [
+interface Slide {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  button_text: string;
+  button_link: string;
+  background_image: string | null;
+  gradient: string;
+}
+
+// Fallback slides if DB is empty or fetch fails
+const fallbackSlides: Slide[] = [
   {
-    id: 1,
+    id: '1',
     title: 'Yến Sào Tinh Chế\nNguyên Chất 100%',
     subtitle: 'Từ đảo yến thiên nhiên Khánh Hòa',
-    cta: 'Khám Phá Ngay',
-    href: '/danh-muc/yen-tinh-che',
+    button_text: 'Khám Phá Ngay',
+    button_link: '/danh-muc/yen-tinh-che',
+    background_image: null,
     gradient: 'from-burgundy-dark via-burgundy to-burgundy-light',
-  },
-  {
-    id: 2,
-    title: 'Bộ Quà Tặng\nYến Sào Cao Cấp',
-    subtitle: 'Hoàn hảo cho mọi dịp lễ tết, biếu tặng người thân',
-    cta: 'Xem Bộ Quà',
-    href: '/danh-muc/qua-tang-yen',
-    gradient: 'from-amber-900 via-amber-800 to-amber-700',
-  },
-  {
-    id: 3,
-    title: 'Nước Yến Collagen\nĐẹp Da Từ Bên Trong',
-    subtitle: 'Kết hợp yến sào & collagen peptide nhập khẩu',
-    cta: 'Mua Ngay',
-    href: '/danh-muc/nuoc-yen',
-    gradient: 'from-rose-900 via-rose-800 to-rose-700',
   },
 ];
 
 export default function HeroSlider() {
+  const [slides, setSlides] = useState<Slide[]>(fallbackSlides);
   const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    async function fetchSlides() {
+      const { data } = await supabase
+        .from('hero_slides')
+        .select('id, title, subtitle, button_text, button_link, background_image, gradient')
+        .eq('is_active', true)
+        .order('sort_order');
+      if (data && data.length > 0) {
+        setSlides(data);
+      }
+    }
+    fetchSlides();
+  }, []);
 
   const next = useCallback(() => {
     setCurrent((prev) => (prev + 1) % slides.length);
-  }, []);
+  }, [slides.length]);
 
   const prev = useCallback(() => {
     setCurrent((prev) => (prev - 1 + slides.length) % slides.length);
-  }, []);
+  }, [slides.length]);
 
   useEffect(() => {
     const timer = setInterval(next, 5000);
     return () => clearInterval(timer);
   }, [next]);
 
+  const slide = slides[current];
+
   return (
     <section className="relative h-[500px] md:h-[600px] lg:h-[700px] overflow-hidden">
       <AnimatePresence mode="wait">
         <motion.div
-          key={slides[current].id}
+          key={slide.id}
           initial={{ opacity: 0, scale: 1.1 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.95 }}
           transition={{ duration: 0.7 }}
-          className={`absolute inset-0 bg-gradient-to-br ${slides[current].gradient}`}
+          className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
         >
+          {/* Background Image */}
+          {slide.background_image && (
+            <img
+              src={slide.background_image}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          )}
+
+          {/* Overlay for readability when image is present */}
+          {slide.background_image && (
+            <div className="absolute inset-0 bg-black/40" />
+          )}
+
           {/* Decorative Elements */}
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-20 left-10 w-72 h-72 rounded-full bg-gold blur-3xl" />
@@ -84,7 +112,7 @@ export default function HeroSlider() {
                 transition={{ delay: 0.3 }}
                 className="text-5xl md:text-6xl lg:text-7xl font-extrabold font-serif text-white leading-tight mb-4 whitespace-pre-line"
               >
-                {slides[current].title}
+                {slide.title}
               </motion.h2>
 
               <motion.p
@@ -93,7 +121,7 @@ export default function HeroSlider() {
                 transition={{ delay: 0.4 }}
                 className="text-lg md:text-xl text-white/80 mb-8 max-w-lg"
               >
-                {slides[current].subtitle}
+                {slide.subtitle}
               </motion.p>
 
               <motion.div
@@ -102,29 +130,31 @@ export default function HeroSlider() {
                 transition={{ delay: 0.5 }}
               >
                 <Link
-                  href={slides[current].href}
+                  href={slide.button_link}
                   className="inline-flex items-center gap-2 px-8 py-3.5 bg-gradient-gold text-burgundy font-semibold rounded-full hover:shadow-lg hover:shadow-gold/30 transition-all hover:scale-105"
                 >
-                  {slides[current].cta}
+                  {slide.button_text}
                   <ChevronRight className="w-4 h-4" />
                 </Link>
               </motion.div>
             </div>
 
             {/* Decorative Bird Nest Icon */}
-            <div className="hidden lg:flex absolute right-16 top-1/2 -translate-y-1/2 items-center justify-center">
-              <div className="relative">
-                <div className="w-64 h-64 rounded-full border-2 border-gold/20 flex items-center justify-center">
-                  <div className="w-48 h-48 rounded-full border-2 border-gold/30 flex items-center justify-center">
-                    <div className="w-32 h-32 rounded-full bg-gold/10 flex items-center justify-center text-6xl">
-                      🕊️
+            {!slide.background_image && (
+              <div className="hidden lg:flex absolute right-16 top-1/2 -translate-y-1/2 items-center justify-center">
+                <div className="relative">
+                  <div className="w-64 h-64 rounded-full border-2 border-gold/20 flex items-center justify-center">
+                    <div className="w-48 h-48 rounded-full border-2 border-gold/30 flex items-center justify-center">
+                      <div className="w-32 h-32 rounded-full bg-gold/10 flex items-center justify-center text-6xl">
+                        🕊️
+                      </div>
                     </div>
                   </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gold animate-pulse" />
+                  <div className="absolute -bottom-2 -left-2 w-4 h-4 rounded-full bg-gold/60 animate-pulse delay-700" />
                 </div>
-                <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-gold animate-pulse" />
-                <div className="absolute -bottom-2 -left-2 w-4 h-4 rounded-full bg-gold/60 animate-pulse delay-700" />
               </div>
-            </div>
+            )}
           </div>
         </motion.div>
       </AnimatePresence>
