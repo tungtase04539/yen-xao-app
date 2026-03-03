@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Mulish } from "next/font/google";
+import { Cormorant_Garamond, Mulish, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import LayoutShell from "@/components/layout/LayoutShell";
@@ -19,6 +19,12 @@ const body = Mulish({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const display = Playfair_Display({
+  variable: "--font-display",
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  display: "swap",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
 
 export const metadata: Metadata = {
   title: {
@@ -46,7 +52,7 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <body
-        className={`${heading.variable} ${body.variable} antialiased min-h-screen flex flex-col`}
+        className={`${heading.variable} ${body.variable} ${display.variable} antialiased min-h-screen flex flex-col`}
       >
         <SmoothScroll>
           <LayoutShell>{children}</LayoutShell>

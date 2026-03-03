@@ -61,16 +61,16 @@ export default async function AboutPage() {
               />
 
               {/* Stats Section */}
-              <div className="mt-20 md:mt-28 grid grid-cols-2 md:grid-cols-4 gap-5">
+              <div className="mt-20 md:mt-28 grid grid-cols-2 md:grid-cols-4 gap-6">
                 {[
                   { number: '15+', label: 'Năm kinh nghiệm' },
                   { number: '50K+', label: 'Khách hàng tin dùng' },
                   { number: '100%', label: 'Yến sào nguyên chất' },
                   { number: '6+', label: 'Chứng nhận quốc tế' },
                 ].map((stat) => (
-                  <div key={stat.label} className="text-center p-8 rounded-2xl luxury-card group hover:gold-glow transition-all duration-300">
-                    <p className="text-4xl md:text-5xl font-bold text-gradient-gold font-serif mb-2">{stat.number}</p>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">{stat.label}</p>
+                  <div key={stat.label} className="text-center p-10 rounded-2xl luxury-card group hover:gold-glow transition-all duration-300">
+                    <p className="text-5xl md:text-6xl lg:text-7xl font-bold text-gradient-gold mb-3" style={{ fontFamily: 'var(--font-display), Georgia, serif' }}>{stat.number}</p>
+                    <p className="text-sm md:text-base text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</p>
                   </div>
                 ))}
               </div>
