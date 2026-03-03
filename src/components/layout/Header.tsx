@@ -100,7 +100,7 @@ export default function Header() {
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
             <Link href="/" className="flex items-center group">
-              <div className="relative h-[4.5rem] md:h-20 shrink-0">
+              <div className="relative h-20 md:h-24 shrink-0">
                 <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
               </div>
             </Link>
