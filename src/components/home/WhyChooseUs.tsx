@@ -139,12 +139,12 @@ export default function WhyChooseUs() {
             { num: '6+', label: 'Chứng Nhận' },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="text-4xl md:text-5xl font-bold font-serif mb-1 bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(135deg, #d4af37, #e8d48b, #d4af37)' }}
+              <p className="text-5xl md:text-6xl lg:text-7xl font-bold mb-2 bg-clip-text text-transparent"
+                style={{ backgroundImage: 'linear-gradient(135deg, #d4af37, #e8d48b, #d4af37)', fontFamily: 'var(--font-display), Georgia, serif' }}
               >
                 {stat.num}
               </p>
-              <p className="text-white/30 text-xs uppercase tracking-[0.15em]">{stat.label}</p>
+              <p className="text-white/40 text-sm md:text-base uppercase tracking-[0.15em] font-medium">{stat.label}</p>
             </div>
           ))}
         </motion.div>
