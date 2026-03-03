@@ -128,6 +128,7 @@ html {
   body {
     @apply bg-background text-foreground;
     font-family: var(--font-body), system-ui, sans-serif;
+    font-variant-numeric: lining-nums tabular-nums;
   }
   h1,
   h2,
@@ -136,6 +137,7 @@ html {
   h5,
   h6 {
     font-family: var(--font-heading), Georgia, serif;
+    font-variant-numeric: lining-nums;
   }
 }
 
