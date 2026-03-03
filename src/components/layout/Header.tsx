@@ -101,7 +101,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center group">
               <div className="relative h-[4.5rem] md:h-20 shrink-0">
-                <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
+                <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" style={{ transform: 'translateY(-10px)' }} />
               </div>
             </Link>
 
