@@ -46,15 +46,15 @@ export default function Header() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Fade header logo when footer is visible
+  // Fade header logo when footer logo is visible
   useEffect(() => {
-    const footer = document.querySelector('footer');
-    if (!footer) return;
+    const footerLogo = document.getElementById('footer-logo');
+    if (!footerLogo) return;
     const observer = new IntersectionObserver(
       ([entry]) => setFooterVisible(entry.isIntersecting),
-      { threshold: 0.1 }
+      { threshold: 0.3 }
     );
-    observer.observe(footer);
+    observer.observe(footerLogo);
     return () => observer.disconnect();
   }, []);
 
