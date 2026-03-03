@@ -101,7 +101,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
               <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
-                <img src="/logo.jpg" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
+                <img src="/logo-transparent.png" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
               </div>
               <div className="hidden sm:block">
                 <h1 className="text-3xl md:text-4xl font-bold font-serif leading-tight tracking-tight" style={{ color: '#C9A55A' }}>

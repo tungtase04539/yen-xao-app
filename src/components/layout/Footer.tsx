@@ -33,7 +33,7 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-6">
               <div className="w-[72px] h-[72px] shrink-0">
-                <img src="/logo.jpg" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
+                <img src="/logo-transparent.png" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
               </div>
               <div>
                 <h3 className="text-3xl font-bold font-serif" style={{ color: '#C9A55A' }}>QiQi Yến</h3>
