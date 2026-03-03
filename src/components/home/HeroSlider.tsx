@@ -236,7 +236,7 @@ export default function HeroSlider() {
                       boxShadow: '0 0 80px rgba(212,175,55,0.1)',
                     }}
                   >
-                    <img src="/hero-birds.png" alt="" className="w-28 h-28 object-contain opacity-80" />
+                    <img src="/hero-birds.png" alt="" className="w-56 h-56 object-contain opacity-80" />
                   </motion.div>
                 </div>
                 {/* Floating accent dots */}
