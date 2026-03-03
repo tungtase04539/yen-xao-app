@@ -99,17 +99,9 @@ export default function Header() {
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-32 h-32 md:w-40 md:h-40 shrink-0">
-                <img src="/logo-transparent.png" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
-              </div>
-              <div className="hidden sm:block">
-                <h1 className="text-3xl md:text-4xl font-bold font-serif leading-tight tracking-tight" style={{ color: '#C9A55A' }}>
-                  QiQi Yến
-                </h1>
-                <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-medium" style={{ color: 'rgba(201,165,90,0.7)' }}>
-                  Yến Sào Cao Cấp
-                </p>
+            <Link href="/" className="flex items-center group">
+              <div className="relative h-20 md:h-24 shrink-0">
+                <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
               </div>
             </Link>
 

@@ -31,13 +31,9 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center gap-3 mb-6">
-              <div className="w-36 h-36 shrink-0">
-                <img src="/logo-transparent.png" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
-              </div>
-              <div>
-                <h3 className="text-3xl font-bold font-serif" style={{ color: '#C9A55A' }}>QiQi Yến</h3>
-                <p className="text-xs tracking-[0.2em] uppercase" style={{ color: 'rgba(201,165,90,0.7)' }}>Yến Sào Cao Cấp</p>
+            <Link href="/" className="flex items-center mb-6">
+              <div className="h-20 shrink-0">
+                <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
               </div>
             </Link>
             <p className="text-lg text-white/50 leading-relaxed mb-6">
