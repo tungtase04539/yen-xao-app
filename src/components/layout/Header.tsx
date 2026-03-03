@@ -35,6 +35,7 @@ export default function Header() {
   const [lang, setLang] = useState<'vi' | 'cn'>('vi');
   const { openCart, getTotalItems } = useCart();
   const megaMenuRef = useRef<HTMLDivElement>(null);
+  const [footerVisible, setFooterVisible] = useState(false);
 
   const totalItems = getTotalItems();
 
@@ -43,6 +44,18 @@ export default function Header() {
     const handleScroll = () => setScrolled(window.scrollY > 20);
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Fade header logo when footer is visible
+  useEffect(() => {
+    const footer = document.querySelector('footer');
+    if (!footer) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setFooterVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(footer);
+    return () => observer.disconnect();
   }, []);
 
   // Close mega menu on click outside
@@ -100,7 +113,7 @@ export default function Header() {
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
             <Link href="/" className="flex items-center group">
-              <div className="relative h-20 md:h-24 shrink-0">
+              <div className={`relative h-20 md:h-24 shrink-0 transition-opacity duration-500 ${footerVisible ? 'opacity-0' : 'opacity-100'}`}>
                 <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
               </div>
             </Link>
