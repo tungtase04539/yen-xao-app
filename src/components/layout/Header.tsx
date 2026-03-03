@@ -93,21 +93,21 @@ export default function Header() {
       {/* Main Header */}
       <header className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled
-          ? 'bg-white/98 backdrop-blur-xl shadow-lg shadow-black/5 border-b border-gold/10'
-          : 'bg-white/95 backdrop-blur-md border-b border-border/50'
-      }`}>
+          ? 'shadow-lg shadow-black/20'
+          : ''
+      }`} style={{ background: 'linear-gradient(135deg, #7C1424, #8B1A2B, #7C1424)' }}>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
               <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
-                <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
+                <img src="/logo.jpg" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-3xl md:text-4xl font-bold text-burgundy font-serif leading-tight tracking-tight">
+                <h1 className="text-3xl md:text-4xl font-bold font-serif leading-tight tracking-tight" style={{ color: '#C9A55A' }}>
                   QiQi Yến
                 </h1>
-                <p className="text-xs md:text-sm text-gold-dark tracking-[0.2em] uppercase font-medium">
+                <p className="text-xs md:text-sm tracking-[0.2em] uppercase font-medium" style={{ color: 'rgba(201,165,90,0.7)' }}>
                   Yến Sào Cao Cấp
                 </p>
               </div>
@@ -124,12 +124,12 @@ export default function Header() {
                   >
                     <button
                       onClick={() => setMegaMenuOpen(!megaMenuOpen)}
-                      className="relative flex items-center gap-1.5 px-5 py-2.5 text-lg font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
+                      className="relative flex items-center gap-1.5 px-5 py-2.5 text-lg font-medium text-white/80 hover:text-[#C9A55A] transition-all rounded-lg group"
                     >
                       {link.name}
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${megaMenuOpen ? 'rotate-180' : ''}`} />
                       {/* Gold underline on hover */}
-                      <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gold scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                      <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-[#C9A55A] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                     </button>
 
                     <AnimatePresence>
@@ -178,10 +178,10 @@ export default function Header() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className="relative px-5 py-2.5 text-lg font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
+                    className="relative px-5 py-2.5 text-lg font-medium text-white/80 hover:text-[#C9A55A] transition-all rounded-lg group"
                   >
                     {link.name}
-                    <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gold scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                    <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-[#C9A55A] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                   </Link>
                 )
               )}
@@ -192,10 +192,10 @@ export default function Header() {
               {/* Cart Button */}
               <button
                 onClick={openCart}
-                className="relative p-2.5 rounded-xl hover:bg-cream transition-all group"
+                className="relative p-2.5 rounded-xl hover:bg-white/10 transition-all group"
                 aria-label="Giỏ hàng"
               >
-                <ShoppingBag className="w-5 h-5 text-foreground/60 group-hover:text-burgundy transition-colors" />
+                <ShoppingBag className="w-5 h-5 text-white/80 group-hover:text-[#C9A55A] transition-colors" />
                 {totalItems > 0 && (
                   <motion.span
                     initial={{ scale: 0 }}
@@ -210,7 +210,7 @@ export default function Header() {
               {/* Mobile Menu Toggle */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="lg:hidden p-2.5 rounded-xl hover:bg-cream transition-all"
+                className="lg:hidden p-2.5 rounded-xl hover:bg-white/10 transition-all text-white"
                 aria-label="Menu"
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -227,12 +227,13 @@ export default function Header() {
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="lg:hidden overflow-hidden border-t border-gold/10 bg-white"
+              className="lg:hidden overflow-hidden border-t border-white/10"
+              style={{ background: '#8B1A2B' }}
             >
               <div className="container mx-auto px-4 py-4 space-y-1">
                 <Link
                   href="/"
-                  className="block px-4 py-3 rounded-xl text-sm font-medium hover:bg-cream transition-colors"
+                  className="block px-4 py-3 rounded-xl text-lg font-medium text-white/80 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   Trang Chủ
@@ -249,7 +250,7 @@ export default function Header() {
                         setMegaMenuOpen(true);
                       }
                     }}
-                    className="flex items-center justify-between w-full text-sm font-bold text-gold-dark uppercase tracking-wider mb-2"
+                    className="flex items-center justify-between w-full text-lg font-bold text-[#C9A55A] uppercase tracking-wider mb-2"
                   >
                     Sản Phẩm
                     <ChevronDown className={`w-4 h-4 transition-transform ${megaMenuOpen ? 'rotate-180' : ''}`} />
@@ -260,7 +261,7 @@ export default function Header() {
                         <Link
                           key={cat.slug}
                           href={`/danh-muc/${cat.slug}`}
-                          className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-sm hover:bg-cream transition-colors"
+                          className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-base text-white/70 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
                           onClick={() => setMobileOpen(false)}
                         >
                           <span>{cat.icon}</span>
@@ -273,21 +274,21 @@ export default function Header() {
 
                 <Link
                   href="/gioi-thieu"
-                  className="block px-4 py-3 rounded-xl text-sm font-medium hover:bg-cream transition-colors"
+                  className="block px-4 py-3 rounded-xl text-lg font-medium text-white/80 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   Giới Thiệu
                 </Link>
                 <Link
                   href="/blog"
-                  className="block px-4 py-3 rounded-xl text-sm font-medium hover:bg-cream transition-colors"
+                  className="block px-4 py-3 rounded-xl text-lg font-medium text-white/80 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   Blog
                 </Link>
                 <Link
                   href="/lien-he"
-                  className="block px-4 py-3 rounded-xl text-sm font-medium hover:bg-cream transition-colors"
+                  className="block px-4 py-3 rounded-xl text-lg font-medium text-white/80 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
                   onClick={() => setMobileOpen(false)}
                 >
                   Liên Hệ

@@ -19,7 +19,7 @@ const infoLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-gradient-to-b from-burgundy-dark to-[#1a0003] text-white relative overflow-hidden">
+    <footer style={{ background: 'linear-gradient(to bottom, #7C1424, #5A0F1A)' }} className="text-white relative overflow-hidden">
       {/* Top gold line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 
@@ -33,11 +33,11 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-6">
               <div className="w-[72px] h-[72px] shrink-0">
-                <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
+                <img src="/logo.jpg" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
               </div>
               <div>
-                <h3 className="text-3xl font-bold font-serif text-gold">QiQi Yến</h3>
-                <p className="text-xs text-gold-light/70 tracking-[0.2em] uppercase">Yến Sào Cao Cấp</p>
+                <h3 className="text-3xl font-bold font-serif" style={{ color: '#C9A55A' }}>QiQi Yến</h3>
+                <p className="text-xs tracking-[0.2em] uppercase" style={{ color: 'rgba(201,165,90,0.7)' }}>Yến Sào Cao Cấp</p>
               </div>
             </Link>
             <p className="text-lg text-white/50 leading-relaxed mb-6">
@@ -64,8 +64,8 @@ export default function Footer() {
 
           {/* Products */}
           <div>
-            <h4 className="text-gold font-serif font-bold text-2xl mb-5 flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-gold/60" />
+            <h4 className="font-serif font-bold text-2xl mb-5 flex items-center gap-2" style={{ color: '#C9A55A' }}>
+              <Sparkles className="w-3.5 h-3.5" style={{ color: 'rgba(201,165,90,0.6)' }} />
               Sản Phẩm
             </h4>
             <ul className="space-y-3">
@@ -73,9 +73,9 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-lg text-white/50 hover:text-gold transition-colors duration-300 flex items-center gap-2 group"
+                    className="text-lg text-white/60 hover:text-[#C9A55A] transition-colors duration-300 flex items-center gap-2 group"
                   >
-                    <span className="w-1 h-1 rounded-full bg-gold/30 group-hover:bg-gold transition-colors" />
+                    <span className="w-1.5 h-1.5 rounded-full group-hover:bg-[#C9A55A] transition-colors" style={{ background: 'rgba(201,165,90,0.3)' }} />
                     {link.name}
                   </Link>
                 </li>
@@ -85,8 +85,8 @@ export default function Footer() {
 
           {/* Info */}
           <div>
-            <h4 className="text-gold font-serif font-bold text-2xl mb-5 flex items-center gap-2">
-              <Sparkles className="w-3.5 h-3.5 text-gold/60" />
+            <h4 className="font-serif font-bold text-2xl mb-5 flex items-center gap-2" style={{ color: '#C9A55A' }}>
+              <Sparkles className="w-3.5 h-3.5" style={{ color: 'rgba(201,165,90,0.6)' }} />
               Thông Tin
             </h4>
             <ul className="space-y-3">
@@ -94,9 +94,9 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-lg text-white/50 hover:text-gold transition-colors duration-300 flex items-center gap-2 group"
+                    className="text-lg text-white/60 hover:text-[#C9A55A] transition-colors duration-300 flex items-center gap-2 group"
                   >
-                    <span className="w-1 h-1 rounded-full bg-gold/30 group-hover:bg-gold transition-colors" />
+                    <span className="w-1.5 h-1.5 rounded-full group-hover:bg-[#C9A55A] transition-colors" style={{ background: 'rgba(201,165,90,0.3)' }} />
                     {link.name}
                   </Link>
                 </li>
@@ -106,7 +106,7 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-gold font-serif font-bold text-2xl mb-5 flex items-center gap-2">
+            <h4 className="font-serif font-bold text-2xl mb-5 flex items-center gap-2" style={{ color: '#C9A55A' }}>
               <Sparkles className="w-3.5 h-3.5 text-gold/60" />
               Liên Hệ
             </h4>
