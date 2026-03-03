@@ -32,7 +32,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-6">
-              <div className="w-[72px] h-[72px] shrink-0">
+              <div className="w-36 h-36 shrink-0">
                 <img src="/logo-transparent.png" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
               </div>
               <div>

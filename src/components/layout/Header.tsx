@@ -100,7 +100,7 @@ export default function Header() {
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
+              <div className="relative w-32 h-32 md:w-40 md:h-40 shrink-0">
                 <img src="/logo-transparent.png" alt="QiQi Yến" className="w-full h-full object-contain rounded-lg" />
               </div>
               <div className="hidden sm:block">
