@@ -19,7 +19,7 @@ const infoLinks = [
 
 export default function Footer() {
   return (
-    <footer style={{ background: 'linear-gradient(to right, #5A1525, #4A0E1A)' }} className="text-white relative overflow-hidden">
+    <footer style={{ background: 'linear-gradient(to right, #8B1A2B, #6E1222)' }} className="text-white relative overflow-hidden">
       {/* Top gold line */}
       <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
 

@@ -95,7 +95,7 @@ export default function Header() {
         scrolled
           ? 'shadow-lg shadow-black/20'
           : ''
-      }`} style={{ background: 'linear-gradient(to right, #5A1525, #4A0E1A)' }}>
+      }`} style={{ background: 'linear-gradient(to right, #8B1A2B, #6E1222)' }}>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
