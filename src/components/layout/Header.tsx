@@ -100,14 +100,14 @@ export default function Header() {
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-14 h-14 md:w-[72px] md:h-[72px] shrink-0">
+              <div className="relative w-16 h-16 md:w-20 md:h-20 shrink-0">
                 <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-2xl md:text-3xl font-bold text-burgundy font-serif leading-tight tracking-tight">
+                <h1 className="text-3xl md:text-4xl font-bold text-burgundy font-serif leading-tight tracking-tight">
                   QiQi Yến
                 </h1>
-                <p className="text-[10px] md:text-xs text-gold-dark tracking-[0.2em] uppercase font-medium">
+                <p className="text-xs md:text-sm text-gold-dark tracking-[0.2em] uppercase font-medium">
                   Yến Sào Cao Cấp
                 </p>
               </div>
@@ -124,7 +124,7 @@ export default function Header() {
                   >
                     <button
                       onClick={() => setMegaMenuOpen(!megaMenuOpen)}
-                      className="relative flex items-center gap-1.5 px-5 py-2.5 text-base font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
+                      className="relative flex items-center gap-1.5 px-5 py-2.5 text-lg font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
                     >
                       {link.name}
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${megaMenuOpen ? 'rotate-180' : ''}`} />
@@ -178,7 +178,7 @@ export default function Header() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className="relative px-5 py-2.5 text-base font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
+                    className="relative px-5 py-2.5 text-lg font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
                   >
                     {link.name}
                     <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gold scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />

@@ -32,15 +32,15 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-6">
-              <div className="w-16 h-16 shrink-0">
+              <div className="w-[72px] h-[72px] shrink-0">
                 <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
               </div>
               <div>
-                <h3 className="text-2xl font-bold font-serif text-gold">QiQi Yến</h3>
-                <p className="text-[10px] text-gold-light/70 tracking-[0.2em] uppercase">Yến Sào Cao Cấp</p>
+                <h3 className="text-3xl font-bold font-serif text-gold">QiQi Yến</h3>
+                <p className="text-xs text-gold-light/70 tracking-[0.2em] uppercase">Yến Sào Cao Cấp</p>
               </div>
             </Link>
-            <p className="text-base text-white/50 leading-relaxed mb-6">
+            <p className="text-lg text-white/50 leading-relaxed mb-6">
               Chuyên cung cấp các sản phẩm yến sào nguyên chất, tinh chế cao cấp từ đảo yến thiên nhiên Khánh Hòa.
             </p>
             <div className="flex gap-3">
@@ -64,7 +64,7 @@ export default function Footer() {
 
           {/* Products */}
           <div>
-            <h4 className="text-gold font-serif font-bold text-xl mb-5 flex items-center gap-2">
+            <h4 className="text-gold font-serif font-bold text-2xl mb-5 flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-gold/60" />
               Sản Phẩm
             </h4>
@@ -73,7 +73,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-base text-white/50 hover:text-gold transition-colors duration-300 flex items-center gap-2 group"
+                    className="text-lg text-white/50 hover:text-gold transition-colors duration-300 flex items-center gap-2 group"
                   >
                     <span className="w-1 h-1 rounded-full bg-gold/30 group-hover:bg-gold transition-colors" />
                     {link.name}
@@ -85,7 +85,7 @@ export default function Footer() {
 
           {/* Info */}
           <div>
-            <h4 className="text-gold font-serif font-bold text-xl mb-5 flex items-center gap-2">
+            <h4 className="text-gold font-serif font-bold text-2xl mb-5 flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-gold/60" />
               Thông Tin
             </h4>
@@ -94,7 +94,7 @@ export default function Footer() {
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-base text-white/50 hover:text-gold transition-colors duration-300 flex items-center gap-2 group"
+                    className="text-lg text-white/50 hover:text-gold transition-colors duration-300 flex items-center gap-2 group"
                   >
                     <span className="w-1 h-1 rounded-full bg-gold/30 group-hover:bg-gold transition-colors" />
                     {link.name}
@@ -106,19 +106,19 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h4 className="text-gold font-serif font-bold text-xl mb-5 flex items-center gap-2">
+            <h4 className="text-gold font-serif font-bold text-2xl mb-5 flex items-center gap-2">
               <Sparkles className="w-3.5 h-3.5 text-gold/60" />
               Liên Hệ
             </h4>
             <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-base text-white/45">
+              <li className="flex items-start gap-3 text-lg text-white/45">
                 <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
                 <span>123 Đường Yến Sào, Quận 1, TP. Hồ Chí Minh</span>
               </li>
               <li>
                 <a
                   href="tel:0901234567"
-                  className="flex items-center gap-3 text-base text-white/45 hover:text-gold transition-colors"
+                  className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
                 >
                   <Phone className="w-4 h-4 text-gold/60 shrink-0" />
                   0901 234 567
@@ -127,7 +127,7 @@ export default function Footer() {
               <li>
                 <a
                   href="mailto:info@yensaocaocap.vn"
-                  className="flex items-center gap-3 text-base text-white/45 hover:text-gold transition-colors"
+                  className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
                 >
                   <Mail className="w-4 h-4 text-gold/60 shrink-0" />
                   info@yensaocaocap.vn
