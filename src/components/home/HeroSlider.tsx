@@ -228,15 +228,16 @@ export default function HeroSlider() {
                 {/* Center static content */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <motion.div
-                    animate={{ y: [-8, 8, -8] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                    className="w-44 h-44 rounded-full flex items-center justify-center"
+                    initial={{ y: 0 }}
+                    animate={{ y: [-12, 12, -12] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0 }}
+                    className="w-60 h-60 rounded-full flex items-center justify-center"
                     style={{
                       background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 60%, transparent 100%)',
                       boxShadow: '0 0 80px rgba(212,175,55,0.1)',
                     }}
                   >
-                    <img src="/hero-birds.png" alt="" className="w-56 h-56 object-contain opacity-80" />
+                    <img src="/hero-birds.png" alt="" className="w-72 h-72 object-contain opacity-80" />
                   </motion.div>
                 </div>
                 {/* Floating accent dots */}
