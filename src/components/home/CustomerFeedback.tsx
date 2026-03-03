@@ -46,18 +46,21 @@ export default function CustomerFeedback() {
   const next = () => setCurrent((c) => (c + 1) % testimonials.length);
 
   return (
-    <section className="py-16 md:py-20 bg-warm-white">
+    <section className="py-20 md:py-28 bg-gradient-luxury">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-14"
         >
-          <h2 className="text-3xl md:text-4xl font-bold font-serif text-burgundy mb-3">
+          <div className="ornament-divider mb-6">
+            <Quote className="w-4 h-4 text-gold" />
+          </div>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-serif text-burgundy mb-4 tracking-tight">
             Khách Hàng Nói Gì
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm md:text-base">
             Niềm tin của khách hàng là động lực để chúng tôi không ngừng phấn đấu
           </p>
         </motion.div>
@@ -70,26 +73,36 @@ export default function CustomerFeedback() {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -50 }}
               transition={{ duration: 0.4 }}
-              className="bg-white rounded-2xl p-8 md:p-10 shadow-lg border border-border/50 relative"
+              className="relative luxury-card rounded-3xl p-8 md:p-12"
             >
-              <Quote className="absolute top-6 right-6 w-10 h-10 text-gold/20" />
+              {/* Gold top accent */}
+              <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-gold/30 to-transparent" />
+
+              {/* Quote icon */}
+              <div className="absolute top-6 right-8 w-14 h-14 rounded-2xl bg-gold/5 flex items-center justify-center">
+                <Quote className="w-6 h-6 text-gold/30" />
+              </div>
 
               {/* Stars */}
-              <div className="flex gap-1 mb-4">
+              <div className="flex gap-1 mb-6">
                 {[...Array(testimonials[current].rating)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-gold text-gold" />
                 ))}
               </div>
 
               {/* Content */}
-              <p className="text-foreground/80 leading-relaxed text-base md:text-lg mb-6 italic">
+              <p className="text-foreground/75 leading-relaxed text-base md:text-lg mb-8 italic font-serif">
                 &ldquo;{testimonials[current].content}&rdquo;
               </p>
 
               {/* Author */}
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-gold flex items-center justify-center text-2xl">
-                  {testimonials[current].avatar}
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-14 h-14 rounded-full bg-gradient-gold flex items-center justify-center text-2xl shadow-md">
+                    {testimonials[current].avatar}
+                  </div>
+                  {/* Gold ring */}
+                  <div className="absolute inset-[-2px] rounded-full border border-gold/30" />
                 </div>
                 <div>
                   <p className="font-semibold text-foreground">{testimonials[current].name}</p>
@@ -100,21 +113,21 @@ export default function CustomerFeedback() {
           </AnimatePresence>
 
           {/* Navigation */}
-          <div className="flex justify-center items-center gap-4 mt-8">
+          <div className="flex justify-center items-center gap-6 mt-10">
             <button
               onClick={prev}
-              className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:border-gold hover:text-gold transition-colors"
+              className="w-11 h-11 rounded-full border border-gold/20 flex items-center justify-center hover:border-gold hover:text-gold hover:bg-gold/5 transition-all"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2.5">
               {testimonials.map((_, i) => (
                 <button
                   key={i}
                   onClick={() => setCurrent(i)}
-                  className={`w-2.5 h-2.5 rounded-full transition-all ${
-                    i === current ? 'bg-gold w-6' : 'bg-border hover:bg-gold/50'
+                  className={`h-1 rounded-full transition-all duration-500 ${
+                    i === current ? 'bg-gold w-8' : 'bg-border w-3 hover:bg-gold/40'
                   }`}
                 />
               ))}
@@ -122,7 +135,7 @@ export default function CustomerFeedback() {
 
             <button
               onClick={next}
-              className="w-10 h-10 rounded-full border border-border flex items-center justify-center hover:border-gold hover:text-gold transition-colors"
+              className="w-11 h-11 rounded-full border border-gold/20 flex items-center justify-center hover:border-gold hover:text-gold hover:bg-gold/5 transition-all"
             >
               <ChevronRight className="w-5 h-5" />
             </button>

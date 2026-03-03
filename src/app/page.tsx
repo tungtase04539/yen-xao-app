@@ -1,10 +1,12 @@
 import HeroSlider from '@/components/home/HeroSlider';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
 import CategoryTabs from '@/components/home/CategoryTabs';
+import WhyChooseUs from '@/components/home/WhyChooseUs';
 import BrandStory from '@/components/home/BrandStory';
 import Certifications from '@/components/home/Certifications';
 import FlashSale from '@/components/home/FlashSale';
 import CustomerFeedback from '@/components/home/CustomerFeedback';
+import NewsletterCTA from '@/components/home/NewsletterCTA';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
 export default function Home() {
@@ -12,13 +14,13 @@ export default function Home() {
     <>
       <HeroSlider />
       <ScrollReveal><FeaturedProducts /></ScrollReveal>
+      <ScrollReveal><WhyChooseUs /></ScrollReveal>
       <ScrollReveal><CategoryTabs /></ScrollReveal>
       <ScrollReveal><BrandStory /></ScrollReveal>
-      <ScrollReveal><Certifications /></ScrollReveal>
       <ScrollReveal><FlashSale /></ScrollReveal>
+      <ScrollReveal><Certifications /></ScrollReveal>
       <ScrollReveal><CustomerFeedback /></ScrollReveal>
+      <ScrollReveal><NewsletterCTA /></ScrollReveal>
     </>
   );
 }
-
-

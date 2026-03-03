@@ -32,70 +32,88 @@ export default function ProductCard({ product }: ProductCardProps) {
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="group bg-white rounded-xl overflow-hidden border border-border/50 hover:border-gold/50 transition-all duration-300 hover:shadow-lg hover:shadow-gold/10"
+      className="group relative bg-white rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl"
+      style={{
+        border: '1px solid rgba(232,223,208,0.5)',
+        boxShadow: '0 4px 20px rgba(0,0,0,0.04)',
+      }}
+      whileHover={{
+        borderColor: 'rgba(212,175,55,0.3)',
+        boxShadow: '0 20px 60px rgba(0,0,0,0.1), 0 0 0 1px rgba(212,175,55,0.15), 0 0 40px rgba(212,175,55,0.05)',
+        y: -4,
+      }}
     >
       {/* Image */}
       <Link href={`/san-pham/${product.slug}`} className="block relative aspect-square overflow-hidden bg-cream">
         {product.thumbnail ? (
           <div
-            className="w-full h-full bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
+            className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110"
             style={{ backgroundImage: `url(${product.thumbnail})` }}
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-6xl group-hover:scale-110 transition-transform duration-500">
+          <div className="w-full h-full flex items-center justify-center text-6xl transition-transform duration-700 group-hover:scale-110">
             🕊️
           </div>
         )}
 
+        {/* Hover overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500" />
+
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.is_featured && (
-            <span className="px-2.5 py-1 bg-gold text-burgundy text-[10px] font-bold rounded-full uppercase tracking-wider">
-              Nổi bật
+            <span className="px-3 py-1.5 text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg"
+              style={{
+                background: 'linear-gradient(135deg, #d4af37, #e8d48b, #d4af37)',
+                color: '#7c000a',
+              }}
+            >
+              ✦ Nổi bật
             </span>
           )}
           {discountPercent > 0 && (
-            <span className="px-2.5 py-1 bg-burgundy text-white text-[10px] font-bold rounded-full">
+            <span className="px-3 py-1.5 bg-burgundy text-white text-[10px] font-bold rounded-full shadow-lg">
               -{discountPercent}%
             </span>
           )}
         </div>
 
-        {/* Quick Actions Overlay */}
-        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
-          <div className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-gold hover:text-burgundy transition-colors cursor-pointer">
+        {/* Quick Actions — slide up from bottom */}
+        <div className="absolute bottom-0 left-0 right-0 p-4 flex justify-center gap-3 translate-y-full group-hover:translate-y-0 transition-transform duration-400">
+          <button className="w-11 h-11 rounded-full bg-white shadow-xl flex items-center justify-center hover:bg-gold hover:text-burgundy transition-all text-foreground/60">
             <Eye className="w-4 h-4" />
-          </div>
-          <div className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-gold hover:text-burgundy transition-colors cursor-pointer">
+          </button>
+          <button className="w-11 h-11 rounded-full bg-white shadow-xl flex items-center justify-center hover:bg-gold hover:text-burgundy transition-all text-foreground/60">
             <ShoppingBag className="w-4 h-4" />
-          </div>
+          </button>
         </div>
       </Link>
 
       {/* Info */}
-      <div className="p-4">
+      <div className="p-4 md:p-5">
         {product.category_name && (
           <Link
             href={`/danh-muc/${product.category_slug}`}
-            className="text-xs text-gold-dark hover:text-gold font-medium uppercase tracking-wider"
+            className="text-[10px] font-medium uppercase tracking-[0.15em]"
+            style={{ color: '#b8960f' }}
           >
             {product.category_name}
           </Link>
         )}
         <Link href={`/san-pham/${product.slug}`}>
-          <h3 className="text-sm md:text-base font-semibold text-foreground mt-1 line-clamp-2 group-hover:text-burgundy transition-colors font-serif">
+          <h3 className="text-sm md:text-base font-semibold text-foreground mt-1.5 line-clamp-2 group-hover:text-burgundy transition-colors font-serif leading-snug">
             {product.name}
           </h3>
         </Link>
 
-        {/* Price */}
-        <div className="mt-2.5 flex items-baseline gap-2">
-          <span className="text-lg font-bold text-burgundy">
+        {/* Price with gold underline */}
+        <div className="mt-3 pt-3 flex items-baseline gap-2" style={{ borderTop: '1px solid rgba(212,175,55,0.15)' }}>
+          <span className="text-lg font-bold text-burgundy font-serif">
             {product.type === 'variable' ? 'Từ ' : ''}
             {formatPrice(displayPrice || 0)}
           </span>
           {hasDiscount && originalPrice && (
-            <span className="text-sm text-muted-foreground line-through">
+            <span className="text-xs text-muted-foreground line-through">
               {formatPrice(originalPrice)}
             </span>
           )}

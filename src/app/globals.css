@@ -16,18 +16,19 @@ html {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(124, 0, 10, 0.25);
+  background: rgba(212, 175, 55, 0.35);
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(124, 0, 10, 0.5);
+  background: rgba(212, 175, 55, 0.6);
 }
 
 @custom-variant dark (&:is(.dark *));
 
 /* ============================================================
-   YẾN SÀO CAO CẤP - DESIGN SYSTEM
-   Tone: Vàng kim (#D4AF37), Đỏ đô (#7C000A), Trắng
+   YẾN SÀO CAO CẤP - PREMIUM DESIGN SYSTEM
+   Tone: Vàng kim (#D4AF37), Đỏ đô (#7C000A), Trắng kem
+   Style: Ultra-premium, luxury skincare aesthetic
    ============================================================ */
 
 @theme inline {
@@ -139,17 +140,19 @@ html {
 }
 
 /* ============================================================
-   CUSTOM UTILITY CLASSES
+   LUXURY UTILITY CLASSES
    ============================================================ */
 
 @layer utilities {
+  /* Text Gradients */
   .text-gradient-gold {
-    background: linear-gradient(135deg, #d4af37, #e8d48b, #d4af37);
+    background: linear-gradient(135deg, #b8960f, #d4af37, #e8d48b, #d4af37, #b8960f);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
+  /* Background Gradients */
   .bg-gradient-hero {
     background: linear-gradient(135deg, #7c000a 0%, #550005 50%, #3a0003 100%);
   }
@@ -158,12 +161,31 @@ html {
     background: linear-gradient(135deg, #d4af37 0%, #e8d48b 50%, #d4af37 100%);
   }
 
+  .bg-gradient-luxury {
+    background: linear-gradient(180deg, #fffdf8 0%, #fff9f0 40%, #f5f0e8 100%);
+  }
+
+  .bg-gradient-dark-luxury {
+    background: linear-gradient(135deg, #1a0003 0%, #550005 30%, #7c000a 60%, #550005 100%);
+  }
+
+  /* Borders */
   .gold-border {
+    border: 1px solid rgba(212, 175, 55, 0.3);
+  }
+
+  .gold-border-strong {
     border: 1px solid #d4af37;
   }
 
+  /* Shadows */
   .gold-shadow {
     box-shadow: 0 4px 20px rgba(212, 175, 55, 0.15);
+  }
+
+  .gold-glow {
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.2),
+                0 0 40px rgba(212, 175, 55, 0.1);
   }
 
   .premium-shadow {
@@ -171,15 +193,100 @@ html {
       0 10px 40px rgba(0, 0, 0, 0.08),
       0 2px 10px rgba(0, 0, 0, 0.04);
   }
+
+  .luxury-shadow {
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.1),
+      0 4px 20px rgba(0, 0, 0, 0.05),
+      0 0 0 1px rgba(212, 175, 55, 0.08);
+  }
+
+  /* Luxury Card */
+  .luxury-card {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(212, 175, 55, 0.15);
+    box-shadow:
+      0 10px 40px rgba(0, 0, 0, 0.06),
+      0 2px 10px rgba(0, 0, 0, 0.03);
+  }
+
+  .luxury-card:hover {
+    border-color: rgba(212, 175, 55, 0.35);
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.08),
+      0 4px 20px rgba(0, 0, 0, 0.04),
+      0 0 30px rgba(212, 175, 55, 0.08);
+  }
+
+  /* Glass Effect */
+  .glass-gold {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+  }
 }
 
 /* ============================================================
-   ANIMATIONS
+   ORNAMENTAL ELEMENTS
+   ============================================================ */
+
+.ornament-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  opacity: 0.7;
+}
+
+.ornament-divider::before,
+.ornament-divider::after {
+  content: '';
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+}
+
+.ornament-line {
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  margin: 0 auto;
+}
+
+/* Gold accent bar */
+.gold-accent-bar {
+  position: relative;
+  padding-left: 16px;
+}
+
+.gold-accent-bar::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: linear-gradient(180deg, #d4af37, #e8d48b, #d4af37);
+  border-radius: 2px;
+}
+
+/* ============================================================
+   PREMIUM ANIMATIONS
    ============================================================ */
 
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes gold-shimmer {
+  0% {
+    background-position: -100% 0;
   }
   100% {
     background-position: 200% 0;
@@ -193,6 +300,50 @@ html {
   }
   50% {
     transform: translateY(-10px);
+  }
+}
+
+@keyframes gentle-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-8px) rotate(1deg);
+  }
+  66% {
+    transform: translateY(-4px) rotate(-1deg);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse-gold {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(212, 175, 55, 0);
   }
 }
 
@@ -218,17 +369,64 @@ html {
   }
 }
 
+@keyframes border-shimmer {
+  0% {
+    border-color: rgba(212, 175, 55, 0.2);
+  }
+  50% {
+    border-color: rgba(212, 175, 55, 0.5);
+  }
+  100% {
+    border-color: rgba(212, 175, 55, 0.2);
+  }
+}
+
+@keyframes slide-line {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
 .animate-shimmer {
   background-size: 200% 100%;
   animation: shimmer 3s infinite linear;
+}
+
+.animate-gold-shimmer {
+  background: linear-gradient(90deg, transparent 0%, rgba(212, 175, 55, 0.3) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: gold-shimmer 3s infinite linear;
 }
 
 .animate-float {
   animation: float 3s ease-in-out infinite;
 }
 
+.animate-gentle-float {
+  animation: gentle-float 6s ease-in-out infinite;
+}
+
 .animate-phone-ring {
   animation: phone-ring 2s ease-in-out infinite;
+}
+
+.animate-pulse-gold {
+  animation: pulse-gold 2s ease-in-out infinite;
+}
+
+.animate-border-shimmer {
+  animation: border-shimmer 3s ease-in-out infinite;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.5s ease-out forwards;
 }
 
 /* ============================================================
@@ -275,7 +473,214 @@ html {
 }
 
 /* ============================================================
-   SCROLLBAR CUSTOM
+   LUXURY PROSE — Premium Content Styling for Static Pages
+   Used on: /gioi-thieu, and other CMS pages
+   ============================================================ */
+
+.luxury-prose {
+  @apply text-base leading-relaxed;
+  color: var(--foreground);
+}
+
+.luxury-prose h1 {
+  @apply text-3xl md:text-4xl font-bold mt-12 mb-6 tracking-tight;
+  font-family: var(--font-heading), Georgia, serif;
+  color: var(--color-burgundy);
+  position: relative;
+  padding-bottom: 16px;
+}
+
+.luxury-prose h1::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-gold), var(--color-gold-light), transparent);
+  border-radius: 2px;
+}
+
+.luxury-prose h2 {
+  @apply text-2xl md:text-3xl font-bold mt-10 mb-5 tracking-tight;
+  font-family: var(--font-heading), Georgia, serif;
+  color: var(--color-burgundy);
+  position: relative;
+  padding-left: 20px;
+}
+
+.luxury-prose h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: 4px;
+  width: 4px;
+  background: linear-gradient(180deg, var(--color-gold), var(--color-gold-light));
+  border-radius: 2px;
+}
+
+.luxury-prose h3 {
+  @apply text-xl md:text-2xl font-semibold mt-8 mb-4;
+  font-family: var(--font-heading), Georgia, serif;
+  color: var(--color-burgundy-light);
+}
+
+.luxury-prose h4 {
+  @apply text-lg font-semibold mt-6 mb-3;
+  font-family: var(--font-heading), Georgia, serif;
+  color: var(--foreground);
+}
+
+.luxury-prose p {
+  @apply text-base md:text-lg leading-relaxed mb-5;
+  color: rgba(26, 26, 26, 0.75);
+}
+
+.luxury-prose p:first-child {
+  @apply text-lg md:text-xl;
+  color: rgba(26, 26, 26, 0.85);
+}
+
+.luxury-prose strong {
+  color: var(--color-burgundy);
+  font-weight: 600;
+}
+
+.luxury-prose em {
+  color: rgba(26, 26, 26, 0.65);
+  font-style: italic;
+}
+
+.luxury-prose a {
+  color: var(--color-burgundy);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: rgba(212, 175, 55, 0.4);
+  transition: all 0.2s;
+}
+
+.luxury-prose a:hover {
+  color: var(--color-gold-dark);
+  text-decoration-color: var(--color-gold);
+}
+
+.luxury-prose ul,
+.luxury-prose ol {
+  @apply mb-6 space-y-3;
+  padding-left: 0;
+}
+
+.luxury-prose ul li {
+  @apply text-base md:text-lg leading-relaxed;
+  color: rgba(26, 26, 26, 0.75);
+  list-style: none;
+  position: relative;
+  padding-left: 24px;
+}
+
+.luxury-prose ul li::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  top: 2px;
+  color: var(--color-gold);
+  font-size: 10px;
+}
+
+.luxury-prose ol {
+  counter-reset: luxury-counter;
+}
+
+.luxury-prose ol li {
+  @apply text-base md:text-lg leading-relaxed;
+  color: rgba(26, 26, 26, 0.75);
+  list-style: none;
+  position: relative;
+  padding-left: 36px;
+  counter-increment: luxury-counter;
+}
+
+.luxury-prose ol li::before {
+  content: counter(luxury-counter);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-gold), var(--color-gold-light));
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.luxury-prose blockquote {
+  @apply my-8 py-5 px-6;
+  border-left: 4px solid var(--color-gold);
+  background: linear-gradient(135deg, rgba(212, 175, 55, 0.05), rgba(212, 175, 55, 0.02));
+  border-radius: 0 12px 12px 0;
+  font-style: italic;
+  color: rgba(26, 26, 26, 0.7);
+}
+
+.luxury-prose blockquote p {
+  @apply mb-0;
+  font-size: inherit;
+}
+
+.luxury-prose img {
+  @apply rounded-2xl my-8 max-w-full;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.luxury-prose hr {
+  @apply my-12;
+  border: none;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.4), transparent);
+}
+
+.luxury-prose table {
+  @apply w-full my-8 text-sm;
+  border-collapse: collapse;
+}
+
+.luxury-prose th {
+  @apply text-left px-4 py-3 font-semibold;
+  background: linear-gradient(135deg, var(--color-cream), var(--color-warm-gray));
+  border-bottom: 2px solid var(--color-gold);
+  color: var(--color-burgundy);
+}
+
+.luxury-prose td {
+  @apply px-4 py-3;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+  color: rgba(26, 26, 26, 0.75);
+}
+
+.luxury-prose tr:hover td {
+  background: rgba(212, 175, 55, 0.03);
+}
+
+/* Section dividers within luxury-prose */
+.luxury-prose section {
+  @apply mb-12;
+  padding-bottom: 3rem;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.12);
+}
+
+.luxury-prose section:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* ============================================================
+   PREMIUM SCROLLBAR
    ============================================================ */
 
 ::-webkit-scrollbar {
@@ -287,10 +692,10 @@ html {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d4af37;
+  background: linear-gradient(180deg, #d4af37, #b8960f);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #b8960f;
+  background: linear-gradient(180deg, #e8d48b, #d4af37);
 }

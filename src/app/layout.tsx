@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Lora, Mulish } from "next/font/google";
+import { Cormorant_Garamond, Mulish } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import LayoutShell from "@/components/layout/LayoutShell";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 
-const heading = Lora({
+const heading = Cormorant_Garamond({
   variable: "--font-heading",
   subsets: ["latin", "latin-ext", "vietnamese"],
   display: "swap",
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const body = Mulish({

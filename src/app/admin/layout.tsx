@@ -16,6 +16,7 @@ import {
   ChevronRight,
   FolderTree,
   Image,
+  BookOpen,
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -25,6 +26,7 @@ const sidebarLinks = [
   { name: 'Danh mục', href: '/admin/categories', icon: FolderTree },
   { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },
   { name: 'Bài viết', href: '/admin/posts', icon: FileText },
+  { name: 'Trang tĩnh', href: '/admin/pages', icon: BookOpen },
   { name: 'Mã giảm giá', href: '/admin/coupons', icon: Tag },
 ];
 
