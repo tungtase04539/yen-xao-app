@@ -101,12 +101,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           {/* Logo */}
           <div className="flex items-center justify-between px-4 py-4 border-b border-border">
             <Link href="/admin" className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-burgundy text-white flex items-center justify-center text-sm font-bold">
-                YS
+              <div className="w-9 h-9 shrink-0">
+                <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
               </div>
               <div>
                 <p className="text-sm font-bold text-burgundy">Admin Panel</p>
-                <p className="text-[10px] text-muted-foreground">Yến Sào Cao Cấp</p>
+                <p className="text-[10px] text-muted-foreground">QiQi Yến</p>
               </div>
             </Link>
             <button

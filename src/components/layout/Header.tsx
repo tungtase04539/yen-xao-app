@@ -100,19 +100,15 @@ export default function Header() {
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-11 h-11 md:w-13 md:h-13 rounded-full bg-gradient-gold flex items-center justify-center text-burgundy font-bold text-lg md:text-xl font-serif shadow-lg group-hover:shadow-gold/30 transition-all duration-300 group-hover:scale-105">
-                  YS
-                </div>
-                {/* Gold ring */}
-                <div className="absolute inset-[-3px] rounded-full border border-gold/30 group-hover:border-gold/60 transition-colors" />
+              <div className="relative w-12 h-12 md:w-14 md:h-14 shrink-0">
+                <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="text-xl md:text-2xl font-bold text-burgundy font-serif leading-tight tracking-tight">
-                  Yến Sào
+                <h1 className="text-2xl md:text-3xl font-bold text-burgundy font-serif leading-tight tracking-tight">
+                  QiQi Yến
                 </h1>
-                <p className="text-[9px] md:text-[10px] text-gold-dark tracking-[0.25em] uppercase font-medium">
-                  Premium Quality
+                <p className="text-[10px] md:text-xs text-gold-dark tracking-[0.2em] uppercase font-medium">
+                  Yến Sào Cao Cấp
                 </p>
               </div>
             </Link>

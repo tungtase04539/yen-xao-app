@@ -32,15 +32,12 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center gap-3 mb-6">
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-gradient-gold flex items-center justify-center text-burgundy font-bold text-xl font-serif shadow-lg shadow-gold/20">
-                  YS
-                </div>
-                <div className="absolute inset-[-2px] rounded-full border border-gold/30" />
+              <div className="w-14 h-14 shrink-0">
+                <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
               </div>
               <div>
-                <h3 className="text-xl font-bold font-serif text-gold">Yến Sào</h3>
-                <p className="text-[9px] text-gold-light/70 tracking-[0.25em] uppercase">Premium Quality</p>
+                <h3 className="text-2xl font-bold font-serif text-gold">QiQi Yến</h3>
+                <p className="text-[10px] text-gold-light/70 tracking-[0.2em] uppercase">Yến Sào Cao Cấp</p>
               </div>
             </Link>
             <p className="text-sm text-white/50 leading-relaxed mb-6">

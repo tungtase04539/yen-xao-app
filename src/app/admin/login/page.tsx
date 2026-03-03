@@ -37,11 +37,11 @@ export default function AdminLoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-burgundy-dark to-burgundy p-4">
       <div className="w-full max-w-sm bg-white rounded-2xl p-8 shadow-2xl">
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-full bg-gradient-gold flex items-center justify-center text-burgundy font-bold text-xl font-serif mx-auto mb-3">
-            YS
+          <div className="w-16 h-16 mx-auto mb-3">
+            <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-xl font-bold font-serif text-burgundy">Admin Login</h1>
-          <p className="text-sm text-muted-foreground">Yến Sào Cao Cấp</p>
+          <p className="text-sm text-muted-foreground">QiQi Yến</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
