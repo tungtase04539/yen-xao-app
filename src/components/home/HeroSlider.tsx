@@ -209,53 +209,50 @@ export default function HeroSlider() {
                 </Link>
               </motion.div>
             </div>
-
-            {/* Right side decorative — large premium ornament */}
-            {!slide.background_image && (
-              <div className="hidden lg:block absolute right-8 xl:right-16 top-1/2 -translate-y-1/2">
-                <motion.div
-                  animate={{ rotate: [0, 360] }}
-                  transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
-                  className="relative w-[380px] h-[380px]"
-                >
-                  {/* Outer ring with dashes */}
-                  <svg className="absolute inset-0 w-full h-full" viewBox="0 0 380 380">
-                    <circle cx="190" cy="190" r="185" fill="none" stroke="rgba(212,175,55,0.12)" strokeWidth="1" strokeDasharray="8 8" />
-                    <circle cx="190" cy="190" r="155" fill="none" stroke="rgba(212,175,55,0.15)" strokeWidth="1" />
-                    <circle cx="190" cy="190" r="120" fill="none" stroke="rgba(212,175,55,0.18)" strokeWidth="1" strokeDasharray="4 12" />
-                  </svg>
-                </motion.div>
-                {/* Center static content */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <motion.div
-                    initial={{ y: 0 }}
-                    animate={{ y: [-12, 12, -12] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0 }}
-                    className="w-60 h-60 rounded-full flex items-center justify-center"
-                    style={{
-                      background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 60%, transparent 100%)',
-                      boxShadow: '0 0 80px rgba(212,175,55,0.1)',
-                    }}
-                  >
-                    <img src="/hero-birds.png" alt="" className="w-72 h-72 object-contain opacity-80" />
-                  </motion.div>
-                </div>
-                {/* Floating accent dots */}
-                <motion.div
-                  animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute top-4 right-12 w-3 h-3 rounded-full bg-gold/70"
-                />
-                <motion.div
-                  animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.8, 0.4] }}
-                  transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                  className="absolute bottom-12 left-4 w-2 h-2 rounded-full bg-gold/50"
-                />
-              </div>
-            )}
           </div>
         </motion.div>
       </AnimatePresence>
+
+      {/* Hero birds ornament — outside AnimatePresence so animation works on first load */}
+      {!slide.background_image && (
+        <div className="hidden lg:block absolute right-8 xl:right-16 top-1/2 -translate-y-1/2 z-[5] pointer-events-none">
+          <motion.div
+            animate={{ rotate: [0, 360] }}
+            transition={{ duration: 60, repeat: Infinity, ease: 'linear' }}
+            className="relative w-[380px] h-[380px]"
+          >
+            <svg className="absolute inset-0 w-full h-full" viewBox="0 0 380 380">
+              <circle cx="190" cy="190" r="185" fill="none" stroke="rgba(212,175,55,0.12)" strokeWidth="1" strokeDasharray="8 8" />
+              <circle cx="190" cy="190" r="155" fill="none" stroke="rgba(212,175,55,0.15)" strokeWidth="1" />
+              <circle cx="190" cy="190" r="120" fill="none" stroke="rgba(212,175,55,0.18)" strokeWidth="1" strokeDasharray="4 12" />
+            </svg>
+          </motion.div>
+          <div className="absolute inset-0 flex items-center justify-center">
+            <motion.div
+              initial={{ y: 0 }}
+              animate={{ y: [-12, 12, -12] }}
+              transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-60 h-60 rounded-full flex items-center justify-center"
+              style={{
+                background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 60%, transparent 100%)',
+                boxShadow: '0 0 80px rgba(212,175,55,0.1)',
+              }}
+            >
+              <img src="/hero-birds.png" alt="" className="w-72 h-72 object-contain opacity-80" />
+            </motion.div>
+          </div>
+          <motion.div
+            animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
+            transition={{ duration: 2, repeat: Infinity }}
+            className="absolute top-4 right-12 w-3 h-3 rounded-full bg-gold/70"
+          />
+          <motion.div
+            animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+            className="absolute bottom-12 left-4 w-2 h-2 rounded-full bg-gold/50"
+          />
+        </div>
+      )}
 
       {/* Navigation Arrows */}
       <button
