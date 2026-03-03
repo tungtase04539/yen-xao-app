@@ -704,3 +704,25 @@ html {
 ::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(180deg, #e8d48b, #d4af37);
 }
+
+/* Metallic gold text with shimmer animation */
+.text-metallic-gold {
+  background: linear-gradient(
+    90deg,
+    #b8943e 0%,
+    #C9A55A 25%,
+    #e8d48b 50%,
+    #C9A55A 75%,
+    #b8943e 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: gold-shimmer 4s ease-in-out infinite;
+}
+
+@keyframes gold-shimmer {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
