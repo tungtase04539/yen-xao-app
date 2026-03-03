@@ -100,7 +100,7 @@ export default function Header() {
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="relative w-12 h-12 md:w-14 md:h-14 shrink-0">
+              <div className="relative w-14 h-14 md:w-[72px] md:h-[72px] shrink-0">
                 <img src="/logo.png" alt="QiQi Yến" className="w-full h-full object-contain" />
               </div>
               <div className="hidden sm:block">
@@ -124,7 +124,7 @@ export default function Header() {
                   >
                     <button
                       onClick={() => setMegaMenuOpen(!megaMenuOpen)}
-                      className="relative flex items-center gap-1.5 px-4 py-2.5 text-sm font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
+                      className="relative flex items-center gap-1.5 px-5 py-2.5 text-base font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
                     >
                       {link.name}
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${megaMenuOpen ? 'rotate-180' : ''}`} />
@@ -178,7 +178,7 @@ export default function Header() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className="relative px-4 py-2.5 text-sm font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
+                    className="relative px-5 py-2.5 text-base font-medium text-foreground/70 hover:text-burgundy transition-all rounded-lg group"
                   >
                     {link.name}
                     <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-gold scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
