@@ -44,7 +44,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       }}
     >
       {/* Image */}
-      <Link href={`/san-pham/${product.slug}`} className="block relative aspect-square overflow-hidden bg-cream">
+      <Link href={`/san-pham/${product.slug}`} className="block relative aspect-[4/3] overflow-hidden bg-cream">
         {product.thumbnail ? (
           <div
             className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110"
@@ -62,7 +62,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         {/* Badges */}
         <div className="absolute top-3 left-3 flex flex-col gap-1.5">
           {product.is_featured && (
-            <span className="px-3 py-1.5 text-[10px] font-bold rounded-full uppercase tracking-wider shadow-lg"
+            <span className="px-3 py-1.5 text-xs font-bold rounded-full uppercase tracking-wider shadow-lg"
               style={{
                 background: 'linear-gradient(135deg, #d4af37, #e8d48b, #d4af37)',
                 color: '#7c000a',
@@ -72,7 +72,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             </span>
           )}
           {discountPercent > 0 && (
-            <span className="px-3 py-1.5 bg-burgundy text-white text-[10px] font-bold rounded-full shadow-lg">
+            <span className="px-3 py-1.5 bg-burgundy text-white text-xs font-bold rounded-full shadow-lg">
               -{discountPercent}%
             </span>
           )}
@@ -90,30 +90,30 @@ export default function ProductCard({ product }: ProductCardProps) {
       </Link>
 
       {/* Info */}
-      <div className="p-4 md:p-5">
+      <div className="p-5 md:p-6">
         {product.category_name && (
           <Link
             href={`/danh-muc/${product.category_slug}`}
-            className="text-[10px] font-medium uppercase tracking-[0.15em]"
+            className="text-xs font-semibold uppercase tracking-[0.15em]"
             style={{ color: '#b8960f' }}
           >
             {product.category_name}
           </Link>
         )}
         <Link href={`/san-pham/${product.slug}`}>
-          <h3 className="text-sm md:text-base font-semibold text-foreground mt-1.5 line-clamp-2 group-hover:text-burgundy transition-colors font-serif leading-snug">
+          <h3 className="text-base md:text-lg font-semibold text-foreground mt-2 line-clamp-2 group-hover:text-burgundy transition-colors font-serif leading-snug">
             {product.name}
           </h3>
         </Link>
 
         {/* Price with gold underline */}
         <div className="mt-3 pt-3 flex items-baseline gap-2" style={{ borderTop: '1px solid rgba(212,175,55,0.15)' }}>
-          <span className="text-lg font-bold text-burgundy font-serif">
+          <span className="text-xl font-bold text-burgundy font-serif">
             {product.type === 'variable' ? 'Từ ' : ''}
             {formatPrice(displayPrice || 0)}
           </span>
           {hasDiscount && originalPrice && (
-            <span className="text-xs text-muted-foreground line-through">
+            <span className="text-sm text-muted-foreground line-through">
               {formatPrice(originalPrice)}
             </span>
           )}

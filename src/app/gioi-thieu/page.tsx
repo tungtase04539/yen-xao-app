@@ -68,8 +68,8 @@ export default async function AboutPage() {
                   { number: '100%', label: 'Yến sào nguyên chất' },
                   { number: '6+', label: 'Chứng nhận quốc tế' },
                 ].map((stat) => (
-                  <div key={stat.label} className="text-center p-10 rounded-2xl luxury-card group hover:gold-glow transition-all duration-300">
-                    <p className="text-5xl md:text-6xl lg:text-7xl font-bold text-gradient-gold mb-3" style={{ fontFamily: 'var(--font-display), Georgia, serif' }}>{stat.number}</p>
+                  <div key={stat.label} className="text-center p-8 md:p-10 rounded-2xl luxury-card group hover:gold-glow transition-all duration-300 overflow-hidden">
+                    <p className="text-4xl md:text-5xl font-bold text-gradient-gold mb-3" style={{ fontFamily: 'var(--font-display), Georgia, serif' }}>{stat.number}</p>
                     <p className="text-sm md:text-base text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</p>
                   </div>
                 ))}
