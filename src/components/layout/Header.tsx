@@ -106,7 +106,7 @@ export default function Header() {
             </Link>
 
             {/* Desktop Nav */}
-            <nav className="hidden lg:flex items-center gap-0.5" style={{ transform: 'translateY(10px)' }}>
+            <nav className="hidden lg:flex items-center gap-0.5">
               {navLinks.map((link) =>
                 link.megaMenu ? (
                   <div
