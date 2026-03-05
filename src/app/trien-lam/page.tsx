@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useLenis } from '@/components/layout/SmoothScroll';
+import { stopLenis, startLenis } from '@/components/layout/SmoothScroll';
 
 interface ExhibitionImage {
   id: string;
@@ -67,18 +67,18 @@ export default function ExhibitionsPage() {
   const closeLightbox = () => setLightboxIndex(null);
   const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
 
-  // Lock body scroll when gallery is open (card has its own overflow-y-auto)
-  const lenis = useLenis();
+  // Lock scroll: stop Lenis + hide body overflow
   useEffect(() => {
     if (!selectedExhibition) return;
-    // Stop Lenis smooth scroll so it doesn't hijack wheel events
-    lenis?.stop();
+    stopLenis();
     document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
     return () => {
-      lenis?.start();
+      startLenis();
       document.body.style.overflow = '';
+      document.documentElement.style.overflow = '';
     };
-  }, [selectedExhibition, lenis]);
+  }, [selectedExhibition]);
 
   const prevImage = () => {
     if (lightboxIndex === null || !selectedExhibition) return;
