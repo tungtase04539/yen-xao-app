@@ -235,7 +235,7 @@ export default function ExhibitionFormPage() {
                   <button
                     type="button"
                     onClick={() => removeImage(i)}
-                    className="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-600"
+                    className="absolute top-2 right-2 w-7 h-7 bg-red-500 text-white rounded-full flex items-center justify-center hover:bg-red-600 shadow-lg"
                   >
                     <X className="w-4 h-4" />
                   </button>
