@@ -73,8 +73,10 @@ export default function Header() {
 
   return (
     <>
+      {/* Sticky wrapper for top bar + header */}
+      <div className="sticky top-0 z-50">
       {/* Luxury Top Bar */}
-      <div className="bg-gradient-to-r from-burgundy-dark via-burgundy to-burgundy-dark text-white text-sm py-2.5 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-burgundy-dark via-burgundy to-burgundy-dark text-white text-sm py-2.5 relative overflow-hidden hidden md:block">
         {/* Shimmer effect */}
         <div className="absolute inset-0 animate-gold-shimmer pointer-events-none" />
         <div className="container mx-auto px-4 flex justify-between items-center relative">
@@ -105,7 +107,7 @@ export default function Header() {
       </div>
 
       {/* Main Header */}
-      <header className={`sticky top-0 z-50 transition-all duration-500 ${
+      <header className={`transition-all duration-500 ${
         scrolled
           ? 'shadow-lg shadow-black/20'
           : ''
@@ -286,6 +288,13 @@ export default function Header() {
                   Giới Thiệu
                 </Link>
                 <Link
+                  href="/trien-lam"
+                  className="block px-4 py-3 rounded-xl text-lg font-medium text-white/80 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
+                  onClick={() => setMobileOpen(false)}
+                >
+                  Triển Lãm
+                </Link>
+                <Link
                   href="/blog"
                   className="block px-4 py-3 rounded-xl text-lg font-medium text-white/80 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
                   onClick={() => setMobileOpen(false)}
@@ -304,6 +313,7 @@ export default function Header() {
           )}
         </AnimatePresence>
       </header>
+      </div>
     </>
   );
 }
