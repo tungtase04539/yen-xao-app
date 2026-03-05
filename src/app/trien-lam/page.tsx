@@ -17,6 +17,7 @@ interface Exhibition {
   location: string;
   event_date: string;
   description: string;
+  thumbnail: string;
   exhibition_images: ExhibitionImage[];
 }
 
@@ -128,10 +129,10 @@ export default function ExhibitionsPage() {
                         className="bg-white rounded-2xl p-6 border border-border/50 shadow-sm hover:shadow-xl hover:shadow-gold/10 hover:border-gold/30 transition-all duration-300 cursor-pointer group"
                       >
                         {/* Preview image */}
-                        {ex.exhibition_images?.[0] && (
+                        {(ex.thumbnail || ex.exhibition_images?.[0]) && (
                           <div className="rounded-xl overflow-hidden mb-4 -mt-2 -mx-2">
                             <img
-                              src={ex.exhibition_images[0].image_url}
+                              src={ex.thumbnail || ex.exhibition_images[0].image_url}
                               alt={ex.title}
                               className="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500"
                             />

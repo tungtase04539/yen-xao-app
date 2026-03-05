@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Save, ArrowLeft, Eye, EyeOff, Upload, X, GripVertical } from 'lucide-react';
 import { toast } from 'sonner';
+import ImageUpload from '@/components/admin/ImageUpload';
 
 interface ExhibitionImage {
   id?: string;
@@ -30,7 +31,7 @@ export default function ExhibitionFormPage() {
   const [location, setLocation] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [description, setDescription] = useState('');
-  const [sortOrder, setSortOrder] = useState(0);
+  const [thumbnail, setThumbnail] = useState('');
   const [isPublished, setIsPublished] = useState(true);
   const [images, setImages] = useState<ExhibitionImage[]>([]);
 
@@ -43,7 +44,7 @@ export default function ExhibitionFormPage() {
           setLocation(data.location);
           setEventDate(data.event_date);
           setDescription(data.description || '');
-          setSortOrder(data.sort_order || 0);
+          setThumbnail(data.thumbnail || '');
           setIsPublished(data.is_published ?? true);
         }
         const { data: imgs } = await supabase
@@ -105,7 +106,8 @@ export default function ExhibitionFormPage() {
       const exData = {
         title, location, event_date: eventDate,
         description: description || null,
-        sort_order: sortOrder, is_published: isPublished,
+        thumbnail: thumbnail || null,
+        is_published: isPublished,
       };
 
       let exId = id;
@@ -178,15 +180,9 @@ export default function ExhibitionFormPage() {
               <Input value={location} onChange={(e) => setLocation(e.target.value)} placeholder="VD: Hà Nội, Việt Nam" />
             </div>
           </div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Ngày diễn ra *</label>
-              <Input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Thứ tự hiển thị</label>
-              <Input type="number" value={sortOrder} onChange={(e) => setSortOrder(Number(e.target.value))} />
-            </div>
+          <div>
+            <label className="block text-sm font-medium mb-1.5">Ngày diễn ra *</label>
+            <Input type="date" value={eventDate} onChange={(e) => setEventDate(e.target.value)} className="max-w-xs" />
           </div>
           <div>
             <label className="block text-sm font-medium mb-1.5">Mô tả</label>
@@ -198,6 +194,7 @@ export default function ExhibitionFormPage() {
               className="w-full rounded-md border border-input px-3 py-2 text-sm resize-none"
             />
           </div>
+          <ImageUpload value={thumbnail} onChange={setThumbnail} bucket="products" folder="exhibitions" label="Ảnh đại diện mốc" />
         </div>
 
         {/* Images */}
