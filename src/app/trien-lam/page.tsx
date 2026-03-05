@@ -69,19 +69,40 @@ export default function ExhibitionsPage() {
 
   // Gallery card ref for manual scroll
   const galleryRef = useRef<HTMLDivElement>(null);
+  const scrollTarget = useRef(0);
+  const scrollAnimating = useRef(false);
+
+  // Smooth scroll animation loop
+  const animateScroll = useCallback(() => {
+    if (!galleryRef.current) return;
+    const current = galleryRef.current.scrollTop;
+    const diff = scrollTarget.current - current;
+    if (Math.abs(diff) < 0.5) {
+      galleryRef.current.scrollTop = scrollTarget.current;
+      scrollAnimating.current = false;
+      return;
+    }
+    galleryRef.current.scrollTop = current + diff * 0.15;
+    requestAnimationFrame(animateScroll);
+  }, []);
 
   // Manual wheel scroll handler - bypasses Lenis completely
   const handleGalleryWheel = useCallback((e: React.WheelEvent) => {
     e.stopPropagation();
-    if (galleryRef.current) {
-      galleryRef.current.scrollTop += e.deltaY;
+    if (!galleryRef.current) return;
+    const maxScroll = galleryRef.current.scrollHeight - galleryRef.current.clientHeight;
+    scrollTarget.current = Math.max(0, Math.min(maxScroll, scrollTarget.current + e.deltaY));
+    if (!scrollAnimating.current) {
+      scrollAnimating.current = true;
+      requestAnimationFrame(animateScroll);
     }
-  }, []);
+  }, [animateScroll]);
 
-  // Touch scroll state
+  // Touch scroll - direct (already smooth on mobile)
   const touchStartY = useRef(0);
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
+    if (galleryRef.current) scrollTarget.current = galleryRef.current.scrollTop;
   }, []);
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     e.stopPropagation();
@@ -89,6 +110,7 @@ export default function ExhibitionsPage() {
     touchStartY.current = e.touches[0].clientY;
     if (galleryRef.current) {
       galleryRef.current.scrollTop += deltaY;
+      scrollTarget.current = galleryRef.current.scrollTop;
     }
   }, []);
 
