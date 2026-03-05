@@ -65,6 +65,16 @@ export default function ExhibitionsPage() {
   const closeLightbox = () => setLightboxIndex(null);
   const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (selectedExhibition) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedExhibition]);
+
   const prevImage = () => {
     if (lightboxIndex === null || !selectedExhibition) return;
     setLightboxIndex(lightboxIndex > 0 ? lightboxIndex - 1 : selectedExhibition.exhibition_images.length - 1);
