@@ -230,7 +230,7 @@ export default function ExhibitionsPage() {
         >
             <div
               className="bg-white rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-y-auto overscroll-contain"
-              style={{ WebkitOverflowScrolling: 'touch' }}
+              style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="px-6 py-4 border-b flex items-center justify-between">
