@@ -66,22 +66,12 @@ export default function ExhibitionsPage() {
   const closeLightbox = () => setLightboxIndex(null);
   const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
 
-  // Lock body scroll when modal is open, but allow modal itself to scroll
+  // Lock page scroll when modal is open
   useEffect(() => {
     if (!selectedExhibition) return;
-    const scrollY = window.scrollY;
-    // Prevent background scroll via CSS
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.position = 'fixed';
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
-
+    document.documentElement.style.overflow = 'hidden';
     return () => {
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      document.body.style.overflow = '';
-      window.scrollTo(0, scrollY);
+      document.documentElement.style.overflow = '';
     };
   }, [selectedExhibition]);
 
