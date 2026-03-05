@@ -11,14 +11,14 @@ const contactInfo = [
   {
     icon: MapPin,
     label: 'Địa chỉ',
-    value: '123 Trần Phú, Nha Trang, Khánh Hòa',
+    value: 'Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng',
     href: null,
   },
   {
     icon: Phone,
     label: 'Hotline',
-    value: '0901 234 567',
-    href: 'tel:0901234567',
+    value: '0984 234 669',
+    href: 'tel:0984234669',
   },
   {
     icon: Mail,

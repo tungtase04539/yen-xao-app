@@ -109,15 +109,15 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-lg text-white/45">
                 <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <span>123 Đường Yến Sào, Quận 1, TP. Hồ Chí Minh</span>
+                <span>Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng</span>
               </li>
               <li>
                 <a
-                  href="tel:0901234567"
+                  href="tel:0984234669"
                   className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
                 >
                   <Phone className="w-4 h-4 text-gold/60 shrink-0" />
-                  0901 234 567
+                  0984 234 669
                 </a>
               </li>
               <li>
