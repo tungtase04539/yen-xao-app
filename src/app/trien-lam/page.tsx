@@ -130,7 +130,7 @@ export default function ExhibitionsPage() {
             <div className="relative max-w-5xl mx-auto">
               {/* Year Filter */}
               {years.length > 1 && (
-                <div className="sticky top-20 z-20 flex justify-center mb-12">
+                <div className="sticky top-[4.5rem] md:top-[6rem] z-20 flex justify-center mb-12">
                   <div className="inline-flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1.5 shadow-lg border border-border/50">
                     <button
                       onClick={() => scrollToYear('all')}
