@@ -17,6 +17,7 @@ import {
   FolderTree,
   Image,
   BookOpen,
+  CalendarDays,
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -27,6 +28,7 @@ const sidebarLinks = [
   { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },
   { name: 'Bài viết', href: '/admin/posts', icon: FileText },
   { name: 'Trang tĩnh', href: '/admin/pages', icon: BookOpen },
+  { name: 'Triển lãm', href: '/admin/exhibitions', icon: CalendarDays },
   { name: 'Mã giảm giá', href: '/admin/coupons', icon: Tag },
 ];
 

@@ -23,6 +23,7 @@ const navLinks = [
     megaMenu: true,
   },
   { name: 'Giới Thiệu', href: '/gioi-thieu' },
+  { name: 'Triển Lãm', href: '/trien-lam' },
   { name: 'Blog', href: '/blog' },
   { name: 'Liên Hệ', href: '/lien-he' },
 ];

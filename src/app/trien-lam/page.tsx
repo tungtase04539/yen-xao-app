@@ -1,0 +1,256 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+import { supabase } from '@/lib/supabase';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
+
+interface ExhibitionImage {
+  id: string;
+  image_url: string;
+  caption: string;
+}
+
+interface Exhibition {
+  id: string;
+  title: string;
+  location: string;
+  event_date: string;
+  description: string;
+  exhibition_images: ExhibitionImage[];
+}
+
+export default function ExhibitionsPage() {
+  const [exhibitions, setExhibitions] = useState<Exhibition[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedExhibition, setSelectedExhibition] = useState<Exhibition | null>(null);
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from('exhibitions')
+        .select('*, exhibition_images(*)')
+        .eq('is_published', true)
+        .order('event_date', { ascending: true });
+      if (data) setExhibitions(data as Exhibition[]);
+      setLoading(false);
+    })();
+  }, []);
+
+  const openGallery = (ex: Exhibition) => {
+    setSelectedExhibition(ex);
+    setLightboxIndex(null);
+  };
+
+  const openLightbox = (index: number) => setLightboxIndex(index);
+  const closeLightbox = () => setLightboxIndex(null);
+  const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
+
+  const prevImage = () => {
+    if (lightboxIndex === null || !selectedExhibition) return;
+    setLightboxIndex(lightboxIndex > 0 ? lightboxIndex - 1 : selectedExhibition.exhibition_images.length - 1);
+  };
+  const nextImage = () => {
+    if (lightboxIndex === null || !selectedExhibition) return;
+    setLightboxIndex(lightboxIndex < selectedExhibition.exhibition_images.length - 1 ? lightboxIndex + 1 : 0);
+  };
+
+  return (
+    <div className="min-h-screen">
+      {/* Hero */}
+      <section className="bg-gradient-dark-luxury text-white py-20 md:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+        </div>
+        <div className="container mx-auto px-4 text-center relative">
+          <div className="ornament-divider mb-8">
+            <span className="text-gold text-lg">✦</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-5 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
+            Hành Trình Triển Lãm
+          </h1>
+          <p className="text-white/60 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+            Dấu chân QiQi Yến qua các sự kiện triển lãm trên khắp cả nước
+          </p>
+          <div className="flex justify-center items-center gap-3 mt-8 text-sm text-white/30">
+            <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
+            <span className="text-gold/30">✦</span>
+            <span className="text-gold/70">Triển Lãm</span>
+          </div>
+        </div>
+      </section>
+
+      {/* Timeline */}
+      <section className="py-16 md:py-24 bg-gradient-luxury">
+        <div className="container mx-auto px-4">
+          {loading ? (
+            <div className="flex justify-center py-20">
+              <div className="w-8 h-8 border-2 border-gold border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : exhibitions.length === 0 ? (
+            <div className="text-center py-20 text-muted-foreground">
+              <p>Hành trình triển lãm đang được cập nhật...</p>
+            </div>
+          ) : (
+            <div className="relative max-w-5xl mx-auto">
+              {/* Vertical line */}
+              <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gold/40 via-gold/20 to-gold/40 md:-translate-x-px" />
+
+              {exhibitions.map((ex, i) => {
+                const isLeft = i % 2 === 0;
+                const date = new Date(ex.event_date);
+                const dateStr = date.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+
+                return (
+                  <motion.div
+                    key={ex.id}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '-50px' }}
+                    transition={{ duration: 0.6, delay: i * 0.1 }}
+                    className={`relative flex flex-col md:flex-row items-start md:items-center mb-16 last:mb-0 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+                  >
+                    {/* Dot on timeline */}
+                    <div className="absolute left-4 md:left-1/2 w-4 h-4 -translate-x-1/2 rounded-full border-2 border-gold bg-white z-10 shadow-lg shadow-gold/20" />
+
+                    {/* Date badge (mobile: inline, desktop: opposite side) */}
+                    <div className={`hidden md:block w-[calc(50%-2rem)] ${isLeft ? 'text-right pr-8' : 'text-left pl-8'}`}>
+                      <span className="text-sm font-medium text-gold uppercase tracking-widest">{dateStr}</span>
+                    </div>
+
+                    {/* Card */}
+                    <div className={`ml-10 md:ml-0 md:w-[calc(50%-2rem)] ${isLeft ? 'md:pl-8' : 'md:pr-8'}`}>
+                      <span className="md:hidden text-xs font-medium text-gold uppercase tracking-widest mb-2 block">{dateStr}</span>
+                      <div
+                        onClick={() => openGallery(ex)}
+                        className="bg-white rounded-2xl p-6 border border-border/50 shadow-sm hover:shadow-xl hover:shadow-gold/10 hover:border-gold/30 transition-all duration-300 cursor-pointer group"
+                      >
+                        {/* Preview image */}
+                        {ex.exhibition_images?.[0] && (
+                          <div className="rounded-xl overflow-hidden mb-4 -mt-2 -mx-2">
+                            <img
+                              src={ex.exhibition_images[0].image_url}
+                              alt={ex.title}
+                              className="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                          </div>
+                        )}
+                        <h3 className="text-lg font-bold mb-2 group-hover:text-gold transition-colors">{ex.title}</h3>
+                        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
+                          <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gold" />{ex.location}</span>
+                          <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-gold" />{date.toLocaleDateString('vi-VN')}</span>
+                        </div>
+                        {ex.description && <p className="text-sm text-muted-foreground line-clamp-2">{ex.description}</p>}
+                        {ex.exhibition_images?.length > 0 && (
+                          <p className="text-xs text-gold mt-3 font-medium">📸 {ex.exhibition_images.length} ảnh — Click để xem</p>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Gallery Modal */}
+      <AnimatePresence>
+        {selectedExhibition && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            onClick={closeGallery}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b flex items-center justify-between rounded-t-2xl">
+                <div>
+                  <h2 className="text-xl font-bold">{selectedExhibition.title}</h2>
+                  <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
+                    <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{selectedExhibition.location}</span>
+                    <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{new Date(selectedExhibition.event_date).toLocaleDateString('vi-VN')}</span>
+                  </div>
+                </div>
+                <button onClick={closeGallery} className="w-9 h-9 rounded-full hover:bg-secondary flex items-center justify-center transition-colors">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {selectedExhibition.description && (
+                <p className="px-6 pt-4 text-sm text-muted-foreground">{selectedExhibition.description}</p>
+              )}
+
+              <div className="p-6 grid grid-cols-2 md:grid-cols-3 gap-3">
+                {selectedExhibition.exhibition_images?.map((img, idx) => (
+                  <div
+                    key={img.id}
+                    className="rounded-xl overflow-hidden cursor-pointer group"
+                    onClick={() => openLightbox(idx)}
+                  >
+                    <img
+                      src={img.image_url}
+                      alt={img.caption || ''}
+                      className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    {img.caption && <p className="text-xs text-center text-muted-foreground mt-1 px-1">{img.caption}</p>}
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Lightbox */}
+      <AnimatePresence>
+        {lightboxIndex !== null && selectedExhibition && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center"
+            onClick={closeLightbox}
+          >
+            <button onClick={closeLightbox} className="absolute top-4 right-4 text-white/60 hover:text-white z-10">
+              <X className="w-7 h-7" />
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-4 text-white/60 hover:text-white z-10">
+              <ChevronLeft className="w-10 h-10" />
+            </button>
+            <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-4 text-white/60 hover:text-white z-10">
+              <ChevronRight className="w-10 h-10" />
+            </button>
+
+            <motion.img
+              key={lightboxIndex}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              src={selectedExhibition.exhibition_images[lightboxIndex].image_url}
+              alt=""
+              className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
+              onClick={(e) => e.stopPropagation()}
+            />
+
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
+              {lightboxIndex + 1} / {selectedExhibition.exhibition_images.length}
+              {selectedExhibition.exhibition_images[lightboxIndex].caption && (
+                <span className="ml-3">{selectedExhibition.exhibition_images[lightboxIndex].caption}</span>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
