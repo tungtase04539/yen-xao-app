@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -26,6 +26,23 @@ export default function ExhibitionsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedExhibition, setSelectedExhibition] = useState<Exhibition | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+  const [activeYear, setActiveYear] = useState<string>('all');
+
+  // Extract unique years
+  const years = useMemo(() => {
+    const yrs = [...new Set(exhibitions.map(ex => new Date(ex.event_date).getFullYear().toString()))];
+    return yrs.sort();
+  }, [exhibitions]);
+
+  const scrollToYear = (year: string) => {
+    setActiveYear(year);
+    if (year === 'all') {
+      document.getElementById('timeline-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const el = document.getElementById(`year-${year}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   useEffect(() => {
     (async () => {
@@ -96,22 +113,54 @@ export default function ExhibitionsPage() {
             </div>
           ) : (
             <div className="relative max-w-5xl mx-auto">
+              {/* Year Filter */}
+              {years.length > 1 && (
+                <div className="sticky top-20 z-20 flex justify-center mb-12">
+                  <div className="inline-flex items-center gap-1 bg-white/90 backdrop-blur-sm rounded-full px-2 py-1.5 shadow-lg border border-border/50">
+                    <button
+                      onClick={() => scrollToYear('all')}
+                      className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                        activeYear === 'all' ? 'bg-gold text-white shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                      }`}
+                    >
+                      Tất cả
+                    </button>
+                    {years.map(year => (
+                      <button
+                        key={year}
+                        onClick={() => scrollToYear(year)}
+                        className={`px-4 py-1.5 rounded-full text-sm font-medium transition-all ${
+                          activeYear === year ? 'bg-gold text-white shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-secondary'
+                        }`}
+                      >
+                        {year}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div id="timeline-top" />
               {/* Vertical line */}
               <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-gold/40 via-gold/20 to-gold/40 md:-translate-x-px" />
 
               {exhibitions.map((ex, i) => {
                 const isLeft = i % 2 === 0;
                 const date = new Date(ex.event_date);
+                const year = date.getFullYear().toString();
                 const dateStr = date.toLocaleDateString('vi-VN', { month: 'long', year: 'numeric' });
+                // Check if this is the first exhibition of its year
+                const isFirstOfYear = i === 0 || new Date(exhibitions[i - 1].event_date).getFullYear().toString() !== year;
 
                 return (
                   <motion.div
                     key={ex.id}
+                    id={isFirstOfYear ? `year-${year}` : undefined}
                     initial={{ opacity: 0, y: 40 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, margin: '-50px' }}
-                    transition={{ duration: 0.6, delay: i * 0.1 }}
-                    className={`relative flex flex-col md:flex-row items-start md:items-center mb-16 last:mb-0 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}
+                    transition={{ duration: 0.6, delay: Math.min(i * 0.1, 0.5) }}
+                    className={`relative flex flex-col md:flex-row items-start md:items-center mb-16 last:mb-0 scroll-mt-32 ${isLeft ? 'md:flex-row' : 'md:flex-row-reverse'}`}
                   >
                     {/* Dot on timeline */}
                     <div className="absolute left-4 md:left-1/2 w-4 h-4 -translate-x-1/2 rounded-full border-2 border-gold bg-white z-10 shadow-lg shadow-gold/20" />
