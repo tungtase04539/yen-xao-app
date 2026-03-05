@@ -7,21 +7,60 @@ import TiptapLink from '@tiptap/extension-link';
 import TiptapImage from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
+import { useRef, useState, useCallback } from 'react';
+import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough,
-  List, ListOrdered, Quote, Image, Link2,
+  List, ListOrdered, Quote, Image, Link2, Upload,
   AlignLeft, AlignCenter, AlignRight,
   Heading1, Heading2, Heading3,
-  Undo, Redo,
+  Undo, Redo, Loader2,
 } from 'lucide-react';
 
 interface RichTextEditorProps {
   content: string;
   onChange: (html: string) => void;
   placeholder?: string;
+  bucket?: string;
+  folder?: string;
 }
 
-export default function RichTextEditor({ content, onChange, placeholder }: RichTextEditorProps) {
+export default function RichTextEditor({ content, onChange, placeholder, bucket = 'pages', folder = 'content' }: RichTextEditorProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+
+  // Upload a file/blob to Supabase Storage and return public URL
+  const uploadImageToStorage = useCallback(async (file: File | Blob): Promise<string | null> => {
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      toast.error('Ảnh phải nhỏ hơn 5MB');
+      return null;
+    }
+
+    setUploading(true);
+    try {
+      const ext = file instanceof File ? file.name.split('.').pop() : 'png';
+      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+
+      const { error } = await supabase.storage
+        .from(bucket)
+        .upload(fileName, file, { cacheControl: '3600', upsert: false });
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      toast.success('Upload ảnh thành công!');
+      return publicUrl;
+    } catch (err) {
+      console.error(err);
+      toast.error('Upload ảnh thất bại');
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  }, [bucket, folder]);
+
   const editor = useEditor({
     immediatelyRender: false,
     extensions: [
@@ -55,12 +94,65 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
       attributes: {
         class: 'prose-content min-h-[200px] p-4 focus:outline-none',
       },
+      // Handle paste images from clipboard
+      handlePaste: (_view, event) => {
+        const items = event.clipboardData?.items;
+        if (!items) return false;
+
+        for (const item of Array.from(items)) {
+          if (item.type.startsWith('image/')) {
+            event.preventDefault();
+            const file = item.getAsFile();
+            if (file) {
+              uploadImageToStorage(file).then((url) => {
+                if (url && editor) {
+                  editor.chain().focus().setImage({ src: url }).run();
+                }
+              });
+            }
+            return true;
+          }
+        }
+        return false;
+      },
+      // Handle drop images
+      handleDrop: (_view, event) => {
+        const files = event.dataTransfer?.files;
+        if (!files || files.length === 0) return false;
+
+        const file = files[0];
+        if (file.type.startsWith('image/')) {
+          event.preventDefault();
+          uploadImageToStorage(file).then((url) => {
+            if (url && editor) {
+              editor.chain().focus().setImage({ src: url }).run();
+            }
+          });
+          return true;
+        }
+        return false;
+      },
     },
   });
 
   if (!editor) return null;
 
-  const addImage = () => {
+  // Upload image via file picker
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      toast.error('Vui lòng chọn file ảnh');
+      return;
+    }
+    const url = await uploadImageToStorage(file);
+    if (url) {
+      editor.chain().focus().setImage({ src: url }).run();
+    }
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const addImageByUrl = () => {
     const url = window.prompt('Nhập URL ảnh:');
     if (url) {
       editor.chain().focus().setImage({ src: url }).run();
@@ -79,19 +171,22 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
     isActive,
     children,
     title,
+    disabled,
   }: {
     onClick: () => void;
     isActive?: boolean;
     children: React.ReactNode;
     title: string;
+    disabled?: boolean;
   }) => (
     <button
       type="button"
       onClick={onClick}
       title={title}
+      disabled={disabled}
       className={`p-1.5 rounded hover:bg-secondary transition-colors ${
         isActive ? 'bg-secondary text-burgundy' : 'text-muted-foreground'
-      }`}
+      } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
     >
       {children}
     </button>
@@ -99,6 +194,15 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
 
   return (
     <div className="border border-input rounded-lg overflow-hidden">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+
       {/* Toolbar */}
       <div className="flex flex-wrap items-center gap-0.5 px-2 py-1.5 bg-secondary/30 border-b border-input">
         <ToolbarButton
@@ -204,10 +308,13 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
 
         <div className="w-px h-6 bg-border mx-1" />
 
-        <ToolbarButton onClick={addLink} title="Add Link">
+        <ToolbarButton onClick={addLink} title="Thêm liên kết">
           <Link2 className="w-4 h-4" />
         </ToolbarButton>
-        <ToolbarButton onClick={addImage} title="Add Image">
+        <ToolbarButton onClick={() => fileInputRef.current?.click()} title="Upload ảnh" disabled={uploading}>
+          {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
+        </ToolbarButton>
+        <ToolbarButton onClick={addImageByUrl} title="Thêm ảnh bằng URL">
           <Image className="w-4 h-4" />
         </ToolbarButton>
 
@@ -227,8 +334,21 @@ export default function RichTextEditor({ content, onChange, placeholder }: RichT
         </ToolbarButton>
       </div>
 
+      {/* Upload indicator */}
+      {uploading && (
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-gold/10 border-b border-gold/20 text-xs text-gold-dark">
+          <Loader2 className="w-3 h-3 animate-spin" />
+          Đang upload ảnh...
+        </div>
+      )}
+
       {/* Editor */}
       <EditorContent editor={editor} />
+
+      {/* Hint */}
+      <div className="px-3 py-1 bg-secondary/20 border-t border-input text-[10px] text-muted-foreground">
+        💡 Paste ảnh trực tiếp (Ctrl+V) hoặc kéo thả ảnh vào editor
+      </div>
     </div>
   );
 }
