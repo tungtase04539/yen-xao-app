@@ -73,45 +73,38 @@ export default function Header() {
 
   return (
     <>
-      {/* Sticky wrapper for top bar + header */}
-      <div className="sticky top-0 z-50">
-      {/* Luxury Top Bar */}
-      <div className="bg-gradient-to-r from-burgundy-dark via-burgundy to-burgundy-dark text-white text-sm py-2.5 relative overflow-hidden hidden md:block">
-        {/* Shimmer effect */}
-        <div className="absolute inset-0 animate-gold-shimmer pointer-events-none" />
-        <div className="container mx-auto px-4 flex justify-between items-center relative">
-          <div className="hidden sm:flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-gold" />
-            <p className="text-gold-light text-xs tracking-wider">
-              Miễn phí vận chuyển đơn hàng từ 1.000.000₫
-            </p>
-          </div>
-          <p className="sm:hidden text-xs text-gold-light tracking-wide">
-            ✦ Freeship từ 1.000.000₫
-          </p>
-          <div className="flex items-center gap-4 text-xs">
-            <a href="tel:0901234567" className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors">
-              <Phone className="w-3 h-3" />
-              <span className="tracking-wide">0901 234 567</span>
-            </a>
-            <div className="w-px h-3 bg-white/20" />
-            <button
-              onClick={() => setLang(lang === 'vi' ? 'cn' : 'vi')}
-              className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors"
-            >
-              <Globe className="w-3 h-3" />
-              {lang === 'vi' ? 'VI' : '中文'}
-            </button>
-          </div>
-        </div>
-      </div>
-
       {/* Main Header */}
-      <header className={`transition-all duration-500 ${
+      <header className={`sticky top-0 z-50 transition-all duration-500 ${
         scrolled
           ? 'shadow-lg shadow-black/20'
           : ''
       }`} style={{ background: 'linear-gradient(to right, #8B1A2B, #6E1222)' }}>
+        {/* Luxury Top Bar — desktop only */}
+        <div className="hidden md:block bg-burgundy-dark/30 text-white text-sm py-2 relative overflow-hidden">
+          <div className="absolute inset-0 animate-gold-shimmer pointer-events-none" />
+          <div className="container mx-auto px-4 flex justify-between items-center relative">
+            <div className="flex items-center gap-2">
+              <Sparkles className="w-3.5 h-3.5 text-gold" />
+              <p className="text-gold-light text-xs tracking-wider">
+                Miễn phí vận chuyển đơn hàng từ 1.000.000₫
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-xs">
+              <a href="tel:0901234567" className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors">
+                <Phone className="w-3 h-3" />
+                <span className="tracking-wide">0901 234 567</span>
+              </a>
+              <div className="w-px h-3 bg-white/20" />
+              <button
+                onClick={() => setLang(lang === 'vi' ? 'cn' : 'vi')}
+                className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors"
+              >
+                <Globe className="w-3 h-3" />
+                {lang === 'vi' ? 'VI' : '中文'}
+              </button>
+            </div>
+          </div>
+        </div>
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
@@ -313,7 +306,6 @@ export default function Header() {
           )}
         </AnimatePresence>
       </header>
-      </div>
     </>
   );
 }
