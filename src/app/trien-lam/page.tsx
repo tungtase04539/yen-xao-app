@@ -3,7 +3,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { MapPin, Calendar, X, ChevronLeft, ChevronRight, Image, Video } from 'lucide-react';
 import { destroyLenis, restoreLenis } from '@/components/layout/SmoothScroll';
 
 interface ExhibitionImage {
@@ -29,6 +29,7 @@ export default function ExhibitionsPage() {
   const [selectedExhibition, setSelectedExhibition] = useState<Exhibition | null>(null);
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [activeYear, setActiveYear] = useState<string>('all');
+  const [mediaFilter, setMediaFilter] = useState<'all' | 'image' | 'video'>('all');
 
   // Extract unique years
   const years = useMemo(() => {
@@ -61,6 +62,7 @@ export default function ExhibitionsPage() {
   const openGallery = (ex: Exhibition) => {
     setSelectedExhibition(ex);
     setLightboxIndex(null);
+    setMediaFilter('all');
   };
 
   const openLightbox = (index: number) => setLightboxIndex(index);
@@ -242,9 +244,18 @@ export default function ExhibitionsPage() {
                           <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-gold" />{date.toLocaleDateString('vi-VN')}</span>
                         </div>
                         {ex.description && <p className="text-base text-muted-foreground line-clamp-2">{ex.description}</p>}
-                        {ex.exhibition_images?.length > 0 && (
-                          <p className="text-sm text-gold mt-3 font-medium">📸 {ex.exhibition_images.length} ảnh — Click để xem</p>
-                        )}
+                        {ex.exhibition_images?.length > 0 && (() => {
+                          const imgCount = ex.exhibition_images.filter(i => i.media_type !== 'video').length;
+                          const vidCount = ex.exhibition_images.filter(i => i.media_type === 'video').length;
+                          return (
+                            <p className="text-sm text-gold mt-3 font-medium">
+                              {imgCount > 0 && <span>📸 {imgCount} ảnh</span>}
+                              {imgCount > 0 && vidCount > 0 && <span> · </span>}
+                              {vidCount > 0 && <span>🎬 {vidCount} video</span>}
+                              <span className="text-muted-foreground font-normal"> — Click để xem</span>
+                            </p>
+                          );
+                        })()}
                       </div>
                     </div>
                   </motion.div>
@@ -284,9 +295,45 @@ export default function ExhibitionsPage() {
               {selectedExhibition.description && (
                 <p className="px-6 pt-4 text-sm text-muted-foreground">{selectedExhibition.description}</p>
               )}
+              {/* Media Filter */}
+              {(() => {
+                const imgs = selectedExhibition.exhibition_images?.filter(i => i.media_type !== 'video') || [];
+                const vids = selectedExhibition.exhibition_images?.filter(i => i.media_type === 'video') || [];
+                const hasFilter = imgs.length > 0 && vids.length > 0;
+                return hasFilter ? (
+                  <div className="px-6 pt-4 flex items-center gap-2">
+                    <button
+                      onClick={() => setMediaFilter('all')}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
+                        mediaFilter === 'all' ? 'bg-gold text-white' : 'bg-secondary text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      Tất cả ({selectedExhibition.exhibition_images.length})
+                    </button>
+                    <button
+                      onClick={() => setMediaFilter('image')}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
+                        mediaFilter === 'image' ? 'bg-gold text-white' : 'bg-secondary text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Image className="w-3.5 h-3.5" /> Ảnh ({imgs.length})
+                    </button>
+                    <button
+                      onClick={() => setMediaFilter('video')}
+                      className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
+                        mediaFilter === 'video' ? 'bg-gold text-white' : 'bg-secondary text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Video className="w-3.5 h-3.5" /> Video ({vids.length})
+                    </button>
+                  </div>
+                ) : null;
+              })()}
 
               <div className="p-6 grid grid-cols-2 md:grid-cols-3 gap-3">
-                {selectedExhibition.exhibition_images?.map((img, idx) => (
+                {selectedExhibition.exhibition_images
+                  ?.filter(img => mediaFilter === 'all' ? true : mediaFilter === 'video' ? img.media_type === 'video' : img.media_type !== 'video')
+                  .map((img, idx) => (
                   <div
                     key={img.id}
                     className="rounded-xl overflow-hidden cursor-pointer group"
