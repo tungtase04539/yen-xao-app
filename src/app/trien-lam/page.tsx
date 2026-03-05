@@ -241,14 +241,15 @@ export default function ExhibitionsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto"
             onClick={closeGallery}
           >
+            <div className="min-h-full flex items-start justify-center p-4 py-8">
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
-              className="bg-white rounded-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+              className="bg-white rounded-2xl max-w-4xl w-full"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b flex items-center justify-between rounded-t-2xl">
@@ -296,6 +297,7 @@ export default function ExhibitionsPage() {
                 ))}
               </div>
             </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
