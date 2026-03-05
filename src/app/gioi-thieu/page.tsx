@@ -22,8 +22,10 @@ export default async function AboutPage() {
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section — Luxury Dark with Gold accents */}
-      <section className="bg-gradient-dark-luxury text-white py-20 md:py-32 relative overflow-hidden">
+      {/* Hero Section — Thumbnail background with dark overlay */}
+      <section className="text-white py-20 md:py-32 relative overflow-hidden" style={page?.thumbnail ? { backgroundImage: `url(${page.thumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}>
+        {/* Dark overlay */}
+        <div className="absolute inset-0 bg-gradient-dark-luxury" style={page?.thumbnail ? { opacity: 0.7 } : undefined} />
         {/* Gold decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
