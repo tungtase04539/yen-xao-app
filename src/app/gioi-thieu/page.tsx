@@ -25,7 +25,7 @@ export default async function AboutPage() {
       {/* Hero Section — Thumbnail background with dark overlay */}
       <section className="text-white py-20 md:py-32 relative overflow-hidden" style={page?.thumbnail ? { backgroundImage: `url(${page.thumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}>
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-dark-luxury" style={page?.thumbnail ? { opacity: 0.7 } : undefined} />
+        <div className="absolute inset-0 bg-gradient-dark-luxury" style={page?.thumbnail ? { opacity: 0.85 } : undefined} />
         {/* Gold decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
@@ -38,10 +38,10 @@ export default async function AboutPage() {
           <div className="ornament-divider mb-8">
             <span className="text-gold text-lg">✦</span>
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-5 tracking-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-5 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
             {page?.title || 'Giới Thiệu'}
           </h1>
-          <p className="text-white/50 max-w-xl mx-auto text-sm md:text-base leading-relaxed">
+          <p className="text-white/80 max-w-xl mx-auto text-sm md:text-base leading-relaxed" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.4)' }}>
             {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
           </p>
           {/* Breadcrumbs */}
