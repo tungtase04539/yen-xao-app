@@ -75,13 +75,15 @@ export default function ExhibitionFormPage() {
       try {
         const ext = file.name.split('.').pop();
         const fileName = `exhibitions/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-        const { error } = await supabase.storage.from('products').upload(fileName, file, { cacheControl: '3600', upsert: false });
+        const { error } = await supabase.storage.from('products').upload(fileName, file, { cacheControl: '3600', upsert: false, contentType: file.type });
         if (error) throw error;
 
         const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(fileName);
         newItems.push({ image_url: publicUrl, media_type: isVideo ? 'video' : 'image', caption: '', sort_order: images.length + newItems.length });
-      } catch {
-        toast.error(`Upload ${file.name} thất bại`);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        toast.error(`Upload ${file.name} thất bại: ${msg}`);
+        console.error('Upload error:', err);
       }
     }
 
