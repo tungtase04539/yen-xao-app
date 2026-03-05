@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -66,14 +66,48 @@ export default function ExhibitionsPage() {
   const openLightbox = (index: number) => setLightboxIndex(index);
   const closeLightbox = () => setLightboxIndex(null);
   const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
+  const galleryRef = useRef<HTMLDivElement>(null);
 
-  // Destroy Lenis entirely when gallery is open so native scroll works
+  // Destroy Lenis entirely when gallery is open + attach mini smooth scroll
   useEffect(() => {
     if (!selectedExhibition) return;
     destroyLenis();
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
+
+    // Mini smooth scroll engine for gallery card
+    const el = galleryRef.current;
+    if (!el) return;
+    let targetScroll = el.scrollTop;
+    let animating = false;
+
+    function animate() {
+      if (!el) return;
+      const diff = targetScroll - el.scrollTop;
+      if (Math.abs(diff) < 0.5) {
+        el.scrollTop = targetScroll;
+        animating = false;
+        return;
+      }
+      el.scrollTop += diff * 0.12;
+      requestAnimationFrame(animate);
+    }
+
+    function onWheel(e: WheelEvent) {
+      e.preventDefault();
+      e.stopPropagation();
+      const maxScroll = el!.scrollHeight - el!.clientHeight;
+      targetScroll = Math.max(0, Math.min(maxScroll, targetScroll + e.deltaY));
+      if (!animating) {
+        animating = true;
+        requestAnimationFrame(animate);
+      }
+    }
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+
     return () => {
+      el.removeEventListener('wheel', onWheel);
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
       restoreLenis();
@@ -229,8 +263,9 @@ export default function ExhibitionsPage() {
           onClick={closeGallery}
         >
             <div
+              ref={galleryRef}
               className="bg-white rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-y-auto overscroll-contain"
-              style={{ WebkitOverflowScrolling: 'touch', scrollBehavior: 'smooth' }}
+              style={{ WebkitOverflowScrolling: 'touch' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="px-6 py-4 border-b flex items-center justify-between">
