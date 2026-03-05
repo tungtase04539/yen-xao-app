@@ -8,6 +8,7 @@ import { MapPin, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
 interface ExhibitionImage {
   id: string;
   image_url: string;
+  media_type: string;
   caption: string;
 }
 
@@ -257,11 +258,22 @@ export default function ExhibitionsPage() {
                     className="rounded-xl overflow-hidden cursor-pointer group"
                     onClick={() => openLightbox(idx)}
                   >
-                    <img
-                      src={img.image_url}
-                      alt={img.caption || ''}
-                      className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
+                    {img.media_type === 'video' ? (
+                      <div className="relative aspect-[4/3] bg-black">
+                        <video src={img.image_url} className="w-full h-full object-cover" muted />
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <div className="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                            <span className="text-2xl">▶</span>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <img
+                        src={img.image_url}
+                        alt={img.caption || ''}
+                        className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    )}
                     {img.caption && <p className="text-xs text-center text-muted-foreground mt-1 px-1">{img.caption}</p>}
                   </div>
                 ))}
@@ -291,16 +303,34 @@ export default function ExhibitionsPage() {
               <ChevronRight className="w-10 h-10" />
             </button>
 
-            <motion.img
-              key={lightboxIndex}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              src={selectedExhibition.exhibition_images[lightboxIndex].image_url}
-              alt=""
-              className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
-              onClick={(e) => e.stopPropagation()}
-            />
+            {selectedExhibition.exhibition_images[lightboxIndex].media_type === 'video' ? (
+              <motion.div
+                key={lightboxIndex}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                className="max-w-[90vw] max-h-[85vh]"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <video
+                  src={selectedExhibition.exhibition_images[lightboxIndex].image_url}
+                  controls
+                  autoPlay
+                  className="max-w-[90vw] max-h-[85vh] rounded-lg"
+                />
+              </motion.div>
+            ) : (
+              <motion.img
+                key={lightboxIndex}
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                src={selectedExhibition.exhibition_images[lightboxIndex].image_url}
+                alt=""
+                className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
+                onClick={(e) => e.stopPropagation()}
+              />
+            )}
 
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
               {lightboxIndex + 1} / {selectedExhibition.exhibition_images.length}
