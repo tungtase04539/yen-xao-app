@@ -66,6 +66,12 @@ export default function ExhibitionsPage() {
   const closeLightbox = () => setLightboxIndex(null);
   const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
 
+  // Lock body scroll when gallery is open (card has its own overflow-y-auto)
+  useEffect(() => {
+    if (!selectedExhibition) return;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = ''; };
+  }, [selectedExhibition]);
 
   const prevImage = () => {
     if (lightboxIndex === null || !selectedExhibition) return;
