@@ -17,8 +17,18 @@ async function getAboutPage() {
   return data;
 }
 
+async function getSections() {
+  const { data } = await supabase
+    .from('page_sections')
+    .select('*, section_media(*)')
+    .eq('page_slug', 'gioi-thieu')
+    .eq('is_published', true)
+    .order('sort_order');
+  return data || [];
+}
+
 export default async function AboutPage() {
-  const page = await getAboutPage();
+  const [page, sections] = await Promise.all([getAboutPage(), getSections()]);
 
   return (
     <div className="min-h-screen">
@@ -58,26 +68,10 @@ export default async function AboutPage() {
         <div className="container mx-auto px-4">
           {page?.content ? (
             <div className="max-w-4xl mx-auto">
-              {/* Rich Text Content with luxury prose styling */}
               <div
                 className="luxury-prose"
                 dangerouslySetInnerHTML={{ __html: page.content }}
               />
-
-              {/* Stats Section */}
-              <div className="mt-20 md:mt-28 grid grid-cols-2 md:grid-cols-4 gap-6">
-                {[
-                  { number: '15+', label: 'Năm kinh nghiệm' },
-                  { number: '50K+', label: 'Khách hàng tin dùng' },
-                  { number: '100%', label: 'Yến sào nguyên chất' },
-                  { number: '6+', label: 'Chứng nhận quốc tế' },
-                ].map((stat) => (
-                  <div key={stat.label} className="text-center p-8 md:p-10 rounded-2xl luxury-card group hover:gold-glow transition-all duration-300 overflow-hidden">
-                    <p className="text-4xl md:text-5xl font-bold text-gradient-gold mb-3" style={{ fontFamily: 'var(--font-display), Georgia, serif' }}>{stat.number}</p>
-                    <p className="text-sm md:text-base text-muted-foreground uppercase tracking-widest font-medium">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           ) : (
             <div className="text-center py-20 text-muted-foreground">
@@ -86,6 +80,67 @@ export default async function AboutPage() {
           )}
         </div>
       </section>
+
+      {/* Dynamic Sections (Nhà Máy, Nhà Yến, etc.) */}
+      {sections.map((section: { id: string; title: string; section_type: string; description: string; section_media: { id: string; media_url: string; media_type: string; caption: string; sort_order?: number }[] }, idx: number) => (
+        <section key={section.id} className={`py-16 md:py-24 ${idx % 2 === 0 ? 'bg-gradient-dark-luxury text-white' : 'bg-gradient-luxury'}`}>
+          <div className="container mx-auto px-4">
+            <div className="max-w-5xl mx-auto">
+              {/* Section Header */}
+              <div className="text-center mb-12">
+                <div className="ornament-divider mb-6">
+                  <span className="text-gold text-lg">
+                    {section.section_type === 'nha-may' ? '🏭' : section.section_type === 'nha-yen' ? '🏠' : '✦'}
+                  </span>
+                </div>
+                <h2 className={`text-3xl md:text-4xl font-bold font-serif mb-4 ${idx % 2 === 0 ? 'text-white' : ''}`}>
+                  {section.title}
+                </h2>
+                {section.description && (
+                  <p className={`max-w-2xl mx-auto text-base leading-relaxed ${idx % 2 === 0 ? 'text-white/70' : 'text-muted-foreground'}`}>
+                    {section.description}
+                  </p>
+                )}
+              </div>
+
+              {/* Media Grid */}
+              {section.section_media && section.section_media.length > 0 && (
+                <div className={`grid gap-4 ${
+                  section.section_media.length === 1 ? 'grid-cols-1 max-w-3xl mx-auto' :
+                  section.section_media.length === 2 ? 'grid-cols-1 md:grid-cols-2' :
+                  'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                }`}>
+                  {section.section_media
+                    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+                    .map((m) => (
+                    <div key={m.id} className="rounded-2xl overflow-hidden border border-gold/10 shadow-lg group">
+                      {m.media_type === 'video' ? (
+                        <video
+                          src={m.media_url}
+                          controls
+                          className="w-full aspect-video object-cover"
+                          preload="metadata"
+                        />
+                      ) : (
+                        <img
+                          src={m.media_url}
+                          alt={m.caption || section.title}
+                          className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      )}
+                      {m.caption && (
+                        <div className={`px-4 py-3 text-sm ${idx % 2 === 0 ? 'text-white/60' : 'text-muted-foreground'}`}>
+                          {m.caption}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

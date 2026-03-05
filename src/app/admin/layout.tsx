@@ -18,6 +18,7 @@ import {
   Image,
   BookOpen,
   CalendarDays,
+  Landmark,
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -28,6 +29,7 @@ const sidebarLinks = [
   { name: 'Đơn hàng', href: '/admin/orders', icon: ShoppingCart },
   { name: 'Bài viết', href: '/admin/posts', icon: FileText },
   { name: 'Trang tĩnh', href: '/admin/pages', icon: BookOpen },
+  { name: 'Mục giới thiệu', href: '/admin/sections', icon: Landmark },
   { name: 'Triển lãm', href: '/admin/exhibitions', icon: CalendarDays },
   { name: 'Mã giảm giá', href: '/admin/coupons', icon: Tag },
 ];
