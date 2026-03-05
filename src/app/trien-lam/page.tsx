@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState, useMemo, useRef, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Calendar, X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { stopLenis, startLenis } from '@/components/layout/SmoothScroll';
+import { destroyLenis, restoreLenis } from '@/components/layout/SmoothScroll';
 
 interface ExhibitionImage {
   id: string;
@@ -67,41 +67,16 @@ export default function ExhibitionsPage() {
   const closeLightbox = () => setLightboxIndex(null);
   const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
 
-  // Gallery card ref for manual scroll
-  const galleryRef = useRef<HTMLDivElement>(null);
-
-  // Manual wheel scroll handler - bypasses Lenis completely
-  const handleGalleryWheel = useCallback((e: React.WheelEvent) => {
-    e.stopPropagation();
-    if (galleryRef.current) {
-      galleryRef.current.scrollTop += e.deltaY;
-    }
-  }, []);
-
-  // Touch scroll - direct (already smooth on mobile)
-  const touchStartY = useRef(0);
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0].clientY;
-  }, []);
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    e.stopPropagation();
-    const deltaY = touchStartY.current - e.touches[0].clientY;
-    touchStartY.current = e.touches[0].clientY;
-    if (galleryRef.current) {
-      galleryRef.current.scrollTop += deltaY;
-    }
-  }, []);
-
-  // Lock scroll: stop Lenis + hide body overflow
+  // Destroy Lenis entirely when gallery is open so native scroll works
   useEffect(() => {
     if (!selectedExhibition) return;
-    stopLenis();
+    destroyLenis();
     document.body.style.overflow = 'hidden';
     document.documentElement.style.overflow = 'hidden';
     return () => {
-      startLenis();
       document.body.style.overflow = '';
       document.documentElement.style.overflow = '';
+      restoreLenis();
     };
   }, [selectedExhibition]);
 
@@ -254,13 +229,9 @@ export default function ExhibitionsPage() {
           onClick={closeGallery}
         >
             <div
-              ref={galleryRef}
               className="bg-white rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-y-auto overscroll-contain"
-              style={{ touchAction: 'pan-y', WebkitOverflowScrolling: 'touch' }}
+              style={{ WebkitOverflowScrolling: 'touch' }}
               onClick={(e) => e.stopPropagation()}
-              onWheel={handleGalleryWheel}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
             >
               <div className="px-6 py-4 border-b flex items-center justify-between">
                 <div>

@@ -7,38 +7,48 @@ import 'lenis/dist/lenis.css';
 declare global {
   interface Window {
     __lenis?: Lenis;
+    __lenisRaf?: number;
   }
 }
 
-export function stopLenis() {
-  window.__lenis?.stop();
+function createLenisInstance() {
+  // Clean up any existing instance
+  if (window.__lenisRaf) cancelAnimationFrame(window.__lenisRaf);
+  if (window.__lenis) window.__lenis.destroy();
+
+  const lenis = new Lenis({
+    duration: 1.2,
+    easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+    touchMultiplier: 2,
+  });
+  window.__lenis = lenis;
+
+  function raf(time: number) {
+    lenis.raf(time);
+    window.__lenisRaf = requestAnimationFrame(raf);
+  }
+  window.__lenisRaf = requestAnimationFrame(raf);
 }
 
-export function startLenis() {
-  window.__lenis?.start();
+export function destroyLenis() {
+  if (window.__lenisRaf) {
+    cancelAnimationFrame(window.__lenisRaf);
+    window.__lenisRaf = undefined;
+  }
+  if (window.__lenis) {
+    window.__lenis.destroy();
+    window.__lenis = undefined;
+  }
+}
+
+export function restoreLenis() {
+  createLenisInstance();
 }
 
 export default function SmoothScroll({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      touchMultiplier: 2,
-    });
-    window.__lenis = lenis;
-
-    let rafId: number;
-    function raf(time: number) {
-      lenis.raf(time);
-      rafId = requestAnimationFrame(raf);
-    }
-    rafId = requestAnimationFrame(raf);
-
-    return () => {
-      cancelAnimationFrame(rafId);
-      lenis.destroy();
-      window.__lenis = undefined;
-    };
+    createLenisInstance();
+    return () => destroyLenis();
   }, []);
 
   return <>{children}</>;
