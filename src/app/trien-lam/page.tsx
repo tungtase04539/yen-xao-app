@@ -217,24 +217,18 @@ export default function ExhibitionsPage() {
       </section>
 
       {/* Gallery Modal */}
-      <AnimatePresence>
-        {selectedExhibition && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto overscroll-contain"
-            onClick={closeGallery}
-          >
-            <div className="min-h-full flex items-start justify-center p-4 py-8">
-            <motion.div
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
+      {selectedExhibition && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto overscroll-contain"
+          style={{ touchAction: 'pan-y' }}
+          onClick={closeGallery}
+        >
+          <div className="min-h-full flex items-start justify-center p-4 py-8">
+            <div
               className="bg-white rounded-2xl max-w-4xl w-full"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="sticky top-0 bg-white z-10 px-6 py-4 border-b flex items-center justify-between rounded-t-2xl">
+              <div className="px-6 py-4 border-b flex items-center justify-between">
                 <div>
                   <h2 className="text-xl font-bold">{selectedExhibition.title}</h2>
                   <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
@@ -278,11 +272,10 @@ export default function ExhibitionsPage() {
                   </div>
                 ))}
               </div>
-            </motion.div>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
 
       {/* Lightbox */}
       <AnimatePresence>
