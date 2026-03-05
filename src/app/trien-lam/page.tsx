@@ -116,7 +116,7 @@ export default function ExhibitionsPage() {
       </section>
 
       {/* Timeline */}
-      <section className="py-16 md:py-24 bg-gradient-luxury">
+      <section className="pt-6 pb-16 md:pt-8 md:pb-24 bg-gradient-luxury">
         <div className="container mx-auto px-4">
           {loading ? (
             <div className="flex justify-center py-20">
