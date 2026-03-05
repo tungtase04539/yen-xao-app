@@ -66,30 +66,22 @@ export default function ExhibitionsPage() {
   const closeLightbox = () => setLightboxIndex(null);
   const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
 
-  // Lock body scroll when modal is open
+  // Lock body scroll when modal is open, but allow modal itself to scroll
   useEffect(() => {
-    if (selectedExhibition) {
-      const scrollY = window.scrollY;
-      document.documentElement.style.overflow = 'hidden';
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.top = `-${scrollY}px`;
-      document.body.style.width = '100%';
-    } else {
-      const scrollY = document.body.style.top;
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
-      document.body.style.position = '';
-      document.body.style.top = '';
-      document.body.style.width = '';
-      if (scrollY) window.scrollTo(0, parseInt(scrollY || '0') * -1);
-    }
+    if (!selectedExhibition) return;
+    const scrollY = window.scrollY;
+    // Prevent background scroll via CSS
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.position = 'fixed';
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+
     return () => {
-      document.documentElement.style.overflow = '';
-      document.body.style.overflow = '';
       document.body.style.position = '';
       document.body.style.top = '';
       document.body.style.width = '';
+      document.body.style.overflow = '';
+      window.scrollTo(0, scrollY);
     };
   }, [selectedExhibition]);
 
@@ -241,7 +233,7 @@ export default function ExhibitionsPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto overscroll-contain"
             onClick={closeGallery}
           >
             <div className="min-h-full flex items-start justify-center p-4 py-8">
