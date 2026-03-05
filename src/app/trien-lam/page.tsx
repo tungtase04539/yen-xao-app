@@ -66,12 +66,20 @@ export default function ExhibitionsPage() {
   const closeLightbox = () => setLightboxIndex(null);
   const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
 
-  // Lock page scroll when modal is open
+  // Block background scroll via event prevention (not CSS, which kills modal scroll too)
   useEffect(() => {
     if (!selectedExhibition) return;
-    document.documentElement.style.overflow = 'hidden';
+    const modalEl = document.getElementById('gallery-modal');
+    const handler = (e: WheelEvent | TouchEvent) => {
+      // Allow scroll only if it's inside the modal
+      if (modalEl && modalEl.contains(e.target as Node)) return;
+      e.preventDefault();
+    };
+    document.addEventListener('wheel', handler, { passive: false });
+    document.addEventListener('touchmove', handler, { passive: false });
     return () => {
-      document.documentElement.style.overflow = '';
+      document.removeEventListener('wheel', handler);
+      document.removeEventListener('touchmove', handler);
     };
   }, [selectedExhibition]);
 
@@ -219,6 +227,7 @@ export default function ExhibitionsPage() {
       {/* Gallery Modal */}
       {selectedExhibition && (
         <div
+          id="gallery-modal"
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm overflow-y-auto overscroll-contain"
           style={{ touchAction: 'pan-y' }}
           onClick={closeGallery}
