@@ -167,12 +167,12 @@ export default function ExhibitionsPage() {
 
                     {/* Date badge (mobile: inline, desktop: opposite side) */}
                     <div className={`hidden md:block w-[calc(50%-2rem)] ${isLeft ? 'text-right pr-8' : 'text-left pl-8'}`}>
-                      <span className="text-sm font-medium text-gold uppercase tracking-widest">{dateStr}</span>
+                      <span className="text-base font-semibold text-gold uppercase tracking-widest">{dateStr}</span>
                     </div>
 
                     {/* Card */}
                     <div className={`ml-10 md:ml-0 md:w-[calc(50%-2rem)] ${isLeft ? 'md:pl-8' : 'md:pr-8'}`}>
-                      <span className="md:hidden text-xs font-medium text-gold uppercase tracking-widest mb-2 block">{dateStr}</span>
+                      <span className="md:hidden text-sm font-semibold text-gold uppercase tracking-widest mb-2 block">{dateStr}</span>
                       <div
                         onClick={() => openGallery(ex)}
                         className="bg-white rounded-2xl p-6 border border-border/50 shadow-sm hover:shadow-xl hover:shadow-gold/10 hover:border-gold/30 transition-all duration-300 cursor-pointer group"
@@ -187,14 +187,14 @@ export default function ExhibitionsPage() {
                             />
                           </div>
                         )}
-                        <h3 className="text-lg font-bold mb-2 group-hover:text-gold transition-colors">{ex.title}</h3>
-                        <div className="flex items-center gap-3 text-sm text-muted-foreground mb-3">
-                          <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5 text-gold" />{ex.location}</span>
-                          <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5 text-gold" />{date.toLocaleDateString('vi-VN')}</span>
+                        <h3 className="text-xl font-bold mb-2 group-hover:text-gold transition-colors">{ex.title}</h3>
+                        <div className="flex items-center gap-3 text-base text-muted-foreground mb-3">
+                          <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4 text-gold" />{ex.location}</span>
+                          <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-gold" />{date.toLocaleDateString('vi-VN')}</span>
                         </div>
-                        {ex.description && <p className="text-sm text-muted-foreground line-clamp-2">{ex.description}</p>}
+                        {ex.description && <p className="text-base text-muted-foreground line-clamp-2">{ex.description}</p>}
                         {ex.exhibition_images?.length > 0 && (
-                          <p className="text-xs text-gold mt-3 font-medium">📸 {ex.exhibition_images.length} ảnh — Click để xem</p>
+                          <p className="text-sm text-gold mt-3 font-medium">📸 {ex.exhibition_images.length} ảnh — Click để xem</p>
                         )}
                       </div>
                     </div>
