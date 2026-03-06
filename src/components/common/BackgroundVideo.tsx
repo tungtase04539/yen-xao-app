@@ -7,15 +7,20 @@ interface BackgroundVideoProps {
   className?: string;
 }
 
+// Detect Zalo at module level (client-only) — safe because this is a Client Component
+const isZaloBrowser = () =>
+  typeof window !== 'undefined' && /zalo/i.test(navigator.userAgent);
+
 export default function BackgroundVideo({ src, className = '' }: BackgroundVideoProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
+    // Skip all play logic in Zalo WebView
+    if (isZaloBrowser()) return;
+
     const video = videoRef.current;
     if (!video) return;
 
-    // iOS Safari: muted must be DOM attribute
-    // Chrome Android: also needs volume = 0 and autoplay attribute
     video.setAttribute('muted', '');
     video.setAttribute('autoplay', '');
     video.setAttribute('playsinline', '');
@@ -23,42 +28,25 @@ export default function BackgroundVideo({ src, className = '' }: BackgroundVideo
     video.volume = 0;
 
     const playVideo = () => {
-      if (video.paused) {
-        video.play().catch(() => {});
-      }
+      if (video.paused) video.play().catch(() => {});
     };
 
-    // Attempt 1: immediate
     playVideo();
-
-    // Attempt 2: 100ms delay
     const t1 = setTimeout(playVideo, 100);
-
-    // Attempt 3: 500ms delay (Chrome Android timing)
     const t2 = setTimeout(playVideo, 500);
 
-    // Attempt 4: canplaythrough (Chrome prefers this over loadedmetadata)
     video.addEventListener('canplaythrough', playVideo, { once: true });
-
-    // Attempt 5: loadedmetadata (Safari)
     video.addEventListener('loadedmetadata', playVideo, { once: true });
 
-    // Attempt 6: IntersectionObserver
     const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) playVideo();
-      },
+      (entries) => { if (entries[0].isIntersecting) playVideo(); },
       { threshold: 0.1 }
     );
     observer.observe(video);
 
-    // Attempt 7: first user interaction fallback
-    const onInteraction = () => {
-      playVideo();
-    };
+    const onInteraction = () => playVideo();
     document.addEventListener('touchstart', onInteraction, { passive: true, once: true });
     document.addEventListener('click', onInteraction, { once: true });
-    document.addEventListener('scroll', onInteraction, { passive: true, once: true });
 
     return () => {
       clearTimeout(t1);
@@ -68,9 +56,11 @@ export default function BackgroundVideo({ src, className = '' }: BackgroundVideo
       observer.disconnect();
       document.removeEventListener('touchstart', onInteraction);
       document.removeEventListener('click', onInteraction);
-      document.removeEventListener('scroll', onInteraction);
     };
   }, [src]);
+
+  // In Zalo WebView, don't render the video element at all
+  if (isZaloBrowser()) return null;
 
   return (
     <video
