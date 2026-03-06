@@ -9,6 +9,9 @@ interface VideoHeroSectionProps {
 export default function VideoHeroSection({ src }: VideoHeroSectionProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
+  // Detect Zalo WebView — Zalo hijacks <video> and opens native player
+  const isZalo = typeof window !== 'undefined' && /zalo/i.test(navigator.userAgent);
+
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
@@ -25,7 +28,8 @@ export default function VideoHeroSection({ src }: VideoHeroSectionProps) {
 
   return (
     <div ref={sentinelRef} id="video-hero" className="w-full relative bg-black" style={{ aspectRatio: '16/9', maxHeight: '80vh' }}>
-      <VideoPlayer src={src} />
+      {/* Skip video in Zalo WebView to avoid native player hijacking */}
+      {!isZalo && <VideoPlayer src={src} />}
     </div>
   );
 }
