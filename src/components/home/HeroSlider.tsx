@@ -95,10 +95,10 @@ export default function HeroSlider() {
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={current}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
+          transition={{ duration: 0.8, ease: 'easeInOut' }}
           className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
         >
           {slide.background_image && (
