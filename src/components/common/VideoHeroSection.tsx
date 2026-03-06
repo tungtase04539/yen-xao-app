@@ -32,7 +32,6 @@ export default function VideoHeroSection({ src }: VideoHeroSectionProps) {
 
 function VideoPlayer({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [showTap, setShowTap] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -44,11 +43,7 @@ function VideoPlayer({ src }: { src: string }) {
     video.muted = true;
     video.volume = 0;
 
-    const play = () => {
-      video.play()
-        .then(() => setShowTap(false))
-        .catch(() => setShowTap(true)); // show tap overlay if blocked
-    };
+    const play = () => { video.play().catch(() => {}); };
 
     video.load();
     play();
@@ -72,40 +67,17 @@ function VideoPlayer({ src }: { src: string }) {
     };
   }, [src]);
 
-  const handleTap = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    video.play().then(() => setShowTap(false)).catch(() => {});
-  };
-
   return (
-    <>
-      <video
-        ref={videoRef}
-        src={src}
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="auto"
-        className="w-full h-full object-cover pointer-events-none"
-        style={{ display: 'block' }}
-      />
-      {showTap && (
-        <button
-          onClick={handleTap}
-          className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 z-10"
-          aria-label="Nhấn để phát video"
-        >
-          <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center mb-2">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
-              <path d="M8 5v14l11-7z"/>
-            </svg>
-          </div>
-          <span className="text-white text-sm font-medium drop-shadow">Nhấn để phát</span>
-        </button>
-      )}
-    </>
+    <video
+      ref={videoRef}
+      src={src}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      className="w-full h-full object-cover pointer-events-none"
+      style={{ display: 'block' }}
+    />
   );
 }
-
