@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
+import BackgroundVideo from '@/components/common/BackgroundVideo';
 
 export const dynamic = 'force-dynamic';
 
@@ -37,15 +38,7 @@ export default async function AboutPage() {
         {/* Background image/gif/video */}
         {page?.thumbnail && (
           /\.(mp4|webm|ogg)(\?.*)?$/i.test(page.thumbnail) ? (
-            <video
-              src={page.thumbnail}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="absolute inset-0 w-full h-full object-cover pointer-events-none"
-              style={{ zIndex: 0 }}
-            />
+            <BackgroundVideo src={page.thumbnail} />
           ) : (
             <img
               src={page.thumbnail}
