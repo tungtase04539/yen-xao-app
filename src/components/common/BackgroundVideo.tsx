@@ -14,30 +14,49 @@ export default function BackgroundVideo({ src, className = '' }: BackgroundVideo
     const video = videoRef.current;
     if (!video) return;
 
+    // iOS Safari requires muted to be set as a DOM attribute, not just React prop
+    video.setAttribute('muted', '');
     video.muted = true;
-    video.playsInline = true;
 
-    const tryPlay = () => {
-      video.play().catch(() => {
-        // Nếu autoplay bị chặn, thử lại sau tương tác đầu tiên
-        const handleInteraction = () => {
-          video.play().catch(() => {});
-          document.removeEventListener('touchstart', handleInteraction);
-          document.removeEventListener('click', handleInteraction);
-        };
-        document.addEventListener('touchstart', handleInteraction, { once: true });
-        document.addEventListener('click', handleInteraction, { once: true });
-      });
+    const playVideo = () => {
+      video.play().catch(() => {});
     };
 
-    if (video.readyState >= 2) {
-      tryPlay();
-    } else {
-      video.addEventListener('loadeddata', tryPlay, { once: true });
-    }
+    // Attempt 1: immediate
+    playVideo();
+
+    // Attempt 2: short delay (helps with some Android)
+    const t1 = setTimeout(playVideo, 300);
+
+    // Attempt 3: after metadata loaded
+    video.addEventListener('loadedmetadata', playVideo, { once: true });
+
+    // Attempt 4: IntersectionObserver — play when visible in viewport
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          playVideo();
+        }
+      },
+      { threshold: 0.1 }
+    );
+    observer.observe(video);
+
+    // Attempt 5: on first user interaction (fallback for strict browsers)
+    const onInteraction = () => {
+      playVideo();
+      document.removeEventListener('touchstart', onInteraction);
+      document.removeEventListener('click', onInteraction);
+    };
+    document.addEventListener('touchstart', onInteraction, { passive: true });
+    document.addEventListener('click', onInteraction);
 
     return () => {
-      video.removeEventListener('loadeddata', tryPlay);
+      clearTimeout(t1);
+      video.removeEventListener('loadedmetadata', playVideo);
+      observer.disconnect();
+      document.removeEventListener('touchstart', onInteraction);
+      document.removeEventListener('click', onInteraction);
     };
   }, [src]);
 
@@ -49,6 +68,7 @@ export default function BackgroundVideo({ src, className = '' }: BackgroundVideo
       muted
       loop
       playsInline
+      preload="auto"
       className={`absolute inset-0 w-full h-full object-cover pointer-events-none ${className}`}
       style={{ zIndex: 0 }}
     />
