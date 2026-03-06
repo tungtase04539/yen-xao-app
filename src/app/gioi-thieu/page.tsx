@@ -33,7 +33,16 @@ export default async function AboutPage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section — Thumbnail background with dark overlay */}
-      <section className="text-white py-20 md:py-32 relative overflow-hidden" style={page?.thumbnail ? { backgroundImage: `url(${page.thumbnail})`, backgroundSize: 'cover', backgroundPosition: 'center' } : undefined}>
+      <section className="text-white py-20 md:py-32 relative overflow-hidden">
+        {/* Background image/gif */}
+        {page?.thumbnail && (
+          <img
+            src={page.thumbnail}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ zIndex: 0 }}
+          />
+        )}
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-gradient-dark-luxury" style={page?.thumbnail ? { opacity: 0.85 } : undefined} />
         {/* Gold decorative elements */}
