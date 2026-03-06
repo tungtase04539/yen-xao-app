@@ -29,7 +29,7 @@ const fallbackSlides: Slide[] = [
 ];
 
 export default function HeroSlider() {
-  const [slides, setSlides] = useState<Slide[]>(fallbackSlides);
+  const [slides, setSlides] = useState<Slide[]>([]);
   const [current, setCurrent] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [loaded, setLoaded] = useState(false);
@@ -43,6 +43,8 @@ export default function HeroSlider() {
         .order('sort_order');
       if (data && data.length > 0) {
         setSlides(data);
+      } else {
+        setSlides(fallbackSlides);
       }
       setCurrent(0);
       setLoaded(true);
@@ -81,6 +83,12 @@ export default function HeroSlider() {
   }, [loaded, resetTimer]);
 
   const slide = slides[current];
+
+  if (!loaded || !slide) {
+    return (
+      <section className="relative min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] bg-burgundy-dark" />
+    );
+  }
 
   return (
     <section className="relative min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] overflow-hidden">
