@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface VideoHeroSectionProps {
   src: string;
@@ -12,27 +12,19 @@ export default function VideoHeroSection({ src }: VideoHeroSectionProps) {
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
-
     const observer = new IntersectionObserver(
       ([entry]) => {
-        // Add/remove class on body so Header can react via CSS
-        if (entry.isIntersecting) {
-          document.body.classList.add('video-hero-visible');
-        } else {
-          document.body.classList.remove('video-hero-visible');
-        }
+        if (entry.isIntersecting) document.body.classList.add('video-hero-visible');
+        else document.body.classList.remove('video-hero-visible');
       },
       { threshold: 0.1 }
     );
     observer.observe(sentinel);
-    return () => {
-      observer.disconnect();
-      document.body.classList.remove('video-hero-visible');
-    };
+    return () => { observer.disconnect(); document.body.classList.remove('video-hero-visible'); };
   }, []);
 
   return (
-    <div ref={sentinelRef} id="video-hero" className="w-full relative" style={{ aspectRatio: '16/9', maxHeight: '80vh' }}>
+    <div ref={sentinelRef} id="video-hero" className="w-full relative bg-black" style={{ aspectRatio: '16/9', maxHeight: '80vh' }}>
       <VideoPlayer src={src} />
     </div>
   );
@@ -40,6 +32,7 @@ export default function VideoHeroSection({ src }: VideoHeroSectionProps) {
 
 function VideoPlayer({ src }: { src: string }) {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [showTap, setShowTap] = useState(false);
 
   useEffect(() => {
     const video = videoRef.current;
@@ -52,16 +45,16 @@ function VideoPlayer({ src }: { src: string }) {
     video.volume = 0;
 
     const play = () => {
-      if (video.paused) video.play().catch(() => {});
+      video.play()
+        .then(() => setShowTap(false))
+        .catch(() => setShowTap(true)); // show tap overlay if blocked
     };
 
-    // Chrome Android needs explicit load() to start fetching before play()
     video.load();
-
     play();
-    const t1 = setTimeout(play, 200);
-    const t2 = setTimeout(play, 800);
-    const t3 = setTimeout(play, 1500); // slow network fallback
+    const t1 = setTimeout(play, 300);
+    const t2 = setTimeout(play, 1000);
+    const t3 = setTimeout(play, 2000);
 
     video.addEventListener('canplay', play, { once: true });
     video.addEventListener('canplaythrough', play, { once: true });
@@ -70,36 +63,49 @@ function VideoPlayer({ src }: { src: string }) {
     const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) play(); }, { threshold: 0.1 });
     io.observe(video);
 
-    const onUser = () => play();
-    document.addEventListener('touchstart', onUser, { passive: true, once: true });
-    document.addEventListener('scroll', onUser, { passive: true, once: true });
-    document.addEventListener('touchend', onUser, { passive: true, once: true });
-
     return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      clearTimeout(t3);
+      clearTimeout(t1); clearTimeout(t2); clearTimeout(t3);
       video.removeEventListener('canplay', play);
       video.removeEventListener('canplaythrough', play);
       video.removeEventListener('loadedmetadata', play);
       io.disconnect();
-      document.removeEventListener('touchstart', onUser);
-      document.removeEventListener('scroll', onUser);
-      document.removeEventListener('touchend', onUser);
     };
   }, [src]);
 
+  const handleTap = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.play().then(() => setShowTap(false)).catch(() => {});
+  };
+
   return (
-    <video
-      ref={videoRef}
-      src={src}
-      autoPlay
-      muted
-      loop
-      playsInline
-      preload="auto"
-      className="w-full h-full object-cover pointer-events-none"
-      style={{ display: 'block' }}
-    />
+    <>
+      <video
+        ref={videoRef}
+        src={src}
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="auto"
+        className="w-full h-full object-cover pointer-events-none"
+        style={{ display: 'block' }}
+      />
+      {showTap && (
+        <button
+          onClick={handleTap}
+          className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 z-10"
+          aria-label="Nhấn để phát video"
+        >
+          <div className="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm border border-white/40 flex items-center justify-center mb-2">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+          <span className="text-white text-sm font-medium drop-shadow">Nhấn để phát</span>
+        </button>
+      )}
+    </>
   );
 }
+
