@@ -4,9 +4,10 @@ import { useEffect, useRef, useState } from 'react';
 
 interface VideoHeroSectionProps {
   src: string;
+  fallbackSrc?: string; // image shown in Zalo WebView instead of video
 }
 
-export default function VideoHeroSection({ src }: VideoHeroSectionProps) {
+export default function VideoHeroSection({ src, fallbackSrc }: VideoHeroSectionProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
   // Detect Zalo WebView — Zalo hijacks <video> and opens native player
@@ -28,8 +29,13 @@ export default function VideoHeroSection({ src }: VideoHeroSectionProps) {
 
   return (
     <div ref={sentinelRef} id="video-hero" className="w-full relative bg-black" style={{ aspectRatio: '16/9', maxHeight: '80vh' }}>
-      {/* Skip video in Zalo WebView to avoid native player hijacking */}
-      {!isZalo && <VideoPlayer src={src} />}
+      {isZalo ? (
+        fallbackSrc
+          ? <img src={fallbackSrc} alt="QiQi Yến" className="w-full h-full object-cover" />
+          : null
+      ) : (
+        <VideoPlayer src={src} />
+      )}
     </div>
   );
 }

@@ -42,7 +42,7 @@ export default async function AboutPage() {
       {hasVideo && (
         <div className="md:hidden">
           {/* Video — full width, no overlay, no interaction */}
-          <VideoHeroSection src={page.thumbnail} />
+          <VideoHeroSection src={page.thumbnail} fallbackSrc="/zalo-banner.jpg" />
 
           {/* Text block below video */}
           <section className="py-10 px-4 text-center bg-white">
