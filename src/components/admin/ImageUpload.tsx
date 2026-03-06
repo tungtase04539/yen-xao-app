@@ -2,7 +2,7 @@
 
 import { useState, useRef } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Upload, X, Loader2, ImagePlus } from 'lucide-react';
+import { Upload, X, Loader2, ImagePlus, Film } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ImageUploadProps {
@@ -11,6 +11,8 @@ interface ImageUploadProps {
   bucket?: string;
   folder?: string;
   label?: string;
+  accept?: string;        // e.g. "image/*,video/mp4,video/webm"
+  maxSizeMB?: number;     // default 5
 }
 
 export default function ImageUpload({
@@ -19,21 +21,38 @@ export default function ImageUpload({
   bucket = 'products',
   folder = 'thumbnails',
   label = 'Ảnh đại diện',
+  accept = 'image/*',
+  maxSizeMB = 5,
 }: ImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const isVideo = (url: string) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Validate
-    if (!file.type.startsWith('image/')) {
+    const allowsVideo = accept.includes('video') || accept === '*';
+    const allowsImage = accept.includes('image') || accept === '*';
+
+    const isFileVideo = file.type.startsWith('video/');
+    const isFileImage = file.type.startsWith('image/');
+
+    if (!isFileVideo && !isFileImage) {
+      toast.error('Định dạng file không hợp lệ');
+      return;
+    }
+    if (isFileImage && !allowsImage) {
+      toast.error('Chỉ chấp nhận file video');
+      return;
+    }
+    if (isFileVideo && !allowsVideo) {
       toast.error('Vui lòng chọn file ảnh');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      toast.error('Ảnh phải nhỏ hơn 5MB');
+    if (file.size > maxSizeMB * 1024 * 1024) {
+      toast.error(`File phải nhỏ hơn ${maxSizeMB}MB`);
       return;
     }
 
@@ -60,9 +79,11 @@ export default function ImageUpload({
     }
   };
 
-  const handleRemove = () => {
-    onChange('');
-  };
+  const handleRemove = () => onChange('');
+
+  const acceptedLabel = accept.includes('video')
+    ? 'PNG, JPG, WebP, MP4, WebM'
+    : 'PNG, JPG, WebP';
 
   return (
     <div>
@@ -72,7 +93,11 @@ export default function ImageUpload({
         <div className="relative w-24 h-24 rounded-xl border-2 border-dashed border-border bg-secondary/30 flex items-center justify-center overflow-hidden shrink-0">
           {value ? (
             <>
-              <img src={value} alt="Preview" className="w-full h-full object-cover" />
+              {isVideo(value) ? (
+                <video src={value} className="w-full h-full object-cover" muted playsInline />
+              ) : (
+                <img src={value} alt="Preview" className="w-full h-full object-cover" />
+              )}
               <button
                 type="button"
                 onClick={handleRemove}
@@ -82,7 +107,9 @@ export default function ImageUpload({
               </button>
             </>
           ) : (
-            <ImagePlus className="w-8 h-8 text-muted-foreground/40" />
+            accept.includes('video')
+              ? <Film className="w-8 h-8 text-muted-foreground/40" />
+              : <ImagePlus className="w-8 h-8 text-muted-foreground/40" />
           )}
         </div>
 
@@ -95,21 +122,21 @@ export default function ImageUpload({
             className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-input bg-white text-sm font-medium hover:bg-secondary transition-colors disabled:opacity-50"
           >
             {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Upload className="w-4 h-4" />}
-            {uploading ? 'Đang upload...' : 'Chọn ảnh'}
+            {uploading ? 'Đang upload...' : 'Chọn file'}
           </button>
           <input
             ref={inputRef}
             type="file"
-            accept="image/*"
+            accept={accept}
             onChange={handleUpload}
             className="hidden"
           />
-          <p className="text-[11px] text-muted-foreground">PNG, JPG, WebP. Tối đa 5MB</p>
+          <p className="text-[11px] text-muted-foreground">{acceptedLabel}. Tối đa {maxSizeMB}MB</p>
           <input
             type="text"
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            placeholder="hoặc nhập URL ảnh..."
+            placeholder="hoặc nhập URL..."
             className="w-full h-8 rounded-md border border-input px-2.5 text-xs bg-white"
           />
         </div>

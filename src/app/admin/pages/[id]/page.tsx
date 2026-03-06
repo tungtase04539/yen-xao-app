@@ -128,7 +128,7 @@ export default function PageFormPage() {
             </div>
           </div>
 
-          <ImageUpload value={thumbnail} onChange={setThumbnail} bucket="pages" folder="thumbnails" label="Ảnh đại diện trang" />
+          <ImageUpload value={thumbnail} onChange={setThumbnail} bucket="pages" folder="thumbnails" label="Ảnh / Video nền trang" accept="image/*,video/mp4,video/webm" maxSizeMB={100} />
 
           <div>
             <label className="block text-sm font-medium mb-1.5">Tóm tắt</label>
