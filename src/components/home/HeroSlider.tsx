@@ -86,18 +86,18 @@ export default function HeroSlider() {
 
   if (!loaded || !slide) {
     return (
-      <section className="relative min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] bg-burgundy-dark" />
+      <section className="relative min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] overflow-hidden bg-burgundy-dark" />
     );
   }
 
   return (
-    <section className="relative min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] overflow-hidden">
+    <section className="relative min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] overflow-hidden bg-burgundy-dark">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={current}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
+          exit={{ opacity: 0 }}
           transition={{ duration: 0.8, ease: 'easeOut' }}
           className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
         >
