@@ -52,7 +52,7 @@ export default async function AboutPage() {
             <h1 className="text-3xl font-bold font-serif mb-4 tracking-tight text-burgundy">
               {page?.title || 'Giới Thiệu'}
             </h1>
-            <p className="text-gray-600 text-sm leading-relaxed mb-6">
+            <p className="text-gray-800 text-sm leading-relaxed mb-6">
               {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
             </p>
             <div className="flex justify-center items-center gap-3 text-sm text-gray-400">

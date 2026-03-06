@@ -51,11 +51,19 @@ function VideoPlayer({ src }: { src: string }) {
     video.muted = true;
     video.volume = 0;
 
-    const play = () => { if (video.paused) video.play().catch(() => {}); };
+    const play = () => {
+      if (video.paused) video.play().catch(() => {});
+    };
+
+    // Chrome Android needs explicit load() to start fetching before play()
+    video.load();
 
     play();
-    const t1 = setTimeout(play, 100);
-    const t2 = setTimeout(play, 600);
+    const t1 = setTimeout(play, 200);
+    const t2 = setTimeout(play, 800);
+    const t3 = setTimeout(play, 1500); // slow network fallback
+
+    video.addEventListener('canplay', play, { once: true });
     video.addEventListener('canplaythrough', play, { once: true });
     video.addEventListener('loadedmetadata', play, { once: true });
 
@@ -65,15 +73,19 @@ function VideoPlayer({ src }: { src: string }) {
     const onUser = () => play();
     document.addEventListener('touchstart', onUser, { passive: true, once: true });
     document.addEventListener('scroll', onUser, { passive: true, once: true });
+    document.addEventListener('touchend', onUser, { passive: true, once: true });
 
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      clearTimeout(t3);
+      video.removeEventListener('canplay', play);
       video.removeEventListener('canplaythrough', play);
       video.removeEventListener('loadedmetadata', play);
       io.disconnect();
       document.removeEventListener('touchstart', onUser);
       document.removeEventListener('scroll', onUser);
+      document.removeEventListener('touchend', onUser);
     };
   }, [src]);
 
