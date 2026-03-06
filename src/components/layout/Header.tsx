@@ -37,6 +37,7 @@ export default function Header() {
   const { openCart, getTotalItems } = useCart();
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const [footerVisible, setFooterVisible] = useState(false);
+  const [videoHeroVisible, setVideoHeroVisible] = useState(false);
 
   const totalItems = getTotalItems();
 
@@ -56,6 +57,18 @@ export default function Header() {
       { threshold: 0.3 }
     );
     observer.observe(footerLogo);
+    return () => observer.disconnect();
+  }, []);
+
+  // Hide logo when video-hero section is visible (mobile about page)
+  useEffect(() => {
+    const videoHero = document.getElementById('video-hero');
+    if (!videoHero) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => setVideoHeroVisible(entry.isIntersecting),
+      { threshold: 0.1 }
+    );
+    observer.observe(videoHero);
     return () => observer.disconnect();
   }, []);
 
@@ -110,7 +123,7 @@ export default function Header() {
           <div className="flex items-center justify-between h-18 md:h-22">
             {/* Logo */}
             <Link href="/" className="flex items-center group">
-              <div className={`relative h-20 md:h-24 shrink-0 transition-opacity duration-500 ${footerVisible ? 'opacity-0' : 'opacity-100'}`}>
+              <div className={`relative h-20 md:h-24 shrink-0 transition-opacity duration-500 ${footerVisible || videoHeroVisible ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                 <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
               </div>
             </Link>

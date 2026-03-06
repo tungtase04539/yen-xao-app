@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import BackgroundVideo from '@/components/common/BackgroundVideo';
+import VideoHeroSection from '@/components/common/VideoHeroSection';
 
 export const dynamic = 'force-dynamic';
 
@@ -28,16 +29,47 @@ async function getSections() {
   return data || [];
 }
 
+const isVideo = (url: string) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
+
 export default async function AboutPage() {
   const [page, sections] = await Promise.all([getAboutPage(), getSections()]);
+  const hasVideo = page?.thumbnail && isVideo(page.thumbnail);
 
   return (
     <div className="min-h-screen">
-      {/* Hero Section — Thumbnail background with dark overlay */}
-      <section className="text-white py-20 md:py-32 relative overflow-hidden">
-        {/* Background image/gif/video */}
+
+      {/* ── MOBILE: Video standalone at top, text below ── */}
+      {hasVideo && (
+        <div className="md:hidden">
+          {/* Video — full width, no overlay, no interaction */}
+          <VideoHeroSection src={page.thumbnail} />
+
+          {/* Text block below video */}
+          <section className="text-white py-10 px-4 text-center" style={{ background: 'linear-gradient(to bottom, #5a0e1a, #4a0c16)' }}>
+            <div className="ornament-divider mb-6">
+              <span className="text-gold text-lg">✦</span>
+            </div>
+            <h1 className="text-3xl font-bold font-serif mb-4 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
+              {page?.title || 'Giới Thiệu'}
+            </h1>
+            <p className="text-white/80 text-sm leading-relaxed mb-6">
+              {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
+            </p>
+            <div className="flex justify-center items-center gap-3 text-sm text-white/30">
+              <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
+              <span className="text-gold/30">✦</span>
+              <span className="text-gold/70">Giới Thiệu</span>
+            </div>
+          </section>
+        </div>
+      )}
+
+      {/* ── DESKTOP (md+): Video as background with text overlay ── */}
+      {/* Also used on mobile when thumbnail is an image (no video) */}
+      <section className={`text-white py-20 md:py-32 relative overflow-hidden ${hasVideo ? 'hidden md:block' : ''}`}>
+        {/* Background */}
         {page?.thumbnail && (
-          /\.(mp4|webm|ogg)(\?.*)?$/i.test(page.thumbnail) ? (
+          hasVideo ? (
             <BackgroundVideo src={page.thumbnail} />
           ) : (
             <img
@@ -68,7 +100,6 @@ export default async function AboutPage() {
           <p className="text-white/80 max-w-xl mx-auto text-sm md:text-base leading-relaxed" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.4)' }}>
             {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
           </p>
-          {/* Breadcrumbs */}
           <div className="flex justify-center items-center gap-3 mt-8 text-sm text-white/30">
             <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
             <span className="text-gold/30">✦</span>
@@ -100,7 +131,6 @@ export default async function AboutPage() {
         <section key={section.id} className={`py-16 md:py-24 ${idx % 2 === 0 ? 'bg-gradient-dark-luxury text-white' : 'bg-gradient-luxury'}`}>
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
-              {/* Section Header */}
               <div className="text-center mb-12">
                 <div className="ornament-divider mb-6">
                   <span className="text-gold text-lg">
@@ -117,7 +147,6 @@ export default async function AboutPage() {
                 )}
               </div>
 
-              {/* Media Grid */}
               {section.section_media && section.section_media.length > 0 && (
                 <div className={`grid gap-4 ${
                   section.section_media.length === 1 ? 'grid-cols-1 max-w-3xl mx-auto' :
