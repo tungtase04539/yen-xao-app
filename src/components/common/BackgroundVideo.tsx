@@ -14,49 +14,61 @@ export default function BackgroundVideo({ src, className = '' }: BackgroundVideo
     const video = videoRef.current;
     if (!video) return;
 
-    // iOS Safari requires muted to be set as a DOM attribute, not just React prop
+    // iOS Safari: muted must be DOM attribute
+    // Chrome Android: also needs volume = 0 and autoplay attribute
     video.setAttribute('muted', '');
+    video.setAttribute('autoplay', '');
+    video.setAttribute('playsinline', '');
     video.muted = true;
+    video.volume = 0;
 
     const playVideo = () => {
-      video.play().catch(() => {});
+      if (video.paused) {
+        video.play().catch(() => {});
+      }
     };
 
     // Attempt 1: immediate
     playVideo();
 
-    // Attempt 2: short delay (helps with some Android)
-    const t1 = setTimeout(playVideo, 300);
+    // Attempt 2: 100ms delay
+    const t1 = setTimeout(playVideo, 100);
 
-    // Attempt 3: after metadata loaded
+    // Attempt 3: 500ms delay (Chrome Android timing)
+    const t2 = setTimeout(playVideo, 500);
+
+    // Attempt 4: canplaythrough (Chrome prefers this over loadedmetadata)
+    video.addEventListener('canplaythrough', playVideo, { once: true });
+
+    // Attempt 5: loadedmetadata (Safari)
     video.addEventListener('loadedmetadata', playVideo, { once: true });
 
-    // Attempt 4: IntersectionObserver — play when visible in viewport
+    // Attempt 6: IntersectionObserver
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting) {
-          playVideo();
-        }
+        if (entries[0].isIntersecting) playVideo();
       },
       { threshold: 0.1 }
     );
     observer.observe(video);
 
-    // Attempt 5: on first user interaction (fallback for strict browsers)
+    // Attempt 7: first user interaction fallback
     const onInteraction = () => {
       playVideo();
-      document.removeEventListener('touchstart', onInteraction);
-      document.removeEventListener('click', onInteraction);
     };
-    document.addEventListener('touchstart', onInteraction, { passive: true });
-    document.addEventListener('click', onInteraction);
+    document.addEventListener('touchstart', onInteraction, { passive: true, once: true });
+    document.addEventListener('click', onInteraction, { once: true });
+    document.addEventListener('scroll', onInteraction, { passive: true, once: true });
 
     return () => {
       clearTimeout(t1);
+      clearTimeout(t2);
+      video.removeEventListener('canplaythrough', playVideo);
       video.removeEventListener('loadedmetadata', playVideo);
       observer.disconnect();
       document.removeEventListener('touchstart', onInteraction);
       document.removeEventListener('click', onInteraction);
+      document.removeEventListener('scroll', onInteraction);
     };
   }, [src]);
 
