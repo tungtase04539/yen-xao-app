@@ -81,8 +81,18 @@ export default function BackgroundVideo({ src, className = '' }: BackgroundVideo
       loop
       playsInline
       preload="auto"
-      className={`absolute inset-0 w-full h-full object-cover pointer-events-none ${className}`}
-      style={{ zIndex: 0 }}
+      className={`pointer-events-none ${className}`}
+      style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        minWidth: '100%',
+        minHeight: '100%',
+        width: 'auto',
+        height: 'auto',
+        zIndex: 0,
+      }}
     />
   );
 }
