@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import BackgroundVideo from '@/components/common/BackgroundVideo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
+import SectionMediaGrid from '@/components/gioi-thieu/SectionMediaGrid';
 
 export const dynamic = 'force-dynamic';
 
@@ -148,37 +149,12 @@ export default async function AboutPage() {
               </div>
 
               {section.section_media && section.section_media.length > 0 && (
-                <div className={`grid gap-4 ${
-                  section.section_media.length === 1 ? 'grid-cols-1 max-w-3xl mx-auto' :
-                  section.section_media.length === 2 ? 'grid-cols-1 md:grid-cols-2' :
-                  'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-                }`}>
-                  {section.section_media
-                    .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
-                    .map((m) => (
-                    <div key={m.id} className="rounded-2xl overflow-hidden border border-gold/10 shadow-lg group">
-                      {m.media_type === 'video' ? (
-                        <video
-                          src={m.media_url}
-                          controls
-                          className="w-full aspect-video object-cover"
-                          preload="metadata"
-                        />
-                      ) : (
-                        <img
-                          src={m.media_url}
-                          alt={m.caption || section.title}
-                          className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      )}
-                      {m.caption && (
-                        <div className={`px-4 py-3 text-sm ${idx % 2 === 0 ? 'text-white/60' : 'text-muted-foreground'}`}>
-                          {m.caption}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
+                <SectionMediaGrid
+                  media={section.section_media}
+                  sectionTitle={section.title}
+                  isDark={idx % 2 === 0}
+                  initialCount={6}
+                />
               )}
             </div>
           </div>
