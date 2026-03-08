@@ -19,6 +19,7 @@ import {
   BookOpen,
   CalendarDays,
   Landmark,
+  Shield,
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -30,6 +31,7 @@ const sidebarLinks = [
   { name: 'Bài viết', href: '/admin/posts', icon: FileText },
   { name: 'Trang tĩnh', href: '/admin/pages', icon: BookOpen },
   { name: 'Mục giới thiệu', href: '/admin/sections', icon: Landmark },
+  { name: 'Chứng nhận', href: '/admin/certifications', icon: Shield },
   { name: 'Triển lãm', href: '/admin/exhibitions', icon: CalendarDays },
   { name: 'Mã giảm giá', href: '/admin/coupons', icon: Tag },
 ];

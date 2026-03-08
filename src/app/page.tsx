@@ -2,7 +2,7 @@ import HeroSlider from '@/components/home/HeroSlider';
 import FeaturedProducts from '@/components/home/FeaturedProducts';
 import CategoryTabs from '@/components/home/CategoryTabs';
 
-import BrandStory from '@/components/home/BrandStory';
+
 import Certifications from '@/components/home/Certifications';
 
 
@@ -16,7 +16,7 @@ export default function Home() {
       <ScrollReveal><FeaturedProducts /></ScrollReveal>
 
       <ScrollReveal><CategoryTabs /></ScrollReveal>
-      <ScrollReveal><BrandStory /></ScrollReveal>
+
 
       <ScrollReveal><Certifications /></ScrollReveal>
 
