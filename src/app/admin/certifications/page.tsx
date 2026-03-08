@@ -116,13 +116,25 @@ export default function CertificationsAdminPage() {
         <div className="space-y-4">
           {certs.map((cert, idx) => (
             <div key={cert.id} className="bg-white rounded-xl border border-border/50 shadow-sm p-5">
-              <div className="flex items-start gap-4">
-                <div className="pt-2 text-muted-foreground/30">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2 text-muted-foreground/40">
                   <GripVertical className="w-5 h-5" />
+                  <span className="text-xs font-medium">#{idx + 1}</span>
                 </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-red-500 hover:text-red-600 hover:bg-red-50"
+                  onClick={() => removeCert(idx)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
 
+              <div className="grid md:grid-cols-[120px_1fr] gap-4">
                 {/* Image upload */}
-                <div className="w-24 shrink-0">
+                <div>
+                  <label className="block text-xs font-medium mb-1">Ảnh badge</label>
                   <ImageUpload
                     value={cert.image_url}
                     onChange={(url) => updateCert(idx, 'image_url', url)}
@@ -133,8 +145,8 @@ export default function CertificationsAdminPage() {
                 </div>
 
                 {/* Fields */}
-                <div className="flex-1 space-y-3">
-                  <div className="grid md:grid-cols-2 gap-3">
+                <div className="space-y-3">
+                  <div className="grid sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-medium mb-1">Tên chứng nhận *</label>
                       <Input
@@ -152,29 +164,16 @@ export default function CertificationsAdminPage() {
                       />
                     </div>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={cert.is_active}
-                        onChange={(e) => updateCert(idx, 'is_active', e.target.checked)}
-                        className="rounded border-gray-300"
-                      />
-                      Hiển thị
-                    </label>
-                    <span className="text-xs text-muted-foreground">Thứ tự: {idx + 1}</span>
-                  </div>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      checked={cert.is_active}
+                      onChange={(e) => updateCert(idx, 'is_active', e.target.checked)}
+                      className="rounded border-gray-300"
+                    />
+                    Hiển thị
+                  </label>
                 </div>
-
-                {/* Delete */}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-red-500 hover:text-red-600 hover:bg-red-50 shrink-0"
-                  onClick={() => removeCert(idx)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
               </div>
             </div>
           ))}
