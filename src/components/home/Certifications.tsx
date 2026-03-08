@@ -60,7 +60,7 @@ export default function Certifications() {
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-4 md:gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 md:gap-6">
           {certs.map((cert, i) => (
             <motion.div
               key={cert.id}
@@ -68,7 +68,7 @@ export default function Certifications() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.05 }}
-              className="group flex flex-col items-center text-center p-5 rounded-2xl luxury-card transition-all duration-300 hover:gold-glow"
+              className="group flex flex-col items-center text-center p-3 md:p-5 rounded-2xl luxury-card transition-all duration-300 hover:gold-glow"
             >
               <div className="relative w-16 h-16 rounded-full flex items-center justify-center mb-4">
                 <div className="absolute inset-0 rounded-full border-2 border-gold/30 group-hover:border-gold/60 transition-colors" />
