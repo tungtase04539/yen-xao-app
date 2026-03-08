@@ -5,7 +5,7 @@ import CategoryTabs from '@/components/home/CategoryTabs';
 import BrandStory from '@/components/home/BrandStory';
 import Certifications from '@/components/home/Certifications';
 
-import CustomerFeedback from '@/components/home/CustomerFeedback';
+
 import NewsletterCTA from '@/components/home/NewsletterCTA';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 
@@ -19,7 +19,7 @@ export default function Home() {
       <ScrollReveal><BrandStory /></ScrollReveal>
 
       <ScrollReveal><Certifications /></ScrollReveal>
-      <ScrollReveal><CustomerFeedback /></ScrollReveal>
+
       <ScrollReveal><NewsletterCTA /></ScrollReveal>
     </>
   );
