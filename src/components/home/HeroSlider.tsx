@@ -198,7 +198,7 @@ export default function HeroSlider() {
                   initial={{ y: 40, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: slide.title ? 0.65 : 0.3, duration: 0.6 }}
-                  className="absolute bottom-36 left-4 md:left-8 flex flex-wrap gap-4"
+                  className="absolute bottom-44 left-4 md:left-8 flex flex-wrap gap-4"
                 >
                   <Link
                     href={slide.button_link}
