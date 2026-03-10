@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 
 interface Slide {
@@ -199,7 +199,7 @@ export default function HeroSlider() {
                     initial={{ y: 40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: slide.title ? 0.65 : 0.3, duration: 0.6 }}
-                    className="flex flex-wrap gap-4"
+                    className="flex flex-wrap gap-4 mt-6"
                   >
                     <Link
                       href={slide.button_link}
@@ -269,21 +269,7 @@ export default function HeroSlider() {
         </div>
       )}
 
-      {/* Navigation Arrows */}
-      <button
-        onClick={prev}
-        className="hidden md:flex absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm text-white/70 items-center justify-center hover:bg-gold/20 hover:border-gold/40 hover:text-gold transition-all z-10"
-        aria-label="Previous slide"
-      >
-        <ChevronLeft className="w-5 h-5" />
-      </button>
-      <button
-        onClick={next}
-        className="hidden md:flex absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full border border-white/15 bg-white/5 backdrop-blur-sm text-white/70 items-center justify-center hover:bg-gold/20 hover:border-gold/40 hover:text-gold transition-all z-10"
-        aria-label="Next slide"
-      >
-        <ChevronRight className="w-5 h-5" />
-      </button>
+
 
       {/* Line Indicators */}
       <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-10">
