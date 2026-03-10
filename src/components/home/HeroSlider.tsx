@@ -148,7 +148,7 @@ export default function HeroSlider() {
           </div>
 
           {/* Content */}
-          <div className="relative container mx-auto px-4 h-full flex items-center min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px]">
+          <div className="relative container mx-auto px-4 h-full flex items-center min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] pt-24 md:pt-28 lg:pt-0">
             <div className="max-w-2xl">
               {/* Premium badge */}
               <motion.div
