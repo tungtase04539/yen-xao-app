@@ -147,56 +147,58 @@ export default function HeroSlider() {
             <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
           </div>
 
-          {/* Content — only render if slide has a title */}
-          {slide.title && (
+          {/* Content — render nếu có title hoặc có button */}
+          {(slide.title || (slide.button_text && slide.button_link)) && (
             <div className="relative container mx-auto px-4 h-full flex items-center min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px]">
               <div className="max-w-2xl">
-                {/* Premium badge */}
-                <motion.div
-                  initial={{ y: 30, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.2, duration: 0.6 }}
-                >
-                  <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gold/30 bg-gold/10 backdrop-blur-sm text-gold text-xs font-medium tracking-[0.2em] uppercase mb-8">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                    </svg>
-                    Yến Sào Cao Cấp
-                  </span>
-                </motion.div>
+                {/* Badge + Title + Subtitle — chỉ khi có title */}
+                {slide.title && (
+                  <>
+                    <motion.div
+                      initial={{ y: 30, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.2, duration: 0.6 }}
+                    >
+                      <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gold/30 bg-gold/10 backdrop-blur-sm text-gold text-xs font-medium tracking-[0.2em] uppercase mb-8">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                          <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                        </svg>
+                        Yến Sào Cao Cấp
+                      </span>
+                    </motion.div>
 
-                {/* Title */}
-                <motion.h2
-                  initial={{ y: 50, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: 0.35, duration: 0.7 }}
-                  className="text-[3.2rem] md:text-[4.5rem] lg:text-[5.5rem] font-bold font-serif text-white leading-[1.05] mb-6 whitespace-pre-line"
-                  style={{ textShadow: '0 4px 30px rgba(0,0,0,0.3)' }}
-                >
-                  {slide.title}
-                </motion.h2>
+                    <motion.h2
+                      initial={{ y: 50, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: 0.35, duration: 0.7 }}
+                      className="text-[3.2rem] md:text-[4.5rem] lg:text-[5.5rem] font-bold font-serif text-white leading-[1.05] mb-6 whitespace-pre-line"
+                      style={{ textShadow: '0 4px 30px rgba(0,0,0,0.3)' }}
+                    >
+                      {slide.title}
+                    </motion.h2>
 
-                {/* Subtitle */}
-                {slide.subtitle && (
-                  <motion.div
-                    initial={{ y: 40, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    className="flex items-start gap-4 mb-10"
-                  >
-                    <div className="w-[3px] h-14 bg-gradient-to-b from-gold to-gold/20 rounded-full shrink-0 mt-1" />
-                    <p className="text-lg md:text-xl text-white/70 max-w-md leading-relaxed">
-                      {slide.subtitle}
-                    </p>
-                  </motion.div>
+                    {slide.subtitle && (
+                      <motion.div
+                        initial={{ y: 40, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.5, duration: 0.6 }}
+                        className="flex items-start gap-4 mb-10"
+                      >
+                        <div className="w-[3px] h-14 bg-gradient-to-b from-gold to-gold/20 rounded-full shrink-0 mt-1" />
+                        <p className="text-lg md:text-xl text-white/70 max-w-md leading-relaxed">
+                          {slide.subtitle}
+                        </p>
+                      </motion.div>
+                    )}
+                  </>
                 )}
 
-                {/* CTA Buttons */}
+                {/* CTA Buttons — hiện độc lập dù có hay không có title */}
                 {slide.button_text && slide.button_link && (
                   <motion.div
                     initial={{ y: 40, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: 0.65, duration: 0.6 }}
+                    transition={{ delay: slide.title ? 0.65 : 0.3, duration: 0.6 }}
                     className="flex flex-wrap gap-4"
                   >
                     <Link
