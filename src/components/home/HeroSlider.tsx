@@ -104,9 +104,7 @@ export default function HeroSlider() {
           {slide.background_image && (
             <img src={slide.background_image} alt="" className="absolute inset-0 w-full h-full object-cover" />
           )}
-          {slide.background_image && (
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent" />
-          )}
+
 
           {/* Animated gold decorative elements */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
