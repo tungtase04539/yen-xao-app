@@ -33,25 +33,6 @@ export default function HeroSlider() {
   const [current, setCurrent] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [heroInView, setHeroInView] = useState(true);
-  const sectionRef = useRef<HTMLElement>(null);
-
-  // Track if hero slider is still in viewport via rAF (Lenis-compatible)
-  useEffect(() => {
-    if (!loaded) return;
-    const section = sectionRef.current;
-    if (!section) return;
-
-    let rafId: number;
-    const check = () => {
-      const rect = section.getBoundingClientRect();
-      // Ẩn button khi bottom của slider đã chạm hoặc vượt qua đỉnh viewport
-      setHeroInView(rect.bottom > 80);
-      rafId = requestAnimationFrame(check);
-    };
-    rafId = requestAnimationFrame(check);
-    return () => cancelAnimationFrame(rafId);
-  }, [loaded]);
 
   useEffect(() => {
     async function fetchSlides() {
@@ -110,7 +91,7 @@ export default function HeroSlider() {
   }
 
   return (
-    <section ref={sectionRef} className="relative min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] overflow-hidden bg-burgundy-dark">
+    <section className="relative min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] overflow-hidden bg-burgundy-dark">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={current}
@@ -217,9 +198,7 @@ export default function HeroSlider() {
                   initial={{ y: 40, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: slide.title ? 0.65 : 0.3, duration: 0.6 }}
-                  className={`fixed bottom-12 left-4 md:left-8 flex flex-wrap gap-4 z-40 transition-all duration-500 ${
-                    heroInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'
-                  }`}
+                  className="absolute bottom-52 left-4 md:left-8 flex flex-wrap gap-4"
                 >
                   <Link
                     href={slide.button_link}
