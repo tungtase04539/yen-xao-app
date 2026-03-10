@@ -11,7 +11,7 @@ import ImageUpload from '@/components/admin/ImageUpload';
 
 interface SlideRow {
   id: string;
-  title: string;
+  title: string | null;
   subtitle: string | null;
   button_text: string;
   button_link: string;
@@ -65,7 +65,7 @@ export default function AdminSlidesPage() {
 
   const startEdit = (s: SlideRow) => {
     setEditId(s.id);
-    setTitle(s.title);
+    setTitle(s.title || '');
     setSubtitle(s.subtitle || '');
     setButtonText(s.button_text);
     setButtonLink(s.button_link);
@@ -76,10 +76,9 @@ export default function AdminSlidesPage() {
   };
 
   const handleSave = async () => {
-    if (!title.trim()) { toast.error('Vui lòng nhập tiêu đề'); return; }
 
     const data = {
-      title,
+      title: title.trim() || null,
       subtitle: subtitle || null,
       button_text: buttonText || 'Khám Phá Ngay',
       button_link: buttonLink || '/san-pham',
@@ -147,7 +146,7 @@ export default function AdminSlidesPage() {
 
           <div className="grid md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-medium mb-1">Tiêu đề *</label>
+              <label className="block text-xs font-medium mb-1">Tiêu đề <span className="text-muted-foreground">(tùy chọn)</span></label>
               <textarea
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -236,13 +235,13 @@ export default function AdminSlidesPage() {
                   <img src={s.background_image} alt="" className="absolute inset-0 w-full h-full object-cover" />
                 )}
                 <div className="relative z-10 flex items-center h-full px-3">
-                  <p className="text-white text-xs font-bold font-serif whitespace-pre-line leading-tight line-clamp-2">{s.title}</p>
+                  <p className="text-white text-xs font-bold font-serif whitespace-pre-line leading-tight line-clamp-2">{s.title || <span className="opacity-50 italic">Chỉ ảnh nền</span>}</p>
                 </div>
               </div>
 
               {/* Info */}
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm line-clamp-1">{s.title.replace('\n', ' ')}</p>
+                <p className="font-semibold text-sm line-clamp-1">{s.title ? s.title.replace('\n', ' ') : <span className="text-muted-foreground italic">Chỉ ảnh nền</span>}</p>
                 {s.subtitle && <p className="text-xs text-muted-foreground line-clamp-1">{s.subtitle}</p>}
                 <div className="flex items-center gap-2 mt-1.5">
                   <Badge variant="secondary" className="text-[10px]">{s.button_text}</Badge>
