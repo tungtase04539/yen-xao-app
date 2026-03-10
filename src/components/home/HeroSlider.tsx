@@ -8,10 +8,10 @@ import { supabase } from '@/lib/supabase';
 
 interface Slide {
   id: string;
-  title: string;
+  title: string | null;
   subtitle: string | null;
-  button_text: string;
-  button_link: string;
+  button_text: string | null;
+  button_link: string | null;
   background_image: string | null;
   gradient: string;
 }
@@ -147,77 +147,82 @@ export default function HeroSlider() {
             <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-gold/50 to-transparent" />
           </div>
 
-          {/* Content */}
-          <div className="relative container mx-auto px-4 h-full flex items-center min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px]">
-            <div className="max-w-2xl">
-              {/* Premium badge */}
-              <motion.div
-                initial={{ y: 30, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-              >
-                <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gold/30 bg-gold/10 backdrop-blur-sm text-gold text-xs font-medium tracking-[0.2em] uppercase mb-8">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                  </svg>
-                  Yến Sào Cao Cấp
-                </span>
-              </motion.div>
-
-              {/* Title — much bigger and bolder */}
-              <motion.h2
-                initial={{ y: 50, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.35, duration: 0.7 }}
-                className="text-[3.2rem] md:text-[4.5rem] lg:text-[5.5rem] font-bold font-serif text-white leading-[1.05] mb-6 whitespace-pre-line"
-                style={{ textShadow: '0 4px 30px rgba(0,0,0,0.3)' }}
-              >
-                {slide.title}
-              </motion.h2>
-
-              {/* Subtitle with gold accent bar */}
-              <motion.div
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.5, duration: 0.6 }}
-                className="flex items-start gap-4 mb-10"
-              >
-                <div className="w-[3px] h-14 bg-gradient-to-b from-gold to-gold/20 rounded-full shrink-0 mt-1" />
-                <p className="text-lg md:text-xl text-white/70 max-w-md leading-relaxed">
-                  {slide.subtitle}
-                </p>
-              </motion.div>
-
-              {/* CTA Buttons */}
-              <motion.div
-                initial={{ y: 40, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ delay: 0.65, duration: 0.6 }}
-                className="flex flex-wrap gap-4"
-              >
-                <Link
-                  href={slide.button_link}
-                  className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-full font-semibold text-base overflow-hidden transition-all hover:scale-[1.03]"
-                  style={{
-                    background: 'linear-gradient(135deg, #d4af37 0%, #e8d48b 50%, #d4af37 100%)',
-                    color: '#7c000a',
-                    boxShadow: '0 8px 32px rgba(212,175,55,0.3), inset 0 1px 0 rgba(255,255,255,0.3)',
-                  }}
+          {/* Content — only render if slide has a title */}
+          {slide.title && (
+            <div className="relative container mx-auto px-4 h-full flex items-center min-h-[650px] md:min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px]">
+              <div className="max-w-2xl">
+                {/* Premium badge */}
+                <motion.div
+                  initial={{ y: 30, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.2, duration: 0.6 }}
                 >
-                  <span className="relative z-10">{slide.button_text}</span>
-                  <ChevronRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-                  {/* Shimmer sweep */}
-                  <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-                </Link>
-                <Link
-                  href="/gioi-thieu"
-                  className="inline-flex items-center gap-2 px-10 py-5 rounded-full font-medium text-base border-2 border-white/20 text-white/90 hover:border-gold/50 hover:text-gold transition-all backdrop-blur-sm"
+                  <span className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full border border-gold/30 bg-gold/10 backdrop-blur-sm text-gold text-xs font-medium tracking-[0.2em] uppercase mb-8">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                    </svg>
+                    Yến Sào Cao Cấp
+                  </span>
+                </motion.div>
+
+                {/* Title */}
+                <motion.h2
+                  initial={{ y: 50, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.35, duration: 0.7 }}
+                  className="text-[3.2rem] md:text-[4.5rem] lg:text-[5.5rem] font-bold font-serif text-white leading-[1.05] mb-6 whitespace-pre-line"
+                  style={{ textShadow: '0 4px 30px rgba(0,0,0,0.3)' }}
                 >
-                  Câu Chuyện Của Chúng Tôi
-                </Link>
-              </motion.div>
+                  {slide.title}
+                </motion.h2>
+
+                {/* Subtitle */}
+                {slide.subtitle && (
+                  <motion.div
+                    initial={{ y: 40, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.5, duration: 0.6 }}
+                    className="flex items-start gap-4 mb-10"
+                  >
+                    <div className="w-[3px] h-14 bg-gradient-to-b from-gold to-gold/20 rounded-full shrink-0 mt-1" />
+                    <p className="text-lg md:text-xl text-white/70 max-w-md leading-relaxed">
+                      {slide.subtitle}
+                    </p>
+                  </motion.div>
+                )}
+
+                {/* CTA Buttons */}
+                {slide.button_text && slide.button_link && (
+                  <motion.div
+                    initial={{ y: 40, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.65, duration: 0.6 }}
+                    className="flex flex-wrap gap-4"
+                  >
+                    <Link
+                      href={slide.button_link}
+                      className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-full font-semibold text-base overflow-hidden transition-all hover:scale-[1.03]"
+                      style={{
+                        background: 'linear-gradient(135deg, #d4af37 0%, #e8d48b 50%, #d4af37 100%)',
+                        color: '#7c000a',
+                        boxShadow: '0 8px 32px rgba(212,175,55,0.3), inset 0 1px 0 rgba(255,255,255,0.3)',
+                      }}
+                    >
+                      <span className="relative z-10">{slide.button_text}</span>
+                      <ChevronRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
+                      <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+                    </Link>
+                    <Link
+                      href="/gioi-thieu"
+                      className="inline-flex items-center gap-2 px-10 py-5 rounded-full font-medium text-base border-2 border-white/20 text-white/90 hover:border-gold/50 hover:text-gold transition-all backdrop-blur-sm"
+                    >
+                      Câu Chuyện Của Chúng Tôi
+                    </Link>
+                  </motion.div>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </motion.div>
       </AnimatePresence>
 
