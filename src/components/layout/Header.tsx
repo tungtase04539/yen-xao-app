@@ -87,7 +87,7 @@ export default function Header() {
   return (
     <>
       {/* Luxury Top Bar — desktop only, scrolls away */}
-      <div className="hidden md:block bg-burgundy-dark/30 text-white text-sm py-2 relative overflow-hidden" style={{ background: 'linear-gradient(to right, #5a0e1a, #4a0c16)' }}>
+      <div className="hidden md:block bg-burgundy-dark/30 text-white text-sm py-2 relative overflow-hidden fixed top-0 left-0 right-0 z-50" style={{ background: 'linear-gradient(to right, #5a0e1a, #4a0c16)' }}>
         <div className="absolute inset-0 animate-gold-shimmer pointer-events-none" />
         <div className="container mx-auto px-4 flex justify-between items-center relative">
           <div className="flex items-center gap-2">
@@ -114,7 +114,7 @@ export default function Header() {
       </div>
 
       {/* Main Header — sticky */}
-      <header className={`sticky top-0 z-50 transition-all duration-500 ${
+      <header className={`fixed left-0 right-0 z-50 transition-all duration-500 top-0 md:top-[34px] ${
         scrolled
           ? 'shadow-lg shadow-black/20'
           : ''
