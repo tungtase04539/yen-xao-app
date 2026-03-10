@@ -131,50 +131,46 @@ export default function CertificationsAdminPage() {
                 </Button>
               </div>
 
-              <div className="grid md:grid-cols-[120px_1fr] gap-4">
-                {/* Image upload */}
+              {/* Fields */}
+              <div className="grid sm:grid-cols-2 gap-3 mb-4">
                 <div>
-                  <label className="block text-xs font-medium mb-1">Ảnh badge</label>
-                  <ImageUpload
-                    value={cert.image_url}
-                    onChange={(url) => updateCert(idx, 'image_url', url)}
-                    bucket="certifications"
-                    folder="badges"
-                    label=""
+                  <label className="block text-xs font-medium mb-1">Tên chứng nhận *</label>
+                  <Input
+                    value={cert.name}
+                    onChange={(e) => updateCert(idx, 'name', e.target.value)}
+                    placeholder="VD: ISO 22000"
                   />
                 </div>
-
-                {/* Fields */}
-                <div className="space-y-3">
-                  <div className="grid sm:grid-cols-2 gap-3">
-                    <div>
-                      <label className="block text-xs font-medium mb-1">Tên chứng nhận *</label>
-                      <Input
-                        value={cert.name}
-                        onChange={(e) => updateCert(idx, 'name', e.target.value)}
-                        placeholder="VD: ISO 22000"
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-medium mb-1">Mô tả</label>
-                      <Input
-                        value={cert.description}
-                        onChange={(e) => updateCert(idx, 'description', e.target.value)}
-                        placeholder="VD: Hệ thống quản lý ATTP"
-                      />
-                    </div>
-                  </div>
-                  <label className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={cert.is_active}
-                      onChange={(e) => updateCert(idx, 'is_active', e.target.checked)}
-                      className="rounded border-gray-300"
-                    />
-                    Hiển thị
-                  </label>
+                <div>
+                  <label className="block text-xs font-medium mb-1">Mô tả</label>
+                  <Input
+                    value={cert.description}
+                    onChange={(e) => updateCert(idx, 'description', e.target.value)}
+                    placeholder="VD: Hệ thống quản lý ATTP"
+                  />
                 </div>
               </div>
+
+              {/* Image upload — full width */}
+              <div className="mb-3">
+                <ImageUpload
+                  value={cert.image_url}
+                  onChange={(url) => updateCert(idx, 'image_url', url)}
+                  bucket="certifications"
+                  folder="badges"
+                  label="Ảnh badge"
+                />
+              </div>
+
+              <label className="flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={cert.is_active}
+                  onChange={(e) => updateCert(idx, 'is_active', e.target.checked)}
+                  className="rounded border-gray-300"
+                />
+                Hiển thị
+              </label>
             </div>
           ))}
         </div>

@@ -22,8 +22,24 @@ export default function CategoryTabs() {
         .eq('type', 'product')
         .order('sort_order');
       if (data && data.length > 0) {
-        setCategories(data);
-        setActiveSlug(data[0].slug);
+        // Kiểm tra song song xem danh mục nào có sản phẩm
+        const checks = await Promise.all(
+          data.map((cat) =>
+            supabase.rpc('get_products_with_min_price', {
+              p_category_slug: cat.slug,
+              p_limit: 1,
+              p_offset: 0,
+              p_sort: 'popular',
+            })
+          )
+        );
+        const categoriesWithProducts = data.filter(
+          (_, i) => checks[i].data && checks[i].data.length > 0
+        );
+        if (categoriesWithProducts.length > 0) {
+          setCategories(categoriesWithProducts);
+          setActiveSlug(categoriesWithProducts[0].slug);
+        }
       }
     }
     fetchCategories();
