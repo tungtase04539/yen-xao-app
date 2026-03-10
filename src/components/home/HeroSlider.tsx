@@ -36,16 +36,21 @@ export default function HeroSlider() {
   const [heroInView, setHeroInView] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Track if hero slider is still in viewport
+  // Track if hero slider is still in viewport (compatible with Lenis)
   useEffect(() => {
+    if (!loaded) return;
     const section = sectionRef.current;
     if (!section) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => setHeroInView(entry.isIntersecting),
-      { threshold: 0.05 }
-    );
-    observer.observe(section);
-    return () => observer.disconnect();
+
+    const checkVisibility = () => {
+      const rect = section.getBoundingClientRect();
+      // Còn hiện khi bottom của slider còn cao hơn 80px so với đỉnh viewport
+      setHeroInView(rect.bottom > 80);
+    };
+
+    checkVisibility();
+    window.addEventListener('scroll', checkVisibility, { passive: true });
+    return () => window.removeEventListener('scroll', checkVisibility);
   }, [loaded]);
 
   useEffect(() => {
