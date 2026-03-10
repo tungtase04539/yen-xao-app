@@ -36,21 +36,21 @@ export default function HeroSlider() {
   const [heroInView, setHeroInView] = useState(true);
   const sectionRef = useRef<HTMLElement>(null);
 
-  // Track if hero slider is still in viewport (compatible with Lenis)
+  // Track if hero slider is still in viewport via rAF (Lenis-compatible)
   useEffect(() => {
     if (!loaded) return;
     const section = sectionRef.current;
     if (!section) return;
 
-    const checkVisibility = () => {
+    let rafId: number;
+    const check = () => {
       const rect = section.getBoundingClientRect();
-      // Còn hiện khi bottom của slider còn cao hơn 80px so với đỉnh viewport
+      // Ẩn button khi bottom của slider đã chạm hoặc vượt qua đỉnh viewport
       setHeroInView(rect.bottom > 80);
+      rafId = requestAnimationFrame(check);
     };
-
-    checkVisibility();
-    window.addEventListener('scroll', checkVisibility, { passive: true });
-    return () => window.removeEventListener('scroll', checkVisibility);
+    rafId = requestAnimationFrame(check);
+    return () => cancelAnimationFrame(rafId);
   }, [loaded]);
 
   useEffect(() => {
