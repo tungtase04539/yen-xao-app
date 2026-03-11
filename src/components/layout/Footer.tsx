@@ -139,11 +139,8 @@ export default function Footer() {
 
       {/* Bottom Bar */}
       <div className="border-t border-white/[0.06]">
-        <div className="container mx-auto px-4 py-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-white/30">
+        <div className="container mx-auto px-4 py-5 flex justify-center items-center text-xs text-white/30">
           <p>© 2026 QiQi Yến Sào - Trao Sức Khỏe, Gửi Trọn Yêu Thương</p>
-          <p className="flex items-center gap-1.5">
-            Crafted with <span className="text-gold">✦</span> passion
-          </p>
         </div>
       </div>
     </footer>
