@@ -209,9 +209,8 @@ export default function HeroSlider() {
                 >
                   <Link
                     href={slide.button_link}
-                    className="group relative inline-flex items-center gap-3 px-12 py-5 rounded-full font-semibold text-lg overflow-hidden transition-all hover:scale-[1.03]"
+                    className="bg-metallic-gold group relative inline-flex items-center gap-3 px-12 py-5 rounded-full font-semibold text-lg overflow-hidden transition-all hover:scale-[1.03]"
                     style={{
-                      background: 'linear-gradient(135deg, #d4af37 0%, #C9A55A 50%, #b8943e 100%)',
                       color: '#6E1222',
                       boxShadow: '0 8px 32px rgba(212,175,55,0.4), inset 0 1px 0 rgba(255,255,255,0.3)',
                     }}

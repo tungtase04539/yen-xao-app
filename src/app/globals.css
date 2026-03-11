@@ -722,6 +722,20 @@ html {
   animation: gold-shimmer 4s ease-in-out infinite;
 }
 
+/* Metallic gold background shimmer — for buttons */
+.bg-metallic-gold {
+  background: linear-gradient(
+    90deg,
+    #b8943e 0%,
+    #C9A55A 25%,
+    #e8d48b 50%,
+    #C9A55A 75%,
+    #b8943e 100%
+  );
+  background-size: 200% 100%;
+  animation: gold-shimmer 4s ease-in-out infinite;
+}
+
 @keyframes gold-shimmer {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
