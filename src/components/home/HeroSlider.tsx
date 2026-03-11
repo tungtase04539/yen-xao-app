@@ -102,7 +102,13 @@ export default function HeroSlider() {
           className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
         >
           {slide.background_image && (
-            <img src={slide.background_image} alt="" className="absolute inset-0 w-full h-full object-cover" />
+            <img
+              src={slide.background_image}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+              loading={current === 0 ? 'eager' : 'lazy'}
+              fetchPriority={current === 0 ? 'high' : 'low'}
+            />
           )}
 
 

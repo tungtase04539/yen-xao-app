@@ -56,6 +56,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
+      <head>
+        {/* Preconnect to Supabase for faster image/video loading */}
+        <link rel="preconnect" href="https://dxrogturyjgaxyiqpxhs.supabase.co" />
+        <link rel="dns-prefetch" href="https://dxrogturyjgaxyiqpxhs.supabase.co" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+      </head>
       <body
         className={`${heading.variable} ${body.variable} ${display.variable} antialiased min-h-screen flex flex-col`}
       >
