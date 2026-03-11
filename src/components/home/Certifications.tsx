@@ -65,7 +65,7 @@ export default function Certifications() {
 
         {/* Grid */}
         {loading ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             {[...Array(6)].map((_, i) => (
               <div key={i} className="flex flex-col items-center text-center p-5 rounded-2xl luxury-card">
                 <div className="w-full aspect-square rounded-xl bg-cream animate-pulse mb-3" />
@@ -75,7 +75,7 @@ export default function Certifications() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
             {certs.map((cert, i) => (
               <motion.div
                 key={cert.id}
