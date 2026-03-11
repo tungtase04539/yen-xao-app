@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cormorant_Garamond, Mulish, Playfair_Display } from "next/font/google";
+import { Cormorant_Garamond, Be_Vietnam_Pro, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import LayoutShell from "@/components/layout/LayoutShell";
@@ -12,7 +12,7 @@ const heading = Cormorant_Garamond({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const body = Mulish({
+const body = Be_Vietnam_Pro({
   variable: "--font-body",
   subsets: ["latin", "latin-ext", "vietnamese"],
   display: "swap",
