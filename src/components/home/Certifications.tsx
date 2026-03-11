@@ -14,8 +14,8 @@ interface Cert {
 }
 
 const fallbackCerts: Cert[] = [
-  { id: '1', name: 'ISO 22000', description: 'Hệ thống quản lý ATTP', image_url: null, sort_order: 1 },
-  { id: '2', name: 'HACCP', description: 'Tiêu chuẩn an toàn thực phẩm', image_url: null, sort_order: 2 },
+  { id: '1', name: 'ISO 22000', description: 'Hệ thống quản lý an toàn thực phẩm', image_url: null, sort_order: 1 },
+  { id: '2', name: 'HACCP', description: 'Tiêu chuẩn an toàn thực phẩm quốc tế', image_url: null, sort_order: 2 },
   { id: '3', name: 'GMP', description: 'Thực hành sản xuất tốt', image_url: null, sort_order: 3 },
   { id: '4', name: 'ATVSTP', description: 'An toàn vệ sinh thực phẩm', image_url: null, sort_order: 4 },
   { id: '5', name: 'FDA', description: 'Chứng nhận FDA Hoa Kỳ', image_url: null, sort_order: 5 },
@@ -38,55 +38,70 @@ export default function Certifications() {
   }, []);
 
   return (
-    <section className="py-16 md:py-20 bg-gradient-luxury relative">
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/15 to-transparent" />
+    <section className="py-20 md:py-28 bg-gradient-luxury relative">
+      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
 
       <div className="container mx-auto px-4">
+        {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-14"
         >
           <div className="ornament-divider mb-5">
             <Shield className="w-4 h-4 text-gold" />
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold font-serif text-burgundy mb-3">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold font-serif text-burgundy mb-4">
             Chứng Nhận Chất Lượng
           </h2>
-          <p className="text-muted-foreground text-sm">
-            Sản phẩm đạt các tiêu chuẩn quốc tế về an toàn & chất lượng
+          <p className="text-muted-foreground text-sm md:text-base max-w-xl mx-auto">
+            Sản phẩm đạt các tiêu chuẩn quốc tế về an toàn &amp; chất lượng
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 md:gap-6">
+        {/* Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-6">
           {certs.map((cert, i) => (
             <motion.div
               key={cert.id}
-              initial={{ opacity: 0, scale: 0.8 }}
-              whileInView={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.05 }}
-              className="group flex flex-col items-center text-center p-3 md:p-5 rounded-2xl luxury-card transition-all duration-300 hover:gold-glow"
+              transition={{ delay: i * 0.07 }}
+              className="group flex flex-col items-center text-center p-5 md:p-6 rounded-2xl luxury-card transition-all duration-300 hover:gold-glow hover:-translate-y-1"
             >
-              <div className="relative w-16 h-16 rounded-full flex items-center justify-center mb-4">
-                <div className="absolute inset-0 rounded-full border-2 border-gold/30 group-hover:border-gold/60 transition-colors" />
+              {/* Badge image / fallback */}
+              <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center mb-4 shrink-0">
+                <div className="absolute inset-0 rounded-full border-2 border-gold/30 group-hover:border-gold/70 transition-colors" />
+                <div className="absolute inset-[6px] rounded-full border border-gold/10 group-hover:border-gold/30 transition-colors" />
                 {cert.image_url ? (
                   <img
                     src={cert.image_url}
                     alt={cert.name}
-                    className="w-12 h-12 rounded-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-gold flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
-                    <span className="text-burgundy font-bold text-[9px] leading-tight text-center">
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-gold flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                    <span className="text-burgundy font-bold text-xs md:text-sm leading-tight text-center px-1">
                       {cert.name}
                     </span>
                   </div>
                 )}
               </div>
-              <p className="text-[10px] md:text-xs text-muted-foreground leading-relaxed">{cert.description}</p>
+
+              {/* Name */}
+              <p className="font-semibold text-sm md:text-base text-foreground mb-1 leading-tight">
+                {cert.name}
+              </p>
+
+              {/* Description */}
+              {cert.description && (
+                <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                  {cert.description}
+                </p>
+              )}
             </motion.div>
           ))}
         </div>
