@@ -28,8 +28,8 @@ const display = Playfair_Display({
 
 export const metadata: Metadata = {
   title: {
-    default: "Yến Sào Cao Cấp - Yến Sào Nguyên Chất Khánh Hòa",
-    template: "%s | Yến Sào Cao Cấp",
+    default: "QiQi Yến Sào - Trao sức khỏe, gửi trọn yêu thương",
+    template: "%s | QiQi Yến Sào",
   },
   description:
     "Chuyên cung cấp yến sào nguyên chất, tinh chế cao cấp từ đảo yến thiên nhiên Khánh Hòa. Cam kết chất lượng, giao hàng toàn quốc.",
