@@ -23,7 +23,8 @@ const fallbackCerts: Cert[] = [
 ];
 
 export default function Certifications() {
-  const [certs, setCerts] = useState<Cert[]>(fallbackCerts);
+  const [certs, setCerts] = useState<Cert[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function fetchCerts() {
@@ -32,7 +33,8 @@ export default function Certifications() {
         .select('id, name, description, image_url, sort_order')
         .eq('is_active', true)
         .order('sort_order');
-      if (data && data.length > 0) setCerts(data);
+      setCerts(data && data.length > 0 ? data : fallbackCerts);
+      setLoading(false);
     }
     fetchCerts();
   }, []);
@@ -62,49 +64,59 @@ export default function Certifications() {
         </motion.div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-6">
-          {certs.map((cert, i) => (
-            <motion.div
-              key={cert.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.07 }}
-              className="group flex flex-col items-center text-center p-5 md:p-6 rounded-2xl luxury-card transition-all duration-300 hover:gold-glow hover:-translate-y-1"
-            >
-              {/* Badge image / fallback */}
-              <div className="relative w-24 h-24 md:w-28 md:h-28 rounded-full flex items-center justify-center mb-4 shrink-0">
-                <div className="absolute inset-0 rounded-full border-2 border-gold/30 group-hover:border-gold/70 transition-colors" />
-                <div className="absolute inset-[6px] rounded-full border border-gold/10 group-hover:border-gold/30 transition-colors" />
+        {loading ? (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-6">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="flex flex-col items-center text-center p-5 rounded-2xl luxury-card">
+                <div className="w-full aspect-square rounded-xl bg-cream animate-pulse mb-3" />
+                <div className="h-3 w-16 bg-cream rounded-full animate-pulse mb-2" />
+                <div className="h-2 w-20 bg-cream rounded-full animate-pulse" />
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-5 md:gap-6">
+            {certs.map((cert, i) => (
+              <motion.div
+                key={cert.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.07 }}
+                className="group flex flex-col items-center text-center p-4 md:p-5 rounded-2xl luxury-card transition-all duration-300 hover:gold-glow hover:-translate-y-1"
+              >
+                {/* Badge image — to, không vòng tròn */}
                 {cert.image_url ? (
-                  <img
-                    src={cert.image_url}
-                    alt={cert.name}
-                    className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
+                  <div className="w-full aspect-square rounded-xl overflow-hidden mb-3">
+                    <img
+                      src={cert.image_url}
+                      alt={cert.name}
+                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
                 ) : (
-                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-gold flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                    <span className="text-burgundy font-bold text-xs md:text-sm leading-tight text-center px-1">
+                  <div className="w-full aspect-square rounded-xl bg-gradient-gold flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300">
+                    <span className="text-burgundy font-bold text-lg md:text-xl leading-tight text-center px-2">
                       {cert.name}
                     </span>
                   </div>
                 )}
-              </div>
 
-              {/* Name */}
-              <p className="font-semibold text-sm md:text-base text-foreground mb-1 leading-tight">
-                {cert.name}
-              </p>
-
-              {/* Description */}
-              {cert.description && (
-                <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-                  {cert.description}
+                {/* Name */}
+                <p className="font-semibold text-sm md:text-base text-foreground mb-1 leading-tight">
+                  {cert.name}
                 </p>
-              )}
-            </motion.div>
-          ))}
-        </div>
+
+                {/* Description */}
+                {cert.description && (
+                  <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
+                    {cert.description}
+                  </p>
+                )}
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
