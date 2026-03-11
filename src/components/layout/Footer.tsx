@@ -27,12 +27,12 @@ export default function Footer() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gold/[0.03] blur-[120px] pointer-events-none" />
 
       {/* Main Footer */}
-      <div className="container mx-auto px-4 py-16 md:py-20 relative">
+      <div className="container mx-auto px-4 py-10 md:py-14 relative">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center mb-6">
-              <div id="footer-logo" className="h-40 shrink-0">
+              <div id="footer-logo" className="h-24 shrink-0">
                 <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
               </div>
             </Link>
