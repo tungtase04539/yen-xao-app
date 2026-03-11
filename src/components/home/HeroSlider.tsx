@@ -203,7 +203,7 @@ export default function HeroSlider() {
                     className="group relative inline-flex items-center gap-3 px-12 py-5 rounded-full font-semibold text-lg overflow-hidden transition-all hover:scale-[1.03]"
                     style={{
                       background: 'linear-gradient(to right, #8B1A2B, #6E1222)',
-                      color: '#f5e6c8',
+                      color: '#C9A55A',
                       boxShadow: '0 8px 32px rgba(110,18,34,0.5), inset 0 1px 0 rgba(255,255,255,0.15)',
                     }}
                   >
