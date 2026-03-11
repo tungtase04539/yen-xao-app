@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -103,12 +104,13 @@ export default function HeroSlider() {
           className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
         >
           {slide.background_image && (
-            <img
-              src={imgHero(slide.background_image)}
+            <Image
+              src={slide.background_image}
               alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-              loading={current === 0 ? 'eager' : 'lazy'}
-              fetchPriority={current === 0 ? 'high' : 'low'}
+              fill
+              className="object-cover"
+              priority={current === 0}
+              sizes="100vw"
             />
           )}
 

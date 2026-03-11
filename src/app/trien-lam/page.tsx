@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useMemo, useRef } from 'react';
+import NextImage from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Calendar, X, ChevronLeft, ChevronRight, Image, Video } from 'lucide-react';
@@ -232,12 +233,16 @@ export default function ExhibitionsPage() {
                         {/* Preview image */}
                         {(ex.thumbnail || ex.exhibition_images?.[0]) && (
                           <div className="rounded-xl overflow-hidden mb-4 -mt-2 -mx-2">
-                            <img
-                              src={imgCard(ex.thumbnail || ex.exhibition_images[0].image_url)}
-                              alt={ex.title}
-                              className="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500"
-                              loading="lazy"
-                            />
+                            <div className="relative w-full aspect-[16/9]">
+                              <NextImage
+                                src={imgCard(ex.thumbnail || ex.exhibition_images[0].image_url)}
+                                alt={ex.title}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-500"
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                loading="lazy"
+                              />
+                            </div>
                           </div>
                         )}
                         <h3 className="text-xl font-bold mb-2 group-hover:text-gold transition-colors">{ex.title}</h3>
@@ -351,12 +356,16 @@ export default function ExhibitionsPage() {
                         </div>
                       </div>
                     ) : (
-                      <img
-                        src={imgCard(img.image_url)}
-                        alt={img.caption || ''}
-                        className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
+                      <div className="relative w-full aspect-[4/3]">
+                        <NextImage
+                          src={imgCard(img.image_url)}
+                          alt={img.caption || ''}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          sizes="(max-width: 768px) 50vw, 33vw"
+                          loading="lazy"
+                        />
+                      </div>
                     )}
                     {img.caption && <p className="text-xs text-center text-muted-foreground mt-1 px-1">{img.caption}</p>}
                   </div>
