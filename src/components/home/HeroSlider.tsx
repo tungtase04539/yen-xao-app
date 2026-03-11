@@ -196,26 +196,20 @@ export default function HeroSlider() {
                   initial={{ y: 40, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: slide.title ? 0.65 : 0.3, duration: 0.6 }}
-                  className="absolute bottom-52 left-4 md:left-8 flex flex-wrap gap-4"
+                  className="absolute bottom-52 left-4 md:left-8"
                 >
                   <Link
                     href={slide.button_link}
-                    className="group relative inline-flex items-center gap-3 px-10 py-5 rounded-full font-semibold text-base overflow-hidden transition-all hover:scale-[1.03]"
+                    className="group relative inline-flex items-center gap-3 px-12 py-5 rounded-full font-semibold text-lg overflow-hidden transition-all hover:scale-[1.03]"
                     style={{
-                      background: 'linear-gradient(135deg, #d4af37 0%, #e8d48b 50%, #d4af37 100%)',
-                      color: '#7c000a',
-                      boxShadow: '0 8px 32px rgba(212,175,55,0.3), inset 0 1px 0 rgba(255,255,255,0.3)',
+                      background: 'linear-gradient(to right, #8B1A2B, #6E1222)',
+                      color: '#f5e6c8',
+                      boxShadow: '0 8px 32px rgba(110,18,34,0.5), inset 0 1px 0 rgba(255,255,255,0.15)',
                     }}
                   >
                     <span className="relative z-10">{slide.button_text}</span>
                     <ChevronRight className="w-5 h-5 relative z-10 group-hover:translate-x-1 transition-transform" />
-                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/30 to-transparent" />
-                  </Link>
-                  <Link
-                    href="/gioi-thieu"
-                    className="inline-flex items-center gap-2 px-10 py-5 rounded-full font-medium text-base border-2 border-white/20 text-white/90 hover:border-gold/50 hover:text-gold transition-all backdrop-blur-sm"
-                  >
-                    Câu Chuyện Của Chúng Tôi
+                    <div className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                   </Link>
                 </motion.div>
               )}
