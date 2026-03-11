@@ -39,7 +39,8 @@ export default function FloatingActions() {
       {/* Toggle Button */}
       <motion.button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-11 h-11 md:w-14 md:h-14 rounded-full bg-burgundy text-white shadow-lg flex items-center justify-center hover:bg-burgundy-light transition-colors"
+        className="w-11 h-11 md:w-14 md:h-14 rounded-full text-white shadow-lg flex items-center justify-center transition-all"
+        style={{ background: 'linear-gradient(135deg, #d4af37 0%, #C9A55A 50%, #b8943e 100%)' }}
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.95 }}
       >
@@ -52,7 +53,7 @@ export default function FloatingActions() {
               exit={{ rotate: 90, opacity: 0 }}
               transition={{ duration: 0.2 }}
             >
-              <X className="w-6 h-6" />
+              <X className="w-6 h-6" style={{ color: '#6E1222' }} />
             </motion.div>
           ) : (
             <motion.div
@@ -63,7 +64,7 @@ export default function FloatingActions() {
               transition={{ duration: 0.2 }}
               className="animate-phone-ring"
             >
-              <Phone className="w-6 h-6" />
+              <Phone className="w-6 h-6" style={{ color: '#6E1222' }} />
             </motion.div>
           )}
         </AnimatePresence>
@@ -96,10 +97,10 @@ export default function FloatingActions() {
         )}
       </AnimatePresence>
 
-      {/* Ripple Effect for Main Button */}
+      {/* Ripple Effect */}
       {!isExpanded && (
         <>
-          <span className="absolute bottom-0 right-0 w-14 h-14 rounded-full bg-burgundy/30 animate-ping pointer-events-none" />
+          <span className="absolute bottom-0 right-0 w-14 h-14 rounded-full animate-ping pointer-events-none" style={{ background: 'rgba(201,165,90,0.3)' }} />
         </>
       )}
     </div>
