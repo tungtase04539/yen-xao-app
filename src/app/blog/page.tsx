@@ -54,6 +54,8 @@ function estimateReadTime(content: string | null): number {
   return Math.max(1, Math.ceil(wordCount / 200));
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function BlogPage() {
   const { data: posts } = await supabase
     .from('posts')
