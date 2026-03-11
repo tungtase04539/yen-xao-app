@@ -32,7 +32,7 @@ export default function Footer() {
           {/* Brand */}
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center mb-6">
-              <div id="footer-logo" className="h-24 shrink-0">
+              <div id="footer-logo" className="h-32 shrink-0">
                 <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
               </div>
             </Link>
@@ -140,7 +140,7 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-white/[0.06]">
         <div className="container mx-auto px-4 py-5 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs text-white/30">
-          <p>© 2026 Yến Sào Cao Cấp. Tất cả quyền được bảo lưu.</p>
+          <p>© 2026 QiQi Yến Sào - Trao Sức Khỏe, Gửi Trọn Yêu Thương</p>
           <p className="flex items-center gap-1.5">
             Crafted with <span className="text-gold">✦</span> passion
           </p>
