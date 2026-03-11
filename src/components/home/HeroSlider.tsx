@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { imgHero } from '@/lib/imageUtils';
 
 interface Slide {
   id: string;
@@ -103,7 +104,7 @@ export default function HeroSlider() {
         >
           {slide.background_image && (
             <img
-              src={slide.background_image}
+              src={imgHero(slide.background_image)}
               alt=""
               className="absolute inset-0 w-full h-full object-cover"
               loading={current === 0 ? 'eager' : 'lazy'}

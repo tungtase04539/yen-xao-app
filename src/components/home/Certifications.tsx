@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Shield } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
+import { imgCert } from '@/lib/imageUtils';
 
 interface Cert {
   id: string;
@@ -89,7 +90,7 @@ export default function Certifications() {
                 {cert.image_url ? (
                   <div className="w-full aspect-square rounded-xl overflow-hidden mb-3">
                     <img
-                      src={cert.image_url}
+                      src={imgCert(cert.image_url)}
                       alt={cert.name}
                       className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
                     />

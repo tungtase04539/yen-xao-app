@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Calendar, X, ChevronLeft, ChevronRight, Image, Video } from 'lucide-react';
 import { destroyLenis, restoreLenis } from '@/components/layout/SmoothScroll';
+import { imgCard, imgHero } from '@/lib/imageUtils';
 
 interface ExhibitionImage {
   id: string;
@@ -232,9 +233,10 @@ export default function ExhibitionsPage() {
                         {(ex.thumbnail || ex.exhibition_images?.[0]) && (
                           <div className="rounded-xl overflow-hidden mb-4 -mt-2 -mx-2">
                             <img
-                              src={ex.thumbnail || ex.exhibition_images[0].image_url}
+                              src={imgCard(ex.thumbnail || ex.exhibition_images[0].image_url)}
                               alt={ex.title}
                               className="w-full aspect-[16/9] object-cover group-hover:scale-105 transition-transform duration-500"
+                              loading="lazy"
                             />
                           </div>
                         )}
@@ -350,9 +352,10 @@ export default function ExhibitionsPage() {
                       </div>
                     ) : (
                       <img
-                        src={img.image_url}
+                        src={imgCard(img.image_url)}
                         alt={img.caption || ''}
                         className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
                       />
                     )}
                     {img.caption && <p className="text-xs text-center text-muted-foreground mt-1 px-1">{img.caption}</p>}
@@ -405,7 +408,7 @@ export default function ExhibitionsPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                src={selectedExhibition.exhibition_images[lightboxIndex].image_url}
+                src={imgHero(selectedExhibition.exhibition_images[lightboxIndex].image_url)}
                 alt=""
                 className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
                 onClick={(e) => e.stopPropagation()}
