@@ -43,9 +43,9 @@ export const metadata: Metadata = {
     "mua yến sào",
   ],
   icons: {
-    icon: '/logo.png',
-    apple: '/logo.png',
-    shortcut: '/logo.png',
+    icon: '/a.png',
+    apple: '/a.png',
+    shortcut: '/a.png',
   },
 };
 
