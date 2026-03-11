@@ -42,6 +42,11 @@ export const metadata: Metadata = {
     "nước yến",
     "mua yến sào",
   ],
+  icons: {
+    icon: '/logo.png',
+    apple: '/logo.png',
+    shortcut: '/logo.png',
+  },
 };
 
 export default function RootLayout({
