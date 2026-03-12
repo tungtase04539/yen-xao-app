@@ -16,6 +16,7 @@ interface SlideRow {
   button_text: string;
   button_link: string;
   background_image: string | null;
+  mobile_image: string | null;
   gradient: string;
   sort_order: number;
   is_active: boolean;
@@ -42,6 +43,7 @@ export default function AdminSlidesPage() {
   const [buttonText, setButtonText] = useState('Khám Phá Ngay');
   const [buttonLink, setButtonLink] = useState('/san-pham');
   const [bgImage, setBgImage] = useState('');
+  const [mobileImage, setMobileImage] = useState('');
   const [gradient, setGradient] = useState(defaultGradients[0].value);
   const [isActive, setIsActive] = useState(true);
 
@@ -58,7 +60,7 @@ export default function AdminSlidesPage() {
 
   const resetForm = () => {
     setTitle(''); setSubtitle(''); setButtonText('Khám Phá Ngay');
-    setButtonLink('/san-pham'); setBgImage('');
+    setButtonLink('/san-pham'); setBgImage(''); setMobileImage('');
     setGradient(defaultGradients[0].value); setIsActive(true);
     setEditId(null); setShowForm(false);
   };
@@ -70,6 +72,7 @@ export default function AdminSlidesPage() {
     setButtonText(s.button_text);
     setButtonLink(s.button_link);
     setBgImage(s.background_image || '');
+    setMobileImage(s.mobile_image || '');
     setGradient(s.gradient);
     setIsActive(s.is_active);
     setShowForm(true);
@@ -83,6 +86,7 @@ export default function AdminSlidesPage() {
       button_text: buttonText || 'Khám Phá Ngay',
       button_link: buttonLink || '/san-pham',
       background_image: bgImage || null,
+      mobile_image: mobileImage || null,
       gradient,
       is_active: isActive,
     };
@@ -184,7 +188,20 @@ export default function AdminSlidesPage() {
             </div>
           </div>
 
-          <ImageUpload value={bgImage} onChange={setBgImage} bucket="general" folder="hero" label="Ảnh nền (tùy chọn — nếu không có sẽ dùng gradient)" />
+          <ImageUpload value={bgImage} onChange={setBgImage} bucket="general" folder="hero" label="🖥️ Ảnh nền Desktop (tùy chọn — nếu không có sẽ dùng gradient)" />
+
+          {/* Mobile image — separate 1:1 square */}
+          <div className="space-y-1">
+            <ImageUpload value={mobileImage} onChange={setMobileImage} bucket="general" folder="hero/mobile" label="📱 Ảnh Mobile (vuông 1:1 — nếu để trống sẽ dùng ảnh Desktop)" />
+            {mobileImage && (
+              <div className="flex items-center gap-2 mt-2">
+                <div className="w-16 h-16 rounded-lg overflow-hidden border border-border shrink-0">
+                  <img src={mobileImage} alt="Mobile preview" className="w-full h-full object-cover" />
+                </div>
+                <p className="text-[10px] text-muted-foreground">Preview ảnh mobile (1:1)</p>
+              </div>
+            )}
+          </div>
 
           {/* Preview */}
           <div className={`relative h-32 rounded-lg overflow-hidden bg-gradient-to-br ${gradient}`}>

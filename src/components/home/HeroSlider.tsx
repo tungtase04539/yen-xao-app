@@ -15,6 +15,7 @@ interface Slide {
   button_text: string | null;
   button_link: string | null;
   background_image: string | null;
+  mobile_image: string | null;
   gradient: string;
 }
 
@@ -26,6 +27,7 @@ const fallbackSlides: Slide[] = [
     button_text: 'Khám Phá Bộ Sưu Tập',
     button_link: '/danh-muc/yen-tinh-che',
     background_image: null,
+    mobile_image: null,
     gradient: 'from-burgundy-dark via-burgundy to-burgundy-light',
   },
 ];
@@ -78,7 +80,7 @@ export default function HeroSlider() {
     async function fetchSlides() {
       const { data } = await supabase
         .from('hero_slides')
-        .select('id, title, subtitle, button_text, button_link, background_image, gradient')
+        .select('id, title, subtitle, button_text, button_link, background_image, mobile_image, gradient')
         .eq('is_active', true)
         .order('sort_order');
       setSlides(data && data.length > 0 ? data : fallbackSlides);
@@ -159,9 +161,10 @@ export default function HeroSlider() {
               transition={{ duration: 0.7, ease: 'easeInOut' }}
               className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
             >
-              {slide.background_image ? (
+              {/* Use mobile_image if set, otherwise fall back to background_image */}
+              {(slide.mobile_image || slide.background_image) ? (
                 <Image
-                  src={slide.background_image}
+                  src={slide.mobile_image ?? slide.background_image!}
                   alt={slide.title ?? ''}
                   fill
                   className="object-cover object-center"
