@@ -196,13 +196,6 @@ export default function HeroSlider() {
             transition={{ duration: 0.5 }}
             className="px-5 pt-5 pb-8 bg-burgundy-dark"
           >
-            {/* Badge */}
-            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-gold/30 bg-gold/10 text-gold text-[10px] font-medium tracking-[0.15em] uppercase mb-4">
-              <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-              </svg>
-              Yến Sào Cao Cấp
-            </span>
 
             {slide.title && (
               <h2
