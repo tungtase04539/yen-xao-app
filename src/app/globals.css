@@ -473,6 +473,11 @@ html {
   @apply rounded-lg my-6 max-w-full;
 }
 
+.prose-content video {
+  @apply rounded-lg my-6 max-w-full w-full;
+  background: #000;
+}
+
 .prose-content blockquote {
   @apply border-l-4 border-gold pl-4 italic my-4 text-foreground/70;
 }
@@ -641,6 +646,13 @@ html {
   @apply rounded-2xl my-8 max-w-full;
   border: 1px solid rgba(212, 175, 55, 0.2);
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+}
+
+.luxury-prose video {
+  @apply rounded-2xl my-8 w-full;
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+  background: #000;
 }
 
 .luxury-prose hr {
