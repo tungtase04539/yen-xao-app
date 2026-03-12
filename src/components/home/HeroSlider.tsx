@@ -151,7 +151,7 @@ export default function HeroSlider() {
           ══════════════════════════════════════════════ */}
       <section className="md:hidden overflow-hidden bg-burgundy-dark">
         {/* Square image area */}
-        <div className="relative w-full aspect-square overflow-hidden">
+        <div className="relative w-full aspect-[3/4] overflow-hidden">
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={`mob-${current}`}
