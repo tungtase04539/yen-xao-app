@@ -185,30 +185,47 @@ export default function Header() {
                           </div>
 
                           {/* Category grid */}
-                          <div className="px-4 pb-3 grid grid-cols-2 gap-1.5">
-                            {productCategories.map((cat) => (
+                          <div className="px-4 pb-3 grid grid-cols-2 gap-2">
+                            {productCategories.map((cat, i) => (
                               <Link
                                 key={cat.slug}
                                 href={`/danh-muc/${cat.slug}`}
-                                className="group/item relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
-                                style={{ border: '1px solid transparent' }}
+                                className="group/item relative flex items-center justify-between px-4 py-3.5 rounded-xl transition-all duration-250 overflow-hidden"
+                                style={{
+                                  background: 'rgba(255,255,255,0.03)',
+                                  border: '1px solid rgba(201,165,90,0.15)',
+                                }}
                                 onMouseEnter={e => {
-                                  (e.currentTarget as HTMLElement).style.background = 'rgba(201,165,90,0.08)';
-                                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,165,90,0.25)';
+                                  const el = e.currentTarget as HTMLElement;
+                                  el.style.background = 'rgba(201,165,90,0.1)';
+                                  el.style.borderColor = 'rgba(201,165,90,0.5)';
+                                  el.style.boxShadow = '0 0 20px rgba(201,165,90,0.12), inset 0 1px 0 rgba(201,165,90,0.1)';
+                                  el.style.transform = 'translateY(-1px)';
                                 }}
                                 onMouseLeave={e => {
-                                  (e.currentTarget as HTMLElement).style.background = 'transparent';
-                                  (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
+                                  const el = e.currentTarget as HTMLElement;
+                                  el.style.background = 'rgba(255,255,255,0.03)';
+                                  el.style.borderColor = 'rgba(201,165,90,0.15)';
+                                  el.style.boxShadow = 'none';
+                                  el.style.transform = 'translateY(0)';
                                 }}
                                 onClick={() => setMegaMenuOpen(false)}
                               >
-                                {/* Gold dot */}
-                                <span className="w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-200 group-hover/item:shadow-[0_0_6px_#C9A55A]" style={{ background: 'rgba(201,165,90,0.5)' }} />
-                                <span className="font-medium text-sm transition-colors duration-200" style={{ color: 'rgba(255,255,255,0.75)' }}
-                                  onMouseEnter={e => (e.currentTarget.style.color = '#C9A55A')}
-                                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
-                                >
-                                  {cat.name}
+                                {/* Left: gold bar + name */}
+                                <div className="flex items-center gap-2.5">
+                                  <span className="w-[3px] h-5 rounded-full shrink-0" style={{ background: 'linear-gradient(to bottom, #C9A55A, rgba(201,165,90,0.3))' }} />
+                                  <span className="font-semibold text-sm tracking-wide transition-colors duration-200"
+                                    style={{ fontFamily: 'var(--font-heading)', color: 'rgba(255,255,255,0.85)', letterSpacing: '0.02em' }}
+                                    onMouseEnter={e => (e.currentTarget.style.color = '#e8d48b')}
+                                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
+                                  >
+                                    {cat.name}
+                                  </span>
+                                </div>
+                                {/* Right: faint index number */}
+                                <span className="text-[10px] font-mono transition-opacity duration-200 group-hover/item:opacity-80"
+                                  style={{ color: 'rgba(201,165,90,0.3)', opacity: 0.5 }}>
+                                  {String(i + 1).padStart(2, '0')}
                                 </span>
                               </Link>
                             ))}
