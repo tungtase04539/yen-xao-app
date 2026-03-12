@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/sonner";
 import LayoutShell from "@/components/layout/LayoutShell";
 import SmoothScroll from "@/components/layout/SmoothScroll";
+import Footer from "@/components/layout/Footer";
 
 const heading = Cormorant_Garamond({
   variable: "--font-heading",
@@ -90,6 +91,7 @@ export default function RootLayout({
       >
         <SmoothScroll>
           <LayoutShell>{children}</LayoutShell>
+          <Footer />
         </SmoothScroll>
         <Toaster position="top-right" richColors />
       </body>
