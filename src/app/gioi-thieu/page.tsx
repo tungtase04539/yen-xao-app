@@ -1,5 +1,6 @@
 import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
+import BackgroundVideo from '@/components/common/BackgroundVideo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import SectionMediaGrid from '@/components/gioi-thieu/SectionMediaGrid';
 
@@ -64,85 +65,49 @@ export default async function AboutPage() {
         </div>
       )}
 
-      {/* ── DESKTOP (md+): 2-col layout — text trái, video phải ── */}
-      {/* Also mobile fallback when thumbnail is an image */}
-      <section className={`text-white py-20 md:py-24 relative overflow-hidden ${hasVideo ? 'hidden md:block' : ''}`}>
-        {/* Background — image only if no video */}
-        {page?.thumbnail && !hasVideo && (
-          <img
-            src={page.thumbnail}
-            alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-            style={{ zIndex: 0 }}
-          />
+      {/* ── DESKTOP (md+): Video as background with text overlay ── */}
+      {/* Also used on mobile when thumbnail is an image (no video) */}
+      <section className={`text-white py-20 md:py-32 relative overflow-hidden ${hasVideo ? 'hidden md:block' : ''}`}>
+        {/* Background */}
+        {page?.thumbnail && (
+          hasVideo ? (
+            <BackgroundVideo src={page.thumbnail} />
+          ) : (
+            <img
+              src={page.thumbnail}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ zIndex: 0 }}
+            />
+          )
         )}
         {/* Dark overlay */}
-        <div className="absolute inset-0 bg-gradient-dark-luxury" style={{ opacity: hasVideo ? 1 : (page?.thumbnail ? 0.85 : 1) }} />
+        <div className="absolute inset-0 bg-gradient-dark-luxury" style={page?.thumbnail ? { opacity: 0.85 } : undefined} />
         {/* Gold decorative elements */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+          <div className="absolute top-[20%] left-[10%] w-80 h-80 rounded-full bg-gold/[0.03] blur-[120px]" />
+          <div className="absolute bottom-[20%] right-[10%] w-96 h-96 rounded-full bg-gold/[0.04] blur-[120px]" />
         </div>
 
-        <div className="container mx-auto px-4 relative">
-          {hasVideo ? (
-            /* 2-col: text left + video right */
-            <div className="flex flex-col md:flex-row items-center gap-10 md:gap-16">
-              {/* Text */}
-              <div className="flex-1 text-center md:text-left">
-                <div className="ornament-divider md:justify-start mb-6">
-                  <span className="text-gold text-lg">✦</span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold font-serif mb-5 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
-                  {page?.title || 'Giới Thiệu'}
-                </h1>
-                <p className="text-white/80 text-sm md:text-base leading-relaxed mb-6" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.4)' }}>
-                  {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
-                </p>
-                <div className="flex justify-center md:justify-start items-center gap-3 text-sm text-white/30">
-                  <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
-                  <span className="text-gold/30">✦</span>
-                  <span className="text-gold/70">Giới Thiệu</span>
-                </div>
-              </div>
-
-              {/* Video — lazy load, preload none */}
-              <div className="flex-1 rounded-2xl overflow-hidden shadow-2xl border border-gold/10">
-                <video
-                  src={page.thumbnail}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="none"
-                  className="w-full h-full object-cover"
-                  style={{ display: 'block', maxHeight: '520px' }}
-                />
-              </div>
-            </div>
-          ) : (
-            /* Centered text (image background) */
-            <div className="text-center">
-              <div className="ornament-divider mb-8">
-                <span className="text-gold text-lg">✦</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-5 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
-                {page?.title || 'Giới Thiệu'}
-              </h1>
-              <p className="text-white/80 max-w-xl mx-auto text-sm md:text-base leading-relaxed" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.4)' }}>
-                {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
-              </p>
-              <div className="flex justify-center items-center gap-3 mt-8 text-sm text-white/30">
-                <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
-                <span className="text-gold/30">✦</span>
-                <span className="text-gold/70">Giới Thiệu</span>
-              </div>
-            </div>
-          )}
+        <div className="container mx-auto px-4 text-center relative">
+          <div className="ornament-divider mb-8">
+            <span className="text-gold text-lg">✦</span>
+          </div>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold font-serif mb-5 tracking-tight" style={{ textShadow: '0 2px 20px rgba(0,0,0,0.5)' }}>
+            {page?.title || 'Giới Thiệu'}
+          </h1>
+          <p className="text-white/80 max-w-xl mx-auto text-sm md:text-base leading-relaxed" style={{ textShadow: '0 1px 10px rgba(0,0,0,0.4)' }}>
+            {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
+          </p>
+          <div className="flex justify-center items-center gap-3 mt-8 text-sm text-white/30">
+            <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
+            <span className="text-gold/30">✦</span>
+            <span className="text-gold/70">Giới Thiệu</span>
+          </div>
         </div>
       </section>
-
-
 
       {/* Content Section */}
       <section className="py-16 md:py-24 bg-gradient-luxury">
