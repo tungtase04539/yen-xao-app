@@ -42,6 +42,28 @@ export const metadata: Metadata = {
     "nước yến",
     "mua yến sào",
   ],
+  openGraph: {
+    type: 'website',
+    locale: 'vi_VN',
+    url: 'https://qiqiyensao.com',
+    siteName: 'QiQi Yến Sào',
+    title: 'QiQi Yến Sào - Trao sức khỏe, gửi trọn yêu thương',
+    description: 'QIQI Yến (thuộc Công ty TNHH TM ĐT PT Phúc Thịnh) chuyên cung cấp các sản phẩm yến sào thiên nhiên nguyên chất và yến chưng chăm sóc sức khỏe toàn diện, cam kết an toàn, chất lượng.',
+    images: [
+      {
+        url: '/zalo-banner.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'QiQi Yến Sào',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'QiQi Yến Sào - Trao sức khỏe, gửi trọn yêu thương',
+    description: 'QIQI Yến (thuộc Công ty TNHH TM ĐT PT Phúc Thịnh) chuyên cung cấp các sản phẩm yến sào thiên nhiên nguyên chất và yến chưng chăm sóc sức khỏe toàn diện, cam kết an toàn, chất lượng.',
+    images: ['/zalo-banner.jpg'],
+  },
   icons: {
     icon: '/a.png',
     apple: '/a.png',
