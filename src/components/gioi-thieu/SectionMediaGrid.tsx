@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import Image from 'next/image';
 
 interface MediaItem {
   id: string;
@@ -15,6 +16,42 @@ interface SectionMediaGridProps {
   sectionTitle: string;
   isDark: boolean;
   initialCount?: number;
+}
+
+/** Lazy-load a video: only set src once it enters viewport */
+function LazyVideo({ src, caption }: { src: string; caption?: string }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !loaded) {
+          video.src = src;
+          video.load();
+          setLoaded(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '200px' }
+    );
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [src, loaded]);
+
+  return (
+    <video
+      ref={videoRef}
+      controls
+      playsInline
+      preload="none"
+      className="w-full aspect-video object-cover"
+      aria-label={caption || 'Video'}
+    />
+  );
 }
 
 export default function SectionMediaGrid({
@@ -49,18 +86,18 @@ export default function SectionMediaGrid({
             className="rounded-2xl overflow-hidden border border-gold/10 shadow-lg group"
           >
             {m.media_type === 'video' ? (
-              <video
-                src={m.media_url}
-                controls
-                className="w-full aspect-video object-cover"
-                preload="metadata"
-              />
+              <LazyVideo src={m.media_url} caption={m.caption} />
             ) : (
-              <img
-                src={m.media_url}
-                alt={m.caption || sectionTitle}
-                className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-500"
-              />
+              <div className="relative w-full aspect-[4/3] overflow-hidden">
+                <Image
+                  src={m.media_url}
+                  alt={m.caption || sectionTitle}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                  loading="lazy"
+                />
+              </div>
             )}
             {m.caption && (
               <div
@@ -94,36 +131,14 @@ export default function SectionMediaGrid({
             {showAll ? (
               <>
                 Thu gọn
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="transition-transform duration-300"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300">
                   <polyline points="18 15 12 9 6 15" />
                 </svg>
               </>
             ) : (
               <>
                 Xem thêm ({sortedMedia.length - initialCount} ảnh/video)
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="transition-transform duration-300"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="transition-transform duration-300">
                   <polyline points="6 9 12 15 18 9" />
                 </svg>
               </>

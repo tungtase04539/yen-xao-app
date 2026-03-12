@@ -85,7 +85,7 @@ function VideoPlayer({ src }: { src: string }) {
       muted
       loop
       playsInline
-      preload="auto"
+      preload="metadata"
       className="w-full h-full object-cover pointer-events-none"
       style={{ display: 'block' }}
     />

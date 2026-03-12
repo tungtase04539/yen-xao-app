@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import BackgroundVideo from '@/components/common/BackgroundVideo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
@@ -73,11 +74,13 @@ export default async function AboutPage() {
           hasVideo ? (
             <BackgroundVideo src={page.thumbnail} />
           ) : (
-            <img
+            <Image
               src={page.thumbnail}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ zIndex: 0 }}
+              alt="QiQi Yến Sào - Giới thiệu"
+              fill
+              priority
+              className="object-cover"
+              sizes="100vw"
             />
           )
         )}
