@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     template: "%s | QiQi Yến Sào",
   },
   description:
-    "Chuyên cung cấp yến sào nguyên chất, tinh chế cao cấp từ đảo yến thiên nhiên Khánh Hòa. Cam kết chất lượng, giao hàng toàn quốc.",
+    "QIQI Yến (thuộc Công ty TNHH TM ĐT PT Phúc Thịnh) chuyên cung cấp các sản phẩm yến sào thiên nhiên nguyên chất và yến chưng chăm sóc sức khỏe toàn diện, cam kết an toàn, chất lượng.",
   keywords: [
     "yến sào",
     "yến sào cao cấp",
