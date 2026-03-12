@@ -162,35 +162,80 @@ export default function Header() {
                     <AnimatePresence>
                       {megaMenuOpen && (
                         <motion.div
-                          initial={{ opacity: 0, y: 10, scale: 0.98 }}
+                          initial={{ opacity: 0, y: 12, scale: 0.97 }}
                           animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                          transition={{ duration: 0.2 }}
-                          className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[520px] bg-white rounded-2xl shadow-2xl border border-gold/15 p-6 grid grid-cols-2 gap-2"
+                          exit={{ opacity: 0, y: 12, scale: 0.97 }}
+                          transition={{ duration: 0.22, ease: 'easeOut' }}
+                          className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[480px] rounded-2xl overflow-hidden"
+                          style={{
+                            background: 'linear-gradient(145deg, #3d0a12 0%, #5a0e1a 50%, #3d0a12 100%)',
+                            border: '1px solid rgba(201,165,90,0.3)',
+                            boxShadow: '0 24px 64px rgba(0,0,0,0.5), 0 0 0 1px rgba(201,165,90,0.1), inset 0 1px 0 rgba(201,165,90,0.15)',
+                          }}
                         >
-                          {/* Gold top border */}
-                          <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-gold to-transparent" />
+                          {/* Top gold shimmer line */}
+                          <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, #C9A55A 30%, #e8d48b 50%, #C9A55A 70%, transparent)' }} />
 
-                          {productCategories.map((cat) => (
+                          {/* Header label */}
+                          <div className="px-6 pt-5 pb-3 flex items-center gap-2">
+                            <Sparkles className="w-3.5 h-3.5" style={{ color: '#C9A55A' }} />
+                            <span className="text-xs font-semibold tracking-[0.2em] uppercase" style={{ color: 'rgba(201,165,90,0.7)' }}>
+                              Danh Mục Sản Phẩm
+                            </span>
+                          </div>
+
+                          {/* Category grid */}
+                          <div className="px-4 pb-3 grid grid-cols-2 gap-1.5">
+                            {productCategories.map((cat) => (
+                              <Link
+                                key={cat.slug}
+                                href={`/danh-muc/${cat.slug}`}
+                                className="group/item relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200"
+                                style={{ border: '1px solid transparent' }}
+                                onMouseEnter={e => {
+                                  (e.currentTarget as HTMLElement).style.background = 'rgba(201,165,90,0.08)';
+                                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,165,90,0.25)';
+                                }}
+                                onMouseLeave={e => {
+                                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                                  (e.currentTarget as HTMLElement).style.borderColor = 'transparent';
+                                }}
+                                onClick={() => setMegaMenuOpen(false)}
+                              >
+                                {/* Gold dot */}
+                                <span className="w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-200 group-hover/item:shadow-[0_0_6px_#C9A55A]" style={{ background: 'rgba(201,165,90,0.5)' }} />
+                                <span className="font-medium text-sm transition-colors duration-200" style={{ color: 'rgba(255,255,255,0.75)' }}
+                                  onMouseEnter={e => (e.currentTarget.style.color = '#C9A55A')}
+                                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.75)')}
+                                >
+                                  {cat.name}
+                                </span>
+                              </Link>
+                            ))}
+                          </div>
+
+                          {/* Divider */}
+                          <div className="mx-5 h-px" style={{ background: 'linear-gradient(90deg, transparent, rgba(201,165,90,0.2), transparent)' }} />
+
+                          {/* View all button */}
+                          <div className="p-4">
                             <Link
-                              key={cat.slug}
-                              href={`/danh-muc/${cat.slug}`}
-                              className="group/item flex items-center p-3.5 rounded-xl hover:bg-cream transition-all"
+                              href="/san-pham"
+                              className="flex items-center justify-center gap-2.5 w-full py-3 rounded-xl font-semibold text-sm transition-all duration-200 hover:brightness-110"
+                              style={{
+                                background: 'linear-gradient(135deg, #b8922a 0%, #C9A55A 40%, #e8d48b 60%, #C9A55A 80%, #b8922a 100%)',
+                                color: '#3d0a12',
+                                boxShadow: '0 4px 16px rgba(201,165,90,0.3), inset 0 1px 0 rgba(255,255,255,0.3)',
+                              }}
                               onClick={() => setMegaMenuOpen(false)}
                             >
-                              <span className="font-semibold text-sm text-foreground group-hover/item:text-burgundy transition-colors">
-                                {cat.name}
-                              </span>
+                              <Sparkles className="w-4 h-4" />
+                              Xem tất cả sản phẩm
                             </Link>
-                          ))}
-                          <Link
-                            href="/san-pham"
-                            className="col-span-2 flex items-center justify-center p-3.5 rounded-xl bg-gradient-gold text-burgundy font-semibold text-sm hover:opacity-90 transition-all mt-1 gap-2"
-                            onClick={() => setMegaMenuOpen(false)}
-                          >
-                            <Sparkles className="w-4 h-4" />
-                            Xem tất cả sản phẩm
-                          </Link>
+                          </div>
+
+                          {/* Bottom gold shimmer line */}
+                          <div className="h-px w-full" style={{ background: 'linear-gradient(90deg, transparent, rgba(201,165,90,0.3) 50%, transparent)' }} />
                         </motion.div>
                       )}
                     </AnimatePresence>
