@@ -214,10 +214,10 @@ export default function Header() {
                                 {/* Left: gold bar + name */}
                                 <div className="flex items-center gap-2.5">
                                   <span className="w-[3px] h-5 rounded-full shrink-0" style={{ background: 'linear-gradient(to bottom, #C9A55A, rgba(201,165,90,0.3))' }} />
-                                  <span className="font-semibold text-sm tracking-wide transition-colors duration-200"
-                                    style={{ fontFamily: 'var(--font-heading)', color: 'rgba(255,255,255,0.85)', letterSpacing: '0.02em' }}
+                                  <span className="font-semibold text-base tracking-wide transition-colors duration-200"
+                                    style={{ fontFamily: 'var(--font-heading)', color: 'rgba(255,255,255,1)', letterSpacing: '0.01em' }}
                                     onMouseEnter={e => (e.currentTarget.style.color = '#e8d48b')}
-                                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.85)')}
+                                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,1)')}
                                   >
                                     {cat.name}
                                   </span>
