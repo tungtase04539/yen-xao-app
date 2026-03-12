@@ -149,19 +149,19 @@ export default function HeroSlider() {
       {/* ══════════════════════════════════════════════
           MOBILE LAYOUT — ảnh vuông 1:1 + text bên dưới
           ══════════════════════════════════════════════ */}
-      {/* Mobile: side-by-side — image left 50%, text right 50% */}
-      <section className="md:hidden overflow-hidden" style={{ background: '#6E1222' }}>
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div
-            key={`mob-${current}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.7, ease: 'easeInOut' }}
-            className="flex"
-          >
-            {/* --- Image: left 50% --- */}
-            <div className={`relative w-1/2 aspect-[2/3] overflow-hidden bg-gradient-to-br ${slide.gradient}`}>
+      <section className="md:hidden overflow-hidden bg-burgundy-dark">
+        {/* Square image area */}
+        <div className="relative w-full aspect-[3/4] overflow-hidden">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={`mob-${current}`}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.7, ease: 'easeInOut' }}
+              className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
+            >
+              {/* Use mobile_image if set, otherwise fall back to background_image */}
               {(slide.mobile_image || slide.background_image) ? (
                 <Image
                   src={slide.mobile_image ?? slide.background_image!}
@@ -170,59 +170,73 @@ export default function HeroSlider() {
                   className="object-cover object-center"
                   priority={current === 0}
                   fetchPriority={current === 0 ? 'high' : 'auto'}
-                  sizes="50vw"
+                  sizes="100vw"
                   quality={85}
                 />
               ) : (
+                /* Fallback: show hero-birds centered */
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <img src="/hero-birds.png" alt="" className="w-24 h-24 object-contain opacity-70" />
+                  <img src="/hero-birds.png" alt="" className="w-48 h-48 object-contain opacity-70" />
                 </div>
               )}
+
+              {/* Light gradient overlay at bottom for text bleed */}
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-burgundy-dark/60 to-transparent" />
+
               <SlideDecorations />
-            </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
 
-            {/* --- Text: right 50%, red background --- */}
-            <div className="w-1/2 flex flex-col justify-center px-4 pt-6 pb-6 bg-burgundy-dark">
-              {slide.title && (
-                <h2
-                  className="text-base font-bold font-serif text-white leading-tight mb-2 whitespace-pre-line"
-                  style={{ textShadow: '0 2px 10px rgba(0,0,0,0.3)', fontSize: 'clamp(0.85rem, 3.5vw, 1.1rem)' }}
-                >
-                  {slide.title}
-                </h2>
-              )}
+        {/* Text + CTA below image */}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={`mob-text-${current}`}
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.5 }}
+            className="px-5 pt-5 pb-8 bg-burgundy-dark"
+          >
 
-              {slide.subtitle && (
-                <div className="flex items-start gap-2 mb-4">
-                  <div className="w-[2px] h-8 bg-gradient-to-b from-gold to-gold/20 rounded-full shrink-0 mt-0.5" />
-                  <p className="text-xs text-white/70 leading-relaxed line-clamp-3">{slide.subtitle}</p>
-                </div>
-              )}
+            {slide.title && (
+              <h2
+                className="text-[1.9rem] font-bold font-serif text-white leading-[1.1] mb-3 whitespace-pre-line"
+                style={{ textShadow: '0 2px 16px rgba(0,0,0,0.3)' }}
+              >
+                {slide.title}
+              </h2>
+            )}
 
-              {slide.button_text && slide.button_link && (
-                <Link
-                  href={slide.button_link}
-                  className="bg-metallic-gold inline-flex items-center gap-1 px-4 py-2 rounded-full font-semibold self-start"
-                  style={{
-                    fontSize: 'clamp(0.65rem, 2.8vw, 0.8rem)',
-                    color: '#6E1222',
-                    boxShadow: '0 4px 16px rgba(212,175,55,0.4), inset 0 1px 0 rgba(255,255,255,0.3)',
-                  }}
-                >
-                  {slide.button_text}
-                  <ChevronRight className="w-3 h-3" />
-                </Link>
-              )}
-
-              {/* Dots */}
-              <div className="mt-4">
-                <DotIndicators dark />
+            {slide.subtitle && (
+              <div className="flex items-start gap-3 mb-5">
+                <div className="w-[2px] h-10 bg-gradient-to-b from-gold to-gold/20 rounded-full shrink-0 mt-0.5" />
+                <p className="text-sm text-white/70 leading-relaxed">{slide.subtitle}</p>
               </div>
+            )}
+
+            {/* CTA */}
+            {slide.button_text && slide.button_link && (
+              <Link
+                href={slide.button_link}
+                className="bg-metallic-gold inline-flex items-center gap-2 px-7 py-3.5 rounded-full font-semibold text-sm"
+                style={{
+                  color: '#6E1222',
+                  boxShadow: '0 6px 24px rgba(212,175,55,0.4), inset 0 1px 0 rgba(255,255,255,0.3)',
+                }}
+              >
+                {slide.button_text}
+                <ChevronRight className="w-4 h-4" />
+              </Link>
+            )}
+
+            {/* Dots */}
+            <div className="mt-6">
+              <DotIndicators dark />
             </div>
           </motion.div>
         </AnimatePresence>
       </section>
-
 
       {/* ══════════════════════════════════════════════
           DESKTOP LAYOUT — giữ nguyên như cũ
