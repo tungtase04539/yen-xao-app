@@ -37,7 +37,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-lg text-white/50 leading-relaxed mb-3">
-              Chuyên cung cấp các sản phẩm yến sào nguyên chất, tinh chế cao cấp từ đảo yến thiên nhiên Khánh Hòa.
+              Chuyên cung cấp các sản phẩm yến sào thiên nhiên nguyên chất và yến chưng chăm sóc sức khỏe toàn diện, cam kết an toàn, chất lượng.
             </p>
             <p className="text-sm text-white/40 mb-6">
               Mã số doanh nghiệp: <span className="text-gold/70 font-medium">0202247835</span>
