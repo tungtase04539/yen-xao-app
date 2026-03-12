@@ -1,13 +1,6 @@
 import Link from 'next/link';
 import { Phone, Mail, MapPin, Sparkles } from 'lucide-react';
-
-const productLinks = [
-  { name: 'Yến Thô', href: '/danh-muc/yen-tho' },
-  { name: 'Yến Tinh Chế', href: '/danh-muc/yen-tinh-che' },
-  { name: 'Yến Chưng Sẵn', href: '/danh-muc/yen-chung-san' },
-  { name: 'Nước Yến', href: '/danh-muc/nuoc-yen' },
-  { name: 'Quà Tặng Yến', href: '/danh-muc/qua-tang-yen' },
-];
+import { supabase } from '@/lib/supabase';
 
 const infoLinks = [
   { name: 'Giới Thiệu', href: '/gioi-thieu' },
@@ -17,7 +10,19 @@ const infoLinks = [
   { name: 'Liên Hệ', href: '/lien-he' },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  // Fetch product categories dynamically
+  const { data: categories } = await supabase
+    .from('categories')
+    .select('id, name, slug')
+    .eq('type', 'product')
+    .order('sort_order');
+
+  const productLinks = (categories || []).map((c) => ({
+    name: c.name,
+    href: `/danh-muc/${c.slug}`,
+  }));
+
   return (
     <footer style={{ background: 'linear-gradient(to right, #8B1A2B, #6E1222)' }} className="text-white relative overflow-hidden">
       {/* Top gold line */}
@@ -37,7 +42,7 @@ export default function Footer() {
               </div>
             </Link>
             <p className="text-lg text-white/50 leading-relaxed mb-3">
-              Chuyên cung cấp các sản phẩm yến sào thiên nhiên nguyên chất và yến chưng chăm sóc sức khỏe toàn diện, cam kết an toàn, chất lượng.
+              Chuyên cung cấp các sản phẩm yến sào nguyên chất, tinh chế cao cấp từ đảo yến thiên nhiên Khánh Hòa.
             </p>
             <p className="text-sm text-white/40 mb-6">
               Mã số doanh nghiệp: <span className="text-gold/70 font-medium">0202247835</span>
@@ -61,7 +66,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Products */}
+          {/* Products — dynamic */}
           <div>
             <h4 className="font-serif font-bold text-2xl mb-5 flex items-center gap-2" style={{ color: '#C9A55A' }}>
               <Sparkles className="w-3.5 h-3.5" style={{ color: 'rgba(201,165,90,0.6)' }} />
@@ -109,33 +114,27 @@ export default function Footer() {
               <Sparkles className="w-3.5 h-3.5 text-gold/60" />
               Liên Hệ
             </h4>
-            <ul className="space-y-3">
-              <li className="flex items-start gap-3 text-sm text-white/45">
+            <ul className="space-y-4">
+              <li className="flex items-start gap-3 text-lg text-white/45">
                 <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <div className="space-y-1.5">
-                  <p><span className="text-white/60 font-medium">CS1:</span> Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng</p>
-                  <p><span className="text-white/60 font-medium">CS2:</span> 50 Phạm Ngọc Đa, Thị Trấn Tiên Lãng, Hải Phòng</p>
-                  <p><span className="text-white/60 font-medium">CS3:</span> Khu đường tàu Thị Trấn Hà Khẩu, Trung Quốc</p>
-                  <p><span className="text-white/60 font-medium">CS4:</span> Phố 114, Phố Bạch Đằng, Phường Thủy Nguyên, Tp Hải Phòng</p>
-                  <p><span className="text-white/60 font-medium">CS5:</span> 37A Mê Linh, Phường Gia Viên, Tp Hải Phòng</p>
-                </div>
+                <span>Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng</span>
               </li>
               <li>
                 <a
-                  href="tel:0843623986"
-                  className="flex items-center gap-3 text-sm text-white/45 hover:text-gold transition-colors"
+                  href="tel:0984234669"
+                  className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
                 >
                   <Phone className="w-4 h-4 text-gold/60 shrink-0" />
-                  0843.623.986
+                  0984 234 669
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:tp.phucthinh.co@gmail.com"
-                  className="flex items-center gap-3 text-sm text-white/45 hover:text-gold transition-colors"
+                  href="mailto:info@yensaocaocap.vn"
+                  className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
                 >
                   <Mail className="w-4 h-4 text-gold/60 shrink-0" />
-                  tp.phucthinh.co@gmail.com
+                  info@yensaocaocap.vn
                 </a>
               </li>
             </ul>
