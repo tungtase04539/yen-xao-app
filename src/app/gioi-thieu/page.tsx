@@ -1,6 +1,5 @@
 import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
-import BackgroundVideo from '@/components/common/BackgroundVideo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import SectionMediaGrid from '@/components/gioi-thieu/SectionMediaGrid';
 
@@ -65,21 +64,17 @@ export default async function AboutPage() {
         </div>
       )}
 
-      {/* ── DESKTOP (md+): Video as background with text overlay ── */}
-      {/* Also used on mobile when thumbnail is an image (no video) */}
+      {/* ── DESKTOP (md+): Text hero + video lazy-loaded below text ── */}
+      {/* Also mobile fallback when thumbnail is an image */}
       <section className={`text-white py-20 md:py-32 relative overflow-hidden ${hasVideo ? 'hidden md:block' : ''}`}>
-        {/* Background */}
-        {page?.thumbnail && (
-          hasVideo ? (
-            <BackgroundVideo src={page.thumbnail} />
-          ) : (
-            <img
-              src={page.thumbnail}
-              alt=""
-              className="absolute inset-0 w-full h-full object-cover"
-              style={{ zIndex: 0 }}
-            />
-          )
+        {/* Background — image only on desktop, gradient if video */}
+        {page?.thumbnail && !hasVideo && (
+          <img
+            src={page.thumbnail}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ zIndex: 0 }}
+          />
         )}
         {/* Dark overlay */}
         <div className="absolute inset-0 bg-gradient-dark-luxury" style={page?.thumbnail ? { opacity: 0.85 } : undefined} />
@@ -108,6 +103,23 @@ export default async function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* ── DESKTOP VIDEO — lazy load sau text ── */}
+      {hasVideo && (
+        <div className="hidden md:block w-full bg-black">
+          <video
+            src={page.thumbnail}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="none"
+            className="w-full max-h-[80vh] object-contain"
+            style={{ display: 'block' }}
+          />
+        </div>
+      )}
+
 
       {/* Content Section */}
       <section className="py-16 md:py-24 bg-gradient-luxury">

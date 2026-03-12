@@ -169,7 +169,9 @@ export default function HeroSlider() {
                   fill
                   className="object-cover object-center"
                   priority={current === 0}
+                  fetchPriority={current === 0 ? 'high' : 'auto'}
                   sizes="100vw"
+                  quality={85}
                 />
               ) : (
                 /* Fallback: show hero-birds centered */
@@ -256,7 +258,21 @@ export default function HeroSlider() {
                 fill
                 className="object-cover"
                 priority={current === 0}
+                fetchPriority={current === 0 ? 'high' : 'auto'}
                 sizes="100vw"
+                quality={85}
+              />
+            )}
+
+            {/* Preload next slide image (hidden) */}
+            {slides[current + 1]?.background_image && (
+              <Image
+                src={slides[current + 1].background_image!}
+                alt=""
+                fill
+                sizes="100vw"
+                className="opacity-0 pointer-events-none absolute"
+                aria-hidden
               />
             )}
 
