@@ -199,7 +199,7 @@ export default function Header() {
 
                                 {/* Name */}
                                 <span
-                                  className="text-[17px] font-medium text-white/90 group-hover/item:text-[#e8d48b] transition-colors duration-200 tracking-tight"
+                                  className="text-metallic-gold text-[17px] font-semibold tracking-tight transition-all duration-200 group-hover/item:brightness-125"
                                   style={{ fontFamily: 'var(--font-body)' }}
                                 >
                                   {cat.name}
