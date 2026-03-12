@@ -12,7 +12,7 @@ const values = [
   {
     icon: Leaf,
     title: 'Thiên Nhiên Thuần Khiết',
-    desc: 'Thu hoạch từ những hang yến tự nhiên vùng biển Khánh Hòa.',
+    desc: 'Thu hoạch từ những hang yến tự nhiên nguyên chất của QiQi Yến.',
   },
   {
     icon: Heart,
@@ -57,7 +57,7 @@ export default function BrandStory() {
             </h2>
             <div className="space-y-5 text-white/65 leading-relaxed">
               <p>
-                Từ những hang yến hoang sơ trên biển Khánh Hòa, chúng tôi mang đến bàn ăn
+                Từ những hang yến hoang sơ, chúng tôi — QiQi Yến — mang đến bàn ăn
                 của bạn những sợi yến sào tinh khiết nhất. Mỗi tổ yến là kết tinh của thiên nhiên,
                 được thu hoạch và chế biến với sự trân trọng và tận tâm.
               </p>

@@ -9,14 +9,14 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yensaocaocap.vn';
 export const metadata: Metadata = {
   title: 'Blog Yến Sào | Kiến Thức Sức Khỏe & Bí Quyết Dùng Yến',
   description:
-    'Khám phá kiến thức về yến sào, lợi ích sức khỏe, cách dùng yến sào hiệu quả và các tin tức mới nhất từ QiQi Yến Sào — thương hiệu yến sào cao cấp Khánh Hòa.',
+    'Khám phá kiến thức về yến sào, lợi ích sức khỏe, cách dùng yến sào hiệu quả và các tin tức mới nhất từ QiQi Yến Sào Hải Phòng.',
   keywords: [
     'blog yến sào',
     'kiến thức yến sào',
     'lợi ích yến sào',
     'cách dùng yến sào',
     'yến sào sức khỏe',
-    'yến sào Khánh Hòa',
+    'QiQi Yến Sào',
   ],
   alternates: { canonical: `${SITE_URL}/blog` },
   openGraph: {

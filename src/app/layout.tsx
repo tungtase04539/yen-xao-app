@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   keywords: [
     "yến sào",
     "yến sào cao cấp",
-    "yến sào Khánh Hòa",
+    "QiQi Yến Hải Phòng",
     "yến tinh chế",
     "yến chưng sẵn",
     "nước yến",

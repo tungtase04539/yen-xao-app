@@ -23,7 +23,7 @@ const fallbackSlides: Slide[] = [
   {
     id: '1',
     title: 'Yến Sào Thượng Hạng\nTinh Hoa Thiên Nhiên',
-    subtitle: 'Từ đảo yến thiên nhiên Khánh Hòa — Nguyên chất 100%',
+    subtitle: 'Thương hiệu QiQi Yến — Nguyên chất 100%',
     button_text: 'Khám Phá Bộ Sưu Tập',
     button_link: '/danh-muc/yen-tinh-che',
     background_image: null,

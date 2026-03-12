@@ -12,8 +12,8 @@ const reasons = [
   },
   {
     icon: Leaf,
-    title: 'Đảo Yến Khánh Hòa',
-    desc: 'Thu hoạch từ hang yến tự nhiên vùng biển Khánh Hòa',
+    title: 'Yến Sào QiQi Yến',
+    desc: 'Thu hoạch từ hang yến tự nhiên nguyên chất, đạt chuẩn QiQi Yến',
     color: '#2a8a4a',
   },
   {
