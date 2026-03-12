@@ -6,14 +6,13 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Menu, X, ChevronDown, Globe, Phone, Sparkles } from 'lucide-react';
 import { useCart } from '@/store/cart';
+import { supabase } from '@/lib/supabase';
 
-const productCategories = [
-  { name: 'Yến Thô', slug: 'yen-tho', desc: 'Yến thô nguyên tổ chưa qua xử lý', icon: '🏔️' },
-  { name: 'Yến Tinh Chế', slug: 'yen-tinh-che', desc: 'Yến đã qua chế biến thủ công', icon: '✨' },
-  { name: 'Yến Chưng Sẵn', slug: 'yen-chung-san', desc: 'Yến chưng sẵn tiện lợi', icon: '🍯' },
-  { name: 'Nước Yến', slug: 'nuoc-yen', desc: 'Nước yến sào đóng chai', icon: '🥤' },
-  { name: 'Quà Tặng Yến', slug: 'qua-tang-yen', desc: 'Bộ quà tặng cao cấp', icon: '🎁' },
-];
+interface Category {
+  id: string;
+  name: string;
+  slug: string;
+}
 
 const navLinks = [
   { name: 'Trang Chủ', href: '/' },
@@ -38,8 +37,21 @@ export default function Header() {
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const [footerVisible, setFooterVisible] = useState(false);
   const [videoHeroVisible, setVideoHeroVisible] = useState(false);
+  const [productCategories, setProductCategories] = useState<Category[]>([]);
 
   const totalItems = getTotalItems();
+
+  // Fetch product categories from Supabase
+  useEffect(() => {
+    supabase
+      .from('categories')
+      .select('id, name, slug')
+      .eq('type', 'product')
+      .order('sort_order')
+      .then(({ data }) => {
+        if (data && data.length > 0) setProductCategories(data);
+      });
+  }, []);
 
   // Track scroll for header style change
   useEffect(() => {
@@ -163,18 +175,12 @@ export default function Header() {
                             <Link
                               key={cat.slug}
                               href={`/danh-muc/${cat.slug}`}
-                              className="group/item flex items-start gap-3 p-3.5 rounded-xl hover:bg-cream transition-all"
+                              className="group/item flex items-center p-3.5 rounded-xl hover:bg-cream transition-all"
                               onClick={() => setMegaMenuOpen(false)}
                             >
-                              <span className="text-lg mt-0.5">{cat.icon}</span>
-                              <div>
-                                <span className="font-semibold text-sm text-foreground group-hover/item:text-burgundy transition-colors">
-                                  {cat.name}
-                                </span>
-                                <span className="block text-xs text-muted-foreground mt-0.5">
-                                  {cat.desc}
-                                </span>
-                              </div>
+                              <span className="font-semibold text-sm text-foreground group-hover/item:text-burgundy transition-colors">
+                                {cat.name}
+                              </span>
                             </Link>
                           ))}
                           <Link
@@ -276,10 +282,9 @@ export default function Header() {
                         <Link
                           key={cat.slug}
                           href={`/danh-muc/${cat.slug}`}
-                          className="flex items-center gap-2 px-3 py-2.5 rounded-lg text-base text-white/70 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
+                          className="flex items-center px-3 py-2.5 rounded-lg text-base text-white/70 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
                           onClick={() => setMobileOpen(false)}
                         >
-                          <span>{cat.icon}</span>
                           {cat.name}
                         </Link>
                       ))}
