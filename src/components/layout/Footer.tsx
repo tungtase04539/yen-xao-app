@@ -109,27 +109,33 @@ export default function Footer() {
               <Sparkles className="w-3.5 h-3.5 text-gold/60" />
               Liên Hệ
             </h4>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-lg text-white/45">
+            <ul className="space-y-3">
+              <li className="flex items-start gap-3 text-sm text-white/45">
                 <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <span>Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng</span>
+                <div className="space-y-1.5">
+                  <p><span className="text-white/60 font-medium">CS1:</span> Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng</p>
+                  <p><span className="text-white/60 font-medium">CS2:</span> 50 Phạm Ngọc Đa, Thị Trấn Tiên Lãng, Hải Phòng</p>
+                  <p><span className="text-white/60 font-medium">CS3:</span> Khu đường tàu Thị Trấn Hà Khẩu, Trung Quốc</p>
+                  <p><span className="text-white/60 font-medium">CS4:</span> Phố 114, Phố Bạch Đằng, Phường Thủy Nguyên, Tp Hải Phòng</p>
+                  <p><span className="text-white/60 font-medium">CS5:</span> 37A Mê Linh, Phường Gia Viên, Tp Hải Phòng</p>
+                </div>
               </li>
               <li>
                 <a
-                  href="tel:0984234669"
-                  className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
+                  href="tel:0843623986"
+                  className="flex items-center gap-3 text-sm text-white/45 hover:text-gold transition-colors"
                 >
                   <Phone className="w-4 h-4 text-gold/60 shrink-0" />
-                  0984 234 669
+                  0843.623.986
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:info@yensaocaocap.vn"
-                  className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
+                  href="mailto:tp.phucthinh.co@gmail.com"
+                  className="flex items-center gap-3 text-sm text-white/45 hover:text-gold transition-colors"
                 >
                   <Mail className="w-4 h-4 text-gold/60 shrink-0" />
-                  info@yensaocaocap.vn
+                  tp.phucthinh.co@gmail.com
                 </a>
               </li>
             </ul>
