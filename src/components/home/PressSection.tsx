@@ -5,20 +5,22 @@ import { motion } from 'framer-motion';
 import { Newspaper } from 'lucide-react';
 
 const pressItems = [
-  { name: 'VnExpress', category: 'Kinh tế' },
-  { name: 'Tuổi Trẻ', category: 'Sức khỏe' },
-  { name: 'Dân Trí', category: 'Thời sự' },
-  { name: 'Báo Hải Phòng', category: 'Địa phương' },
-  { name: 'VTV', category: 'Truyền hình' },
-  { name: 'Zing News', category: 'Xu hướng' },
-  { name: 'Nông Nghiệp VN', category: 'Thực phẩm' },
-  { name: 'Nhân Dân', category: 'Chính luận' },
-  { name: 'Người Lao Động', category: 'Tiêu dùng' },
-  { name: 'Thanh Niên', category: 'Chăm sóc sức khỏe' },
+  {
+    name: 'Thương Hiệu Vàng',
+    logo: 'https://thuonghieuvang.net.vn/Data/upload/files/thuonghieuvanglogo-724x110.jpg',
+    href: 'https://thuonghieuvang.net.vn/Thuong-hieu-Yen-Sao-QiQi-Yen-Chat-Luong-Vuot-Troi-Suc-Khoe-Ben-Lau.aspx',
+    category: 'Thương hiệu uy tín',
+  },
+  {
+    name: 'Văn Hóa Doanh Nhân Việt Nam',
+    logo: 'https://vanhoadoanhnhanvietnam.vn/wp-content/uploads/2025/07/Van-hoa-Doanh-nhan_logo-01-e1751864241797.png',
+    href: 'https://vanhoadoanhnhanvietnam.vn/doanh-nghiep/thuong-hieu/yen-sao-qiqi-yen-chat-luong-vuot-troi-suc-khoe-ben-lau.html',
+    category: 'Văn hóa doanh nhân',
+  },
 ];
 
-// Duplicate for seamless marquee
-const marqueeItems = [...pressItems, ...pressItems];
+// Duplicate enough times for seamless marquee
+const marqueeItems = [...pressItems, ...pressItems, ...pressItems, ...pressItems];
 
 export default function PressSection() {
   return (
@@ -67,26 +69,42 @@ export default function PressSection() {
             transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
           >
             {marqueeItems.map((item, i) => (
-              <div
+              <a
                 key={i}
-                className="shrink-0 flex items-center gap-3 px-6 py-4 rounded-2xl"
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="shrink-0 flex flex-col items-center justify-center gap-3 px-8 py-5 rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-1"
                 style={{
                   background: 'white',
-                  border: '1px solid rgba(201,165,90,0.15)',
+                  border: '1px solid rgba(201,165,90,0.2)',
                   boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
-                  minWidth: 180,
+                  minWidth: 220,
+                }}
+                onMouseEnter={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(201,165,90,0.2)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,165,90,0.5)';
+                }}
+                onMouseLeave={e => {
+                  (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(0,0,0,0.05)';
+                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,165,90,0.2)';
                 }}
               >
-                {/* Gold ornament */}
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                  style={{ background: 'linear-gradient(135deg, rgba(201,165,90,0.15), rgba(201,165,90,0.05))', border: '1px solid rgba(201,165,90,0.2)' }}>
-                  <Newspaper className="w-4 h-4" style={{ color: '#C9A55A' }} />
+                {/* Logo */}
+                <div className="h-10 flex items-center justify-center">
+                  <img
+                    src={item.logo}
+                    alt={item.name}
+                    className="h-full w-auto object-contain max-w-[160px]"
+                    loading="lazy"
+                  />
                 </div>
-                <div>
-                  <p className="font-bold text-sm text-foreground leading-none">{item.name}</p>
-                  <p className="text-[11px] text-muted-foreground mt-0.5">{item.category}</p>
-                </div>
-              </div>
+                {/* Category badge */}
+                <span className="text-[10px] font-medium tracking-wide uppercase px-2.5 py-0.5 rounded-full"
+                  style={{ background: 'rgba(110,18,34,0.06)', color: '#6E1222' }}>
+                  {item.category}
+                </span>
+              </a>
             ))}
           </motion.div>
         </div>
