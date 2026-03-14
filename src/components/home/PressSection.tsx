@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Newspaper, Tv, Play, X, ExternalLink } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
@@ -13,14 +14,14 @@ interface PressVideo {
   thumbnail_url: string | null;
 }
 
-interface Newspaper {
+interface Paper {
   name: string;
   logo: string;
   href: string;
   desc: string;
 }
 
-const newspapers: Newspaper[] = [
+const newspapers: Paper[] = [
   {
     name: 'Thương Hiệu Vàng',
     logo: 'https://thuonghieuvang.net.vn/Data/upload/files/thuonghieuvanglogo-724x110.jpg',
@@ -38,22 +39,18 @@ const newspapers: Newspaper[] = [
 const GOLD = '#C9A55A';
 const BURGUNDY = '#6E1222';
 
-function Overlay({ onClose }: { onClose: () => void }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
-      onClick={onClose}
-    />
-  );
+// Portal wrapper – renders children at document.body
+function PortalModal({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
+  if (!mounted) return null;
+  return createPortal(children, document.body);
 }
 
 export default function PressSection() {
   const [videos, setVideos] = useState<PressVideo[]>([]);
   const [activeVideo, setActiveVideo] = useState<PressVideo | null>(null);
-  const [activeArticle, setActiveArticle] = useState<Newspaper | null>(null);
+  const [activeArticle, setActiveArticle] = useState<Paper | null>(null);
 
   useEffect(() => {
     supabase
@@ -63,13 +60,9 @@ export default function PressSection() {
       .then(({ data }) => { if (data) setVideos(data); });
   }, []);
 
-  // Lock body scroll when modal open
+  // Lock scroll
   useEffect(() => {
-    if (activeVideo || activeArticle) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
+    document.body.style.overflow = (activeVideo || activeArticle) ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [activeVideo, activeArticle]);
 
@@ -94,7 +87,6 @@ export default function PressSection() {
         <div className="flex flex-col gap-10 max-w-5xl mx-auto">
           {/* ── ROW 1: Báo chí ── */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5 }}>
-            {/* Row header */}
             <div className="flex items-center gap-3 mb-5">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${GOLD}15`, border: `1px solid ${GOLD}35` }}>
                 <Newspaper className="w-5 h-5" style={{ color: GOLD }} />
@@ -105,7 +97,6 @@ export default function PressSection() {
               </div>
               <div className="flex-1 h-px ml-4" style={{ background: `linear-gradient(90deg, ${GOLD}30, transparent)` }} />
             </div>
-            {/* 2-col newspaper cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {newspapers.map((paper) => (
                 <button
@@ -133,7 +124,6 @@ export default function PressSection() {
 
           {/* ── ROW 2: Truyền hình ── */}
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: 0.1 }}>
-            {/* Row header */}
             <div className="flex items-center gap-3 mb-5">
               <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${BURGUNDY}12`, border: `1px solid ${BURGUNDY}30` }}>
                 <Tv className="w-5 h-5" style={{ color: BURGUNDY }} />
@@ -144,7 +134,6 @@ export default function PressSection() {
               </div>
               <div className="flex-1 h-px ml-4" style={{ background: `linear-gradient(90deg, ${BURGUNDY}20, transparent)` }} />
             </div>
-            {/* 2-col video cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {videos.length > 0 ? videos.map((v) => (
                 <button
@@ -169,7 +158,7 @@ export default function PressSection() {
               )) : [1, 2].map(n => (
                 <div key={n} className="rounded-2xl flex flex-col items-center justify-center gap-2 p-8"
                   style={{ background: 'white', border: `1px dashed ${BURGUNDY}20`, aspectRatio: '16/9' }}>
-                  <Tv className="w-8 h-8 opacity-15" style={{ color: BURGUNDY }} />
+                  <Tv className="w-8 h-8 opacity-20" style={{ color: BURGUNDY }} />
                   <p className="text-xs text-muted-foreground">Clip sắp ra mắt</p>
                 </div>
               ))}
@@ -178,100 +167,104 @@ export default function PressSection() {
         </div>
       </div>
 
-      {/* ── VIDEO MODAL ── */}
-      <AnimatePresence>
-        {activeVideo && (
-          <>
-            <Overlay onClose={() => setActiveVideo(null)} />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-8 pointer-events-none overflow-y-auto"
-              style={{ minHeight: '100dvh' }}
-            >
-              <div className="relative w-full max-w-3xl pointer-events-auto rounded-2xl overflow-hidden shadow-2xl"
-                style={{ background: '#0a0003' }}>
-                {/* Close */}
-                <button
-                  onClick={() => setActiveVideo(null)}
-                  className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-colors"
-                  style={{ background: 'rgba(0,0,0,0.6)' }}
-                >
-                  <X className="w-5 h-5 text-white" />
-                </button>
-                {/* Video */}
-                <div style={{ aspectRatio: '16/9' }}>
-                  <video
-                    src={activeVideo.video_url}
-                    controls
-                    autoPlay
-                    className="w-full h-full object-contain"
-                    style={{ background: '#000' }}
-                  />
-                </div>
-                {/* Info bar */}
-                <div className="px-5 py-4" style={{ background: 'rgba(0,0,0,0.85)' }}>
-                  <p className="text-white font-semibold text-sm">{activeVideo.title}</p>
-                  <p className="text-white/50 text-xs mt-0.5">{activeVideo.channel_name}</p>
-                </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
-
-      {/* ── ARTICLE MODAL ── */}
-      <AnimatePresence>
-        {activeArticle && (
-          <>
-            <Overlay onClose={() => setActiveArticle(null)} />
-            <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 20, scale: 0.97 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
-            >
-              <div className="relative w-full max-w-md pointer-events-auto rounded-2xl overflow-hidden shadow-2xl"
-                style={{ background: 'white' }}>
-                {/* Gold top bar */}
-                <div className="h-1.5 w-full" style={{ background: `linear-gradient(90deg, ${BURGUNDY}, ${GOLD}, ${BURGUNDY})` }} />
-
-                <button onClick={() => setActiveArticle(null)} className="absolute top-4 right-4 p-1.5 rounded-full hover:bg-gray-100 transition-colors">
-                  <X className="w-5 h-5 text-gray-500" />
-                </button>
-
-                <div className="p-8">
-                  {/* Logo */}
-                  <div className="h-10 mb-6">
-                    <img src={activeArticle.logo} alt={activeArticle.name} className="h-full w-auto object-contain max-w-[200px]" />
-                  </div>
-
-                  <p className="text-xs font-semibold uppercase tracking-widest mb-2" style={{ color: BURGUNDY }}>Bài viết nổi bật</p>
-                  <h3 className="text-lg font-bold text-foreground leading-snug mb-4">{activeArticle.desc}</h3>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    QiQi Yến đã được <strong>{activeArticle.name}</strong> ghi nhận và giới thiệu đến độc giả trên toàn quốc.
-                  </p>
-
-                  <a
-                    href={activeArticle.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-semibold text-sm transition-all hover:brightness-110"
-                    style={{ background: `linear-gradient(135deg, ${BURGUNDY}, #9b1a2c)`, color: 'white' }}
-                    onClick={() => setActiveArticle(null)}
+      {/* ── VIDEO MODAL – rendered at document.body via portal ── */}
+      <PortalModal>
+        <AnimatePresence>
+          {activeVideo && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setActiveVideo(null)}
+                style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}
+              />
+              {/* Dialog */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.95 }}
+                transition={{ duration: 0.2 }}
+                style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', pointerEvents: 'none' }}
+              >
+                <div style={{ position: 'relative', width: '100%', maxWidth: '768px', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.6)', background: '#0a0003', pointerEvents: 'auto' }}>
+                  <button
+                    onClick={() => setActiveVideo(null)}
+                    style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', zIndex: 10, width: '2.25rem', height: '2.25rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', cursor: 'pointer' }}
                   >
-                    <ExternalLink className="w-4 h-4" />
-                    Đọc bài viết đầy đủ
-                  </a>
+                    <X size={18} />
+                  </button>
+                  <div style={{ aspectRatio: '16/9' }}>
+                    <video src={activeVideo.video_url} controls autoPlay style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#000', display: 'block' }} />
+                  </div>
+                  <div style={{ padding: '1rem 1.25rem', background: 'rgba(0,0,0,0.85)' }}>
+                    <p style={{ color: 'white', fontWeight: 600, fontSize: '0.875rem', margin: 0 }}>{activeVideo.title}</p>
+                    <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', margin: '0.25rem 0 0' }}>{activeVideo.channel_name}</p>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </PortalModal>
+
+      {/* ── ARTICLE MODAL – rendered at document.body via portal ── */}
+      <PortalModal>
+        <AnimatePresence>
+          {activeArticle && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setActiveArticle(null)}
+                style={{ position: 'fixed', inset: 0, zIndex: 9998, background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+              />
+              {/* Dialog */}
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 20, scale: 0.97 }}
+                transition={{ duration: 0.2 }}
+                style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', pointerEvents: 'none' }}
+              >
+                <div style={{ position: 'relative', width: '100%', maxWidth: '28rem', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.4)', background: 'white', pointerEvents: 'auto' }}>
+                  {/* Gold top bar */}
+                  <div style={{ height: '6px', background: `linear-gradient(90deg, ${BURGUNDY}, ${GOLD}, ${BURGUNDY})` }} />
+                  <button
+                    onClick={() => setActiveArticle(null)}
+                    style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '0.25rem' }}
+                  >
+                    <X size={20} />
+                  </button>
+                  <div style={{ padding: '2rem' }}>
+                    <div style={{ height: '2.5rem', marginBottom: '1.5rem' }}>
+                      <img src={activeArticle.logo} alt={activeArticle.name} style={{ height: '100%', width: 'auto', objectFit: 'contain', maxWidth: '200px' }} />
+                    </div>
+                    <p style={{ fontSize: '0.65rem', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: BURGUNDY, marginBottom: '0.5rem' }}>Bài viết nổi bật</p>
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 700, lineHeight: 1.4, marginBottom: '0.75rem', color: '#1a1a1a' }}>{activeArticle.desc}</h3>
+                    <p style={{ fontSize: '0.875rem', color: '#666', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+                      QiQi Yến đã được <strong>{activeArticle.name}</strong> ghi nhận và giới thiệu đến độc giả trên toàn quốc.
+                    </p>
+                    <a
+                      href={activeArticle.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setActiveArticle(null)}
+                      style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', width: '100%', padding: '0.75rem', borderRadius: '0.75rem', fontWeight: 600, fontSize: '0.875rem', textDecoration: 'none', background: `linear-gradient(135deg, ${BURGUNDY}, #9b1a2c)`, color: 'white' }}
+                    >
+                      <ExternalLink size={16} />
+                      Đọc bài viết đầy đủ
+                    </a>
+                  </div>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
+      </PortalModal>
     </section>
   );
 }
