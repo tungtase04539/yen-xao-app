@@ -20,9 +20,11 @@ export default function PressVideosAdminPage() {
   const [videos, setVideos] = useState<PressVideo[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedThumb, setSelectedThumb] = useState<File | null>(null);
   const [form, setForm] = useState({ title: '', channel_name: '', sort_order: 0 });
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
+  const thumbRef = useRef<HTMLInputElement>(null);
 
   const fetchVideos = async () => {
     const { data } = await supabase
@@ -63,7 +65,7 @@ export default function PressVideosAdminPage() {
     const ext = file.name.split('.').pop();
     const path = `press/${Date.now()}.${ext}`;
 
-    // Upload video to Supabase storage
+    // Upload video
     const { error: uploadError } = await supabase.storage
       .from('videos')
       .upload(path, file, { contentType: file.type, upsert: false });
@@ -73,14 +75,28 @@ export default function PressVideosAdminPage() {
       setSaving(false);
       return;
     }
-
     const { data: urlData } = supabase.storage.from('videos').getPublicUrl(path);
     const video_url = urlData.publicUrl;
+
+    // Upload thumbnail if provided
+    let thumbnail_url: string | null = null;
+    if (selectedThumb) {
+      const tExt = selectedThumb.name.split('.').pop();
+      const tPath = `press-thumbs/${Date.now()}.${tExt}`;
+      const { error: tErr } = await supabase.storage
+        .from('images')
+        .upload(tPath, selectedThumb, { contentType: selectedThumb.type, upsert: false });
+      if (!tErr) {
+        const { data: tUrl } = supabase.storage.from('images').getPublicUrl(tPath);
+        thumbnail_url = tUrl.publicUrl;
+      }
+    }
 
     const { error } = await supabase.from('press_videos').insert({
       title: form.title,
       channel_name: form.channel_name,
       video_url,
+      thumbnail_url,
       sort_order: form.sort_order,
     });
 
@@ -90,7 +106,9 @@ export default function PressVideosAdminPage() {
       toast.success('Đã thêm video!');
       setForm({ title: '', channel_name: '', sort_order: 0 });
       setSelectedFile(null);
+      setSelectedThumb(null);
       if (fileRef.current) fileRef.current.value = '';
+      if (thumbRef.current) thumbRef.current.value = '';
       fetchVideos();
     }
     setSaving(false);
@@ -165,7 +183,6 @@ export default function PressVideosAdminPage() {
           />
 
           {selectedFile ? (
-            /* Selected file feedback */
             <div className="flex items-center gap-3 w-full border-2 border-green-200 bg-green-50 rounded-xl px-4 py-4">
               <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
                 <Tv className="w-5 h-5 text-green-600" />
@@ -174,20 +191,49 @@ export default function PressVideosAdminPage() {
                 <p className="text-sm font-medium text-green-800 truncate">{selectedFile.name}</p>
                 <p className="text-xs text-green-600">{(selectedFile.size / 1024 / 1024).toFixed(1)} MB</p>
               </div>
-              <button
-                onClick={() => { setSelectedFile(null); if (fileRef.current) fileRef.current.value = ''; }}
-                className="shrink-0 text-xs text-red-500 hover:underline"
-              >
+              <button onClick={() => { setSelectedFile(null); if (fileRef.current) fileRef.current.value = ''; }} className="shrink-0 text-xs text-red-500 hover:underline">
                 Đổi file
               </button>
             </div>
           ) : (
-            <button
-              onClick={handlePickFile}
-              className="flex items-center gap-2 w-full border-2 border-dashed border-border rounded-xl px-4 py-5 text-sm text-muted-foreground hover:border-burgundy hover:text-burgundy transition-colors"
-            >
+            <button onClick={handlePickFile} className="flex items-center gap-2 w-full border-2 border-dashed border-border rounded-xl px-4 py-5 text-sm text-muted-foreground hover:border-burgundy hover:text-burgundy transition-colors">
               <Upload className="w-5 h-5" />
               <span>Chọn file video (.mp4, .webm, .mov...)</span>
+            </button>
+          )}
+          <p className="text-[11px] text-muted-foreground mt-1.5">
+            Video sẽ upload lên Supabase Storage bucket <code className="bg-secondary px-1 rounded">videos</code>
+          </p>
+        </div>
+
+        {/* Thumbnail picker */}
+        <div>
+          <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Ảnh preview (tuỳ chọn)</label>
+          <input
+            ref={thumbRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) setSelectedThumb(f); }}
+          />
+          {selectedThumb ? (
+            <div className="flex items-center gap-3 w-full border-2 border-blue-200 bg-blue-50 rounded-xl px-4 py-3">
+              <img
+                src={URL.createObjectURL(selectedThumb)}
+                alt="preview"
+                className="w-16 h-10 object-cover rounded-lg shrink-0"
+              />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-blue-800 truncate">{selectedThumb.name}</p>
+              </div>
+              <button onClick={() => { setSelectedThumb(null); if (thumbRef.current) thumbRef.current.value = ''; }} className="shrink-0 text-xs text-red-500 hover:underline">
+                Đổi ảnh
+              </button>
+            </div>
+          ) : (
+            <button onClick={() => thumbRef.current?.click()} className="flex items-center gap-2 w-full border-2 border-dashed border-border rounded-xl px-4 py-4 text-sm text-muted-foreground hover:border-burgundy hover:text-burgundy transition-colors">
+              <Upload className="w-4 h-4" />
+              <span>Chọn ảnh thumbnail (.jpg, .png, .webp...)</span>
             </button>
           )}
           <p className="text-[11px] text-muted-foreground mt-1.5">
