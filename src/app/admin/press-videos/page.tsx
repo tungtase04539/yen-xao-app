@@ -39,7 +39,13 @@ export default function PressVideosAdminPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) setSelectedFile(file);
+    if (!file) return;
+    const maxMB = 500;
+    if (file.size > maxMB * 1024 * 1024) {
+      toast.error(`File quá lớn (${(file.size/1024/1024).toFixed(0)}MB). Giới hạn ${maxMB}MB. Hãy nén video trước.`);
+      return;
+    }
+    setSelectedFile(file);
   };
 
   const handleSave = async () => {
