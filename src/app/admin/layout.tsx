@@ -20,6 +20,7 @@ import {
   CalendarDays,
   Landmark,
   Shield,
+  Tv,
 } from 'lucide-react';
 
 const sidebarLinks = [
@@ -34,6 +35,7 @@ const sidebarLinks = [
   { name: 'Chứng nhận', href: '/admin/certifications', icon: Shield },
   { name: 'Triển lãm', href: '/admin/exhibitions', icon: CalendarDays },
   { name: 'Mã giảm giá', href: '/admin/coupons', icon: Tag },
+  { name: 'Truyền hình', href: '/admin/press-videos', icon: Tv },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
