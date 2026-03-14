@@ -1,112 +1,218 @@
 'use client';
 
-import { useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Newspaper } from 'lucide-react';
+import { Newspaper, Tv, Play } from 'lucide-react';
+import { supabase } from '@/lib/supabase';
 
-const pressItems = [
+interface PressVideo {
+  id: string;
+  title: string;
+  channel_name: string;
+  video_url: string;
+  thumbnail_url: string | null;
+}
+
+const newspapers = [
   {
     name: 'Thương Hiệu Vàng',
     logo: 'https://thuonghieuvang.net.vn/Data/upload/files/thuonghieuvanglogo-724x110.jpg',
     href: 'https://thuonghieuvang.net.vn/Thuong-hieu-Yen-Sao-QiQi-Yen-Chat-Luong-Vuot-Troi-Suc-Khoe-Ben-Lau.aspx',
-    category: 'Thương hiệu uy tín',
   },
   {
     name: 'Văn Hóa Doanh Nhân Việt Nam',
     logo: 'https://vanhoadoanhnhanvietnam.vn/wp-content/uploads/2025/07/Van-hoa-Doanh-nhan_logo-01-e1751864241797.png',
     href: 'https://vanhoadoanhnhanvietnam.vn/doanh-nghiep/thuong-hieu/yen-sao-qiqi-yen-chat-luong-vuot-troi-suc-khoe-ben-lau.html',
-    category: 'Văn hóa doanh nhân',
   },
 ];
 
-// Duplicate enough times for seamless marquee
-const marqueeItems = [...pressItems, ...pressItems, ...pressItems, ...pressItems];
+const GOLD = '#C9A55A';
+const BURGUNDY = '#6E1222';
 
 export default function PressSection() {
+  const [videos, setVideos] = useState<PressVideo[]>([]);
+  const [playing, setPlaying] = useState<string | null>(null);
+
+  useEffect(() => {
+    supabase
+      .from('press_videos')
+      .select('id, title, channel_name, video_url, thumbnail_url')
+      .order('sort_order')
+      .then(({ data }) => { if (data) setVideos(data); });
+  }, []);
+
   return (
-    <section className="py-16 md:py-20 overflow-hidden bg-[#faf6f0] relative">
-      {/* Subtle top/bottom lines */}
-      <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
-      <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-gold/25 to-transparent" />
+    <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: '#faf6f0' }}>
+      {/* Top / bottom gold lines */}
+      <div className="absolute top-0 inset-x-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}40, transparent)` }} />
+      <div className="absolute bottom-0 inset-x-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}40, transparent)` }} />
 
       <div className="container mx-auto px-4">
-        {/* Header */}
+        {/* Section header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center mb-10"
+          className="text-center mb-12"
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full mb-4"
-            style={{ background: 'rgba(110,18,34,0.06)', border: '1px solid rgba(110,18,34,0.1)' }}>
-            <Newspaper className="w-3.5 h-3.5" style={{ color: '#6E1222' }} />
-            <span className="text-xs font-semibold tracking-[0.18em] uppercase" style={{ color: '#6E1222' }}>
-              Báo Chí Đưa Tin
+            style={{ background: `${BURGUNDY}0d`, border: `1px solid ${BURGUNDY}1a` }}>
+            <Newspaper className="w-3.5 h-3.5" style={{ color: BURGUNDY }} />
+            <span className="text-xs font-semibold tracking-[0.18em] uppercase" style={{ color: BURGUNDY }}>
+              Truyền Thông Ghi Nhận
             </span>
           </div>
           <h2 className="text-2xl md:text-3xl font-bold font-serif text-foreground">
-            Được <span className="text-burgundy">Truyền Thông</span> Tin Tưởng
+            QiQi Yến Trên <span style={{ color: BURGUNDY }}>Báo Chí & Truyền Hình</span>
           </h2>
-          <p className="text-muted-foreground text-sm mt-2 max-w-md mx-auto">
-            QiQi Yến được các cơ quan báo chí uy tín ghi nhận và giới thiệu
-          </p>
         </motion.div>
-      </div>
 
-      {/* Marquee track */}
-      <div className="relative">
-        {/* Fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(to right, #faf6f0, transparent)' }} />
-        <div className="absolute right-0 top-0 bottom-0 w-24 z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(to left, #faf6f0, transparent)' }} />
+        {/* Two-column layout */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
 
-        <div className="flex overflow-hidden">
+          {/* ── LEFT: Báo chí ── */}
           <motion.div
-            className="flex gap-4 shrink-0"
-            animate={{ x: ['0%', '-50%'] }}
-            transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
           >
-            {marqueeItems.map((item, i) => (
-              <a
-                key={i}
-                href={item.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="shrink-0 flex flex-col items-center justify-center gap-3 px-8 py-5 rounded-2xl cursor-pointer transition-all duration-200 hover:-translate-y-1"
-                style={{
-                  background: 'white',
-                  border: '1px solid rgba(201,165,90,0.2)',
-                  boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
-                  minWidth: 220,
-                }}
-                onMouseEnter={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 8px 24px rgba(201,165,90,0.2)';
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,165,90,0.5)';
-                }}
-                onMouseLeave={e => {
-                  (e.currentTarget as HTMLElement).style.boxShadow = '0 2px 12px rgba(0,0,0,0.05)';
-                  (e.currentTarget as HTMLElement).style.borderColor = 'rgba(201,165,90,0.2)';
-                }}
-              >
-                {/* Logo */}
-                <div className="h-10 flex items-center justify-center">
-                  <img
-                    src={item.logo}
-                    alt={item.name}
-                    className="h-full w-auto object-contain max-w-[160px]"
-                    loading="lazy"
-                  />
-                </div>
-                {/* Category badge */}
-                <span className="text-[10px] font-medium tracking-wide uppercase px-2.5 py-0.5 rounded-full"
-                  style={{ background: 'rgba(110,18,34,0.06)', color: '#6E1222' }}>
-                  {item.category}
-                </span>
-              </a>
-            ))}
+            {/* Column header */}
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{ background: `${GOLD}15`, border: `1px solid ${GOLD}30` }}>
+                <Newspaper className="w-4 h-4" style={{ color: GOLD }} />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-foreground">Báo Chí Đưa Tin</h3>
+                <p className="text-xs text-muted-foreground">{newspapers.length} bài viết</p>
+              </div>
+            </div>
+
+            {/* 2-col logo grid */}
+            <div className="grid grid-cols-2 gap-3">
+              {newspapers.map((paper) => (
+                <a
+                  key={paper.name}
+                  href={paper.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group flex flex-col items-center justify-center gap-3 p-5 rounded-2xl transition-all duration-200 hover:-translate-y-0.5"
+                  style={{
+                    background: 'white',
+                    border: `1px solid ${GOLD}25`,
+                    boxShadow: '0 2px 12px rgba(0,0,0,0.05)',
+                  }}
+                  onMouseEnter={e => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.boxShadow = `0 8px 24px ${GOLD}30`;
+                    el.style.borderColor = `${GOLD}70`;
+                  }}
+                  onMouseLeave={e => {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.boxShadow = '0 2px 12px rgba(0,0,0,0.05)';
+                    el.style.borderColor = `${GOLD}25`;
+                  }}
+                >
+                  <div className="h-9 flex items-center justify-center">
+                    <img src={paper.logo} alt={paper.name} className="h-full w-auto object-contain max-w-[130px]" loading="lazy" />
+                  </div>
+                  <span className="text-[10px] font-semibold tracking-widest uppercase"
+                    style={{ color: `${BURGUNDY}99` }}>
+                    Đọc bài viết →
+                  </span>
+                </a>
+              ))}
+            </div>
           </motion.div>
+
+          {/* ── RIGHT: Truyền hình ── */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+          >
+            {/* Column header */}
+            <div className="flex items-center gap-2.5 mb-5">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center"
+                style={{ background: `${BURGUNDY}12`, border: `1px solid ${BURGUNDY}25` }}>
+                <Tv className="w-4 h-4" style={{ color: BURGUNDY }} />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-foreground">Truyền Hình Đưa Tin</h3>
+                <p className="text-xs text-muted-foreground">
+                  {videos.length > 0 ? `${videos.length} đoạn clip` : 'Sắp cập nhật'}
+                </p>
+              </div>
+            </div>
+
+            {/* 2-col video grid */}
+            {videos.length > 0 ? (
+              <div className="grid grid-cols-2 gap-3">
+                {videos.map((v) => (
+                  <div
+                    key={v.id}
+                    className="relative rounded-2xl overflow-hidden cursor-pointer group"
+                    style={{
+                      background: '#1a0003',
+                      border: `1px solid ${BURGUNDY}30`,
+                      aspectRatio: '16/9',
+                    }}
+                    onClick={() => setPlaying(playing === v.id ? null : v.id)}
+                  >
+                    {playing === v.id ? (
+                      <video
+                        src={v.video_url}
+                        controls
+                        autoPlay
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <>
+                        {v.thumbnail_url ? (
+                          <img src={v.thumbnail_url} alt={v.title} className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center"
+                            style={{ background: `linear-gradient(135deg, #1a0003, ${BURGUNDY})` }}>
+                            <Tv className="w-8 h-8 opacity-30 text-white" />
+                          </div>
+                        )}
+                        {/* Play button overlay */}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2"
+                          style={{ background: 'rgba(0,0,0,0.35)' }}>
+                          <div className="w-10 h-10 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-110"
+                            style={{ background: GOLD, boxShadow: `0 4px 16px ${GOLD}60` }}>
+                            <Play className="w-4 h-4 fill-current" style={{ color: BURGUNDY, marginLeft: 2 }} />
+                          </div>
+                          <div className="text-center px-2">
+                            <p className="text-white text-[11px] font-semibold leading-tight line-clamp-2">{v.title}</p>
+                            <p className="text-white/60 text-[10px] mt-0.5">{v.channel_name}</p>
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              /* Empty placeholder */
+              <div className="grid grid-cols-2 gap-3">
+                {[1, 2].map((n) => (
+                  <div key={n} className="rounded-2xl flex flex-col items-center justify-center gap-2 p-6"
+                    style={{
+                      background: 'white',
+                      border: `1px dashed ${BURGUNDY}25`,
+                      aspectRatio: '16/9',
+                    }}>
+                    <Tv className="w-7 h-7 opacity-20" style={{ color: BURGUNDY }} />
+                    <p className="text-[10px] text-muted-foreground text-center">Clip sắp ra mắt</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+
         </div>
       </div>
     </section>
