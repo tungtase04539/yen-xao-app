@@ -19,11 +19,10 @@ interface PressVideo {
 export default function PressVideosAdminPage() {
   const [videos, setVideos] = useState<PressVideo[]>([]);
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [form, setForm] = useState({ title: '', channel_name: '', sort_order: 0 });
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
-  const pendingVideoRef = useRef<File | null>(null);
 
   const fetchVideos = async () => {
     const { data } = await supabase
@@ -40,7 +39,7 @@ export default function PressVideosAdminPage() {
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) pendingVideoRef.current = file;
+    if (file) setSelectedFile(file);
   };
 
   const handleSave = async () => {
@@ -48,13 +47,13 @@ export default function PressVideosAdminPage() {
       toast.error('Vui lòng nhập tiêu đề và tên kênh');
       return;
     }
-    if (!pendingVideoRef.current) {
+    if (!selectedFile) {
       toast.error('Vui lòng chọn file video');
       return;
     }
     setSaving(true);
 
-    const file = pendingVideoRef.current;
+    const file = selectedFile;
     const ext = file.name.split('.').pop();
     const path = `press/${Date.now()}.${ext}`;
 
@@ -84,7 +83,7 @@ export default function PressVideosAdminPage() {
     } else {
       toast.success('Đã thêm video!');
       setForm({ title: '', channel_name: '', sort_order: 0 });
-      pendingVideoRef.current = null;
+      setSelectedFile(null);
       if (fileRef.current) fileRef.current.value = '';
       fetchVideos();
     }
@@ -158,13 +157,33 @@ export default function PressVideosAdminPage() {
             className="hidden"
             onChange={handleFileChange}
           />
-          <button
-            onClick={handlePickFile}
-            className="flex items-center gap-2 w-full border-2 border-dashed border-border rounded-xl px-4 py-5 text-sm text-muted-foreground hover:border-burgundy hover:text-burgundy transition-colors"
-          >
-            <Upload className="w-5 h-5" />
-            <span>Chọn file video (.mp4, .webm, .mov...)</span>
-          </button>
+
+          {selectedFile ? (
+            /* Selected file feedback */
+            <div className="flex items-center gap-3 w-full border-2 border-green-200 bg-green-50 rounded-xl px-4 py-4">
+              <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center shrink-0">
+                <Tv className="w-5 h-5 text-green-600" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-green-800 truncate">{selectedFile.name}</p>
+                <p className="text-xs text-green-600">{(selectedFile.size / 1024 / 1024).toFixed(1)} MB</p>
+              </div>
+              <button
+                onClick={() => { setSelectedFile(null); if (fileRef.current) fileRef.current.value = ''; }}
+                className="shrink-0 text-xs text-red-500 hover:underline"
+              >
+                Đổi file
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={handlePickFile}
+              className="flex items-center gap-2 w-full border-2 border-dashed border-border rounded-xl px-4 py-5 text-sm text-muted-foreground hover:border-burgundy hover:text-burgundy transition-colors"
+            >
+              <Upload className="w-5 h-5" />
+              <span>Chọn file video (.mp4, .webm, .mov...)</span>
+            </button>
+          )}
           <p className="text-[11px] text-muted-foreground mt-1.5">
             Video sẽ upload lên Supabase Storage bucket <code className="bg-secondary px-1 rounded">videos</code>
           </p>
