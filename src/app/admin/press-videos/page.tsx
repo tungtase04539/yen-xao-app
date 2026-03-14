@@ -84,10 +84,10 @@ export default function PressVideosAdminPage() {
       const tExt = selectedThumb.name.split('.').pop();
       const tPath = `press-thumbs/${Date.now()}.${tExt}`;
       const { error: tErr } = await supabase.storage
-        .from('images')
+        .from('videos')
         .upload(tPath, selectedThumb, { contentType: selectedThumb.type, upsert: false });
       if (!tErr) {
-        const { data: tUrl } = supabase.storage.from('images').getPublicUrl(tPath);
+        const { data: tUrl } = supabase.storage.from('videos').getPublicUrl(tPath);
         thumbnail_url = tUrl.publicUrl;
       }
     }
@@ -290,10 +290,10 @@ export default function PressVideosAdminPage() {
                         const tExt = file.name.split('.').pop();
                         const tPath = `press-thumbs/${Date.now()}.${tExt}`;
                         const { error: tErr } = await supabase.storage
-                          .from('images')
+                          .from('videos')
                           .upload(tPath, file, { contentType: file.type, upsert: false });
                         if (tErr) { toast.error('Upload ảnh thất bại: ' + tErr.message); return; }
-                        const { data: tUrl } = supabase.storage.from('images').getPublicUrl(tPath);
+                        const { data: tUrl } = supabase.storage.from('videos').getPublicUrl(tPath);
                         const { error } = await supabase.from('press_videos')
                           .update({ thumbnail_url: tUrl.publicUrl })
                           .eq('id', v.id);
