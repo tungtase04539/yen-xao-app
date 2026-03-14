@@ -269,9 +269,38 @@ export default function PressVideosAdminPage() {
           <div className="grid gap-4">
             {videos.map((v) => (
               <div key={v.id} className="bg-white rounded-2xl border border-border p-4 flex gap-4 items-start">
-                {/* Video preview */}
-                <div className="shrink-0 w-40 rounded-xl overflow-hidden bg-gray-100" style={{ aspectRatio: '16/9' }}>
-                  <video src={v.video_url} className="w-full h-full object-cover" preload="none" />
+                {/* Thumbnail / video preview */}
+                <div className="shrink-0 w-40 rounded-xl overflow-hidden bg-gray-100 relative group" style={{ aspectRatio: '16/9' }}>
+                  {v.thumbnail_url ? (
+                    <img src={v.thumbnail_url} alt={v.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <video src={v.video_url} className="w-full h-full object-cover" preload="none" />
+                  )}
+                  {/* Overlay: change thumb */}
+                  <label className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer text-white text-[10px] font-semibold gap-1 flex-col">
+                    <Upload className="w-4 h-4" />
+                    <span>{v.thumbnail_url ? 'Đổi ảnh' : 'Thêm ảnh'}</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        const tExt = file.name.split('.').pop();
+                        const tPath = `press-thumbs/${Date.now()}.${tExt}`;
+                        const { error: tErr } = await supabase.storage
+                          .from('images')
+                          .upload(tPath, file, { contentType: file.type, upsert: false });
+                        if (tErr) { toast.error('Upload ảnh thất bại: ' + tErr.message); return; }
+                        const { data: tUrl } = supabase.storage.from('images').getPublicUrl(tPath);
+                        const { error } = await supabase.from('press_videos')
+                          .update({ thumbnail_url: tUrl.publicUrl })
+                          .eq('id', v.id);
+                        if (error) { toast.error('Cập nhật thất bại'); } else { toast.success('Đã cập nhật ảnh preview!'); fetchVideos(); }
+                      }}
+                    />
+                  </label>
                 </div>
 
                 {/* Info */}
@@ -279,21 +308,18 @@ export default function PressVideosAdminPage() {
                   <p className="font-semibold text-foreground text-sm">{v.title}</p>
                   <p className="text-xs text-muted-foreground mt-0.5">{v.channel_name}</p>
                   <p className="text-xs text-muted-foreground mt-1">Thứ tự: {v.sort_order}</p>
-                  <a
-                    href={v.video_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs text-burgundy hover:underline mt-2"
-                  >
+                  {v.thumbnail_url
+                    ? <p className="text-xs text-green-600 mt-1">✓ Có ảnh preview</p>
+                    : <p className="text-xs text-amber-500 mt-1">⚠ Chưa có ảnh — hover vào video để thêm</p>
+                  }
+                  <a href={v.video_url} target="_blank" rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs text-burgundy hover:underline mt-2">
                     <Play className="w-3 h-3" /> Xem video
                   </a>
                 </div>
 
                 {/* Delete */}
-                <button
-                  onClick={() => handleDelete(v)}
-                  className="shrink-0 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                >
+                <button onClick={() => handleDelete(v)} className="shrink-0 p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors">
                   <Trash2 className="w-4 h-4" />
                 </button>
               </div>
@@ -304,3 +330,4 @@ export default function PressVideosAdminPage() {
     </div>
   );
 }
+
