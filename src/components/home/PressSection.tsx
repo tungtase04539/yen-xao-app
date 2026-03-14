@@ -106,7 +106,7 @@ export default function PressSection() {
               <div className="flex-1 h-px ml-4" style={{ background: `linear-gradient(90deg, ${GOLD}30, transparent)` }} />
             </div>
             {/* 2-col newspaper cards */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {newspapers.map((paper) => (
                 <button
                   key={paper.name}
@@ -145,7 +145,7 @@ export default function PressSection() {
               <div className="flex-1 h-px ml-4" style={{ background: `linear-gradient(90deg, ${BURGUNDY}20, transparent)` }} />
             </div>
             {/* 2-col video cards */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {videos.length > 0 ? videos.map((v) => (
                 <button
                   key={v.id}
