@@ -33,18 +33,18 @@ export default async function Footer() {
 
       {/* Main Footer */}
       <div className="container mx-auto px-4 py-10 md:py-14 relative">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-14">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-10">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link href="/" className="flex items-center mb-6">
-              <div id="footer-logo" className="h-32 shrink-0">
+            <Link href="/" className="flex items-center mb-5">
+              <div id="footer-logo" className="h-28 shrink-0">
                 <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
               </div>
             </Link>
-            <p className="text-lg text-white/50 leading-relaxed mb-3">
+            <p className="text-sm text-white/50 leading-relaxed mb-3">
               Chuyên cung cấp các sản phẩm yến sào nguyên chất, tinh chế cao cấp từ đảo yến thiên nhiên của QiQi Yến.
             </p>
-            <p className="text-sm text-white/40 mb-6">
+            <p className="text-xs text-white/40 mb-5">
               Mã số doanh nghiệp: <span className="text-gold/70 font-medium">0202247835</span>
             </p>
             <div className="flex gap-3">
@@ -58,7 +58,7 @@ export default async function Footer() {
                   href={social.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-10 h-10 rounded-full border border-gold/20 flex items-center justify-center text-white/50 hover:border-gold hover:text-gold hover:bg-gold/10 transition-all text-sm"
+                  className="w-9 h-9 rounded-full border border-gold/20 flex items-center justify-center text-white/50 hover:border-gold hover:text-gold hover:bg-gold/10 transition-all text-sm"
                 >
                   {social.label}
                 </a>
@@ -67,19 +67,19 @@ export default async function Footer() {
           </div>
 
           {/* Products — dynamic */}
-          <div>
-            <h4 className="font-serif font-bold text-2xl mb-5 flex items-center gap-2" style={{ color: '#C9A55A' }}>
-              <Sparkles className="w-3.5 h-3.5" style={{ color: 'rgba(201,165,90,0.6)' }} />
+          <div className="lg:col-span-1">
+            <h4 className="font-serif font-bold text-xl mb-4 flex items-center gap-2" style={{ color: '#C9A55A' }}>
+              <Sparkles className="w-3 h-3" style={{ color: 'rgba(201,165,90,0.6)' }} />
               Sản Phẩm
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {productLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-lg text-white/60 hover:text-[#C9A55A] transition-colors duration-300 flex items-center gap-2 group"
+                    className="text-sm text-white/60 hover:text-[#C9A55A] transition-colors duration-300 flex items-center gap-2 group"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full group-hover:bg-[#C9A55A] transition-colors" style={{ background: 'rgba(201,165,90,0.3)' }} />
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0 group-hover:bg-[#C9A55A] transition-colors" style={{ background: 'rgba(201,165,90,0.3)' }} />
                     {link.name}
                   </Link>
                 </li>
@@ -88,19 +88,19 @@ export default async function Footer() {
           </div>
 
           {/* Info */}
-          <div>
-            <h4 className="font-serif font-bold text-2xl mb-5 flex items-center gap-2" style={{ color: '#C9A55A' }}>
-              <Sparkles className="w-3.5 h-3.5" style={{ color: 'rgba(201,165,90,0.6)' }} />
+          <div className="lg:col-span-1">
+            <h4 className="font-serif font-bold text-xl mb-4 flex items-center gap-2" style={{ color: '#C9A55A' }}>
+              <Sparkles className="w-3 h-3" style={{ color: 'rgba(201,165,90,0.6)' }} />
               Thông Tin
             </h4>
-            <ul className="space-y-3">
+            <ul className="space-y-2.5">
               {infoLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={link.href}
-                    className="text-lg text-white/60 hover:text-[#C9A55A] transition-colors duration-300 flex items-center gap-2 group"
+                    className="text-sm text-white/60 hover:text-[#C9A55A] transition-colors duration-300 flex items-center gap-2 group"
                   >
-                    <span className="w-1.5 h-1.5 rounded-full group-hover:bg-[#C9A55A] transition-colors" style={{ background: 'rgba(201,165,90,0.3)' }} />
+                    <span className="w-1.5 h-1.5 rounded-full shrink-0 group-hover:bg-[#C9A55A] transition-colors" style={{ background: 'rgba(201,165,90,0.3)' }} />
                     {link.name}
                   </Link>
                 </li>
@@ -108,52 +108,46 @@ export default async function Footer() {
             </ul>
           </div>
 
-          {/* Contact */}
-          <div>
-            <h4 className="font-serif font-bold text-2xl mb-5 flex items-center gap-2" style={{ color: '#C9A55A' }}>
-              <Sparkles className="w-3.5 h-3.5 text-gold/60" />
+          {/* Contact — 2 cols wide */}
+          <div className="lg:col-span-2">
+            <h4 className="font-serif font-bold text-xl mb-4 flex items-center gap-2" style={{ color: '#C9A55A' }}>
+              <Sparkles className="w-3 h-3 text-gold/60" />
               Liên Hệ
             </h4>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3 text-lg text-white/45">
-                <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <span><span className="text-gold/70">Cơ sở 1:</span> Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng</span>
-              </li>
-              <li className="flex items-start gap-3 text-lg text-white/45">
-                <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <span><span className="text-gold/70">Cơ sở 2:</span> 50 Phạm Ngọc Đa, Thị Trấn Tiên Lãng, Hải Phòng</span>
-              </li>
-              <li className="flex items-start gap-3 text-lg text-white/45">
-                <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <span><span className="text-gold/70">Cơ sở 3:</span> Khu đường tàu, Thị Trấn Hà Khẩu, Trung Quốc</span>
-              </li>
-              <li className="flex items-start gap-3 text-lg text-white/45">
-                <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <span><span className="text-gold/70">Cơ sở 4:</span> Phố 114 Bạch Đằng, Phường Thủy Nguyên, Tp. Hải Phòng</span>
-              </li>
-              <li className="flex items-start gap-3 text-lg text-white/45">
-                <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <span><span className="text-gold/70">Cơ sở 5:</span> 37A Mê Linh, Phường Gia Viên, Tp. Hải Phòng</span>
-              </li>
-              <li>
-                <a
-                  href="tel:0843623986"
-                  className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
-                >
-                  <Phone className="w-4 h-4 text-gold/60 shrink-0" />
-                  0843.623986
-                </a>
-              </li>
-              <li>
-                <a
-                  href="mailto:tp.phucthinh.co@gmail.com"
-                  className="flex items-center gap-3 text-lg text-white/45 hover:text-gold transition-colors"
-                >
-                  <Mail className="w-4 h-4 text-gold/60 shrink-0" />
-                  tp.phucthinh.co@gmail.com
-                </a>
-              </li>
-            </ul>
+            {/* Addresses in 2-col grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mb-4">
+              {[
+                { label: 'Cơ sở 1', addr: 'Số 10/20/98 Khúc Thừa Dụ, P. An Biên, Hải Phòng' },
+                { label: 'Cơ sở 2', addr: '50 Phạm Ngọc Đa, TT. Tiên Lãng, Hải Phòng' },
+                { label: 'Cơ sở 3', addr: 'Khu đường tàu, TT. Hà Khẩu, Trung Quốc' },
+                { label: 'Cơ sở 4', addr: 'Phố 114 Bạch Đằng, P. Thủy Nguyên, Hải Phòng' },
+                { label: 'Cơ sở 5', addr: '37A Mê Linh, P. Gia Viên, Tp. Hải Phòng' },
+              ].map(({ label, addr }) => (
+                <div key={label} className="flex items-start gap-2">
+                  <MapPin className="w-3.5 h-3.5 mt-0.5 text-gold/60 shrink-0" />
+                  <span className="text-xs text-white/50 leading-snug">
+                    <span className="text-gold/70 font-medium">{label}:</span> {addr}
+                  </span>
+                </div>
+              ))}
+            </div>
+            {/* Phone & Email */}
+            <div className="flex flex-col gap-2.5 pt-3 border-t border-white/10">
+              <a
+                href="tel:0843623986"
+                className="flex items-center gap-2.5 text-sm text-white/55 hover:text-gold transition-colors"
+              >
+                <Phone className="w-3.5 h-3.5 text-gold/60 shrink-0" />
+                0843.623986
+              </a>
+              <a
+                href="mailto:tp.phucthinh.co@gmail.com"
+                className="flex items-center gap-2.5 text-sm text-white/55 hover:text-gold transition-colors"
+              >
+                <Mail className="w-3.5 h-3.5 text-gold/60 shrink-0" />
+                tp.phucthinh.co@gmail.com
+              </a>
+            </div>
           </div>
         </div>
       </div>
