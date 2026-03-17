@@ -117,18 +117,24 @@ export default async function Footer() {
             {/* Addresses in 2-col grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mb-4">
               {[
-                { label: 'Cơ sở 1', addr: 'Số 10/20/98 Khúc Thừa Dụ, P. An Biên, Hải Phòng' },
-                { label: 'Cơ sở 2', addr: '50 Phạm Ngọc Đa, TT. Tiên Lãng, Hải Phòng' },
-                { label: 'Cơ sở 3', addr: 'Khu đường tàu, TT. Hà Khẩu, Trung Quốc' },
-                { label: 'Cơ sở 4', addr: 'Phố 114 Bạch Đằng, P. Thủy Nguyên, Hải Phòng' },
-                { label: 'Cơ sở 5', addr: '37A Mê Linh, P. Gia Viên, Tp. Hải Phòng' },
-              ].map(({ label, addr }) => (
-                <div key={label} className="flex items-start gap-2">
-                  <MapPin className="w-3.5 h-3.5 mt-0.5 text-gold/60 shrink-0" />
-                  <span className="text-xs text-white/50 leading-snug">
-                    <span className="text-gold/70 font-medium">{label}:</span> {addr}
+                { label: 'Cơ sở 1', addr: 'Số 10/20/98 Khúc Thừa Dụ, P. An Biên, Hải Phòng', map: 'Số+10/20/98+Khúc+Thừa+Dụ,+Phường+An+Biên,+Hải+Phòng' },
+                { label: 'Cơ sở 2', addr: '50 Phạm Ngọc Đa, TT. Tiên Lãng, Hải Phòng', map: '50+Phạm+Ngọc+Đa,+Thị+Trấn+Tiên+Lãng,+Hải+Phòng' },
+                { label: 'Cơ sở 3', addr: 'Khu đường tàu, TT. Hà Khẩu, Trung Quốc', map: 'Khu+đường+tàu,+Thị+Trấn+Hà+Khẩu,+Hà+Khẩu,+Vân+Nam,+Trung+Quốc' },
+                { label: 'Cơ sở 4', addr: 'Phố 114 Bạch Đằng, P. Thủy Nguyên, Hải Phòng', map: 'Phố+114+Bạch+Đằng,+Phường+Thủy+Nguyên,+Hải+Phòng' },
+                { label: 'Cơ sở 5', addr: '37A Mê Linh, P. Gia Viên, Tp. Hải Phòng', map: '37A+Mê+Linh,+Phường+Gia+Viên,+Hải+Phòng' },
+              ].map(({ label, addr, map }) => (
+                <a
+                  key={label}
+                  href={`https://www.google.com/maps/search/?api=1&query=${map}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 group"
+                >
+                  <MapPin className="w-3.5 h-3.5 mt-0.5 text-gold/60 shrink-0 group-hover:text-gold transition-colors" />
+                  <span className="text-xs text-white/50 leading-snug group-hover:text-white/80 transition-colors">
+                    <span className="text-gold/70 font-medium group-hover:text-gold transition-colors">{label}:</span> {addr}
                   </span>
-                </div>
+                </a>
               ))}
             </div>
             {/* Phone & Email */}
