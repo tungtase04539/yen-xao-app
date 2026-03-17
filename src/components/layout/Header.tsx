@@ -199,9 +199,10 @@ export default function Header() {
 
                                 {/* Name */}
                                 <span
-                                  className="text-metallic-gold text-[18px] font-bold tracking-wide transition-all duration-200"
+                                  className="text-metallic-gold text-[18px] font-extrabold tracking-wide transition-all duration-200"
                                   style={{
                                     fontFamily: 'var(--font-heading)',
+                                    fontWeight: 800,
                                     filter: 'drop-shadow(0 0 8px rgba(201,165,90,0.45))',
                                     letterSpacing: '0.04em',
                                   }}

@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/sonner";
 import LayoutShell from "@/components/layout/LayoutShell";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import Footer from "@/components/layout/Footer";
+import { GoogleAnalytics } from "@next/third-parties/google";
 
 const heading = Cormorant_Garamond({
   variable: "--font-heading",
@@ -94,6 +95,7 @@ export default function RootLayout({
           <Footer />
         </SmoothScroll>
         <Toaster position="top-right" richColors />
+        <GoogleAnalytics gaId="G-R1VFGXSMCQ" />
       </body>
     </html>
   );
