@@ -117,7 +117,7 @@ export default async function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3 text-lg text-white/45">
                 <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />
-                <span>Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng</span>
+                <span><span className="text-gold/70">Cơ sở 1:</span> Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng</span>
               </li>
               <li className="flex items-start gap-3 text-lg text-white/45">
                 <MapPin className="w-4 h-4 mt-0.5 text-gold/60 shrink-0" />

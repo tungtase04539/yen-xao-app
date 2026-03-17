@@ -11,7 +11,7 @@ const contactInfo = [
   {
     icon: MapPin,
     label: 'Địa chỉ',
-    value: 'Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng',
+    value: 'Cơ sở 1: Số 10/20/98 Khúc Thừa Dụ, Phường An Biên, Hải Phòng',
     href: null,
   },
   {
