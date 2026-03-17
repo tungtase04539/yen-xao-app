@@ -17,14 +17,14 @@ const contactInfo = [
   {
     icon: Phone,
     label: 'Hotline',
-    value: '0984 234 669',
-    href: 'tel:0984234669',
+    value: '0843.623986',
+    href: 'tel:0843623986',
   },
   {
     icon: Mail,
     label: 'Email',
-    value: 'contact@yensaocaocap.vn',
-    href: 'mailto:contact@yensaocaocap.vn',
+    value: 'tp.phucthinh.co@gmail.com',
+    href: 'mailto:tp.phucthinh.co@gmail.com',
   },
   {
     icon: Clock,

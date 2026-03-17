@@ -64,7 +64,7 @@ export default function ChinhSachBaoHanhPage() {
             <section>
               <h2>4. Quy Trình Đổi Trả</h2>
               <ol>
-                <li>Liên hệ hotline <strong>0984 234 669</strong> hoặc email <strong>info@yensaocaocap.vn</strong> để thông báo tình trạng sản phẩm</li>
+                <li>Liên hệ hotline <strong>0843.623986</strong> hoặc email <strong>tp.phucthinh.co@gmail.com</strong> để thông báo tình trạng sản phẩm</li>
                 <li>Cung cấp ảnh/video làm bằng chứng cùng hóa đơn mua hàng</li>
                 <li>Đội ngũ chăm sóc khách hàng xác nhận và hướng dẫn quy trình đổi trả trong vòng 24 giờ</li>
                 <li>Sản phẩm thay thế hoặc hoàn tiền được xử lý trong vòng 3 — 5 ngày làm việc</li>
@@ -90,7 +90,7 @@ export default function ChinhSachBaoHanhPage() {
               </p>
               <p>
                 Nếu có bất kỳ thắc mắc nào về chính sách bảo hành, vui lòng liên hệ:
-                <strong> 0984 234 669</strong> — chúng tôi sẵn lòng hỗ trợ 24/7.
+                <strong> 0843.623986</strong> — chúng tôi sẵn lòng hỗ trợ 24/7.
               </p>
             </section>
 

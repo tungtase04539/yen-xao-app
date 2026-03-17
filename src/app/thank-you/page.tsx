@@ -49,7 +49,7 @@ export default async function ThankYouPage({ searchParams }: Props) {
             <div className="p-4 rounded-xl bg-cream text-center">
               <Phone className="w-6 h-6 text-gold mx-auto mb-2" />
               <p className="text-xs text-muted-foreground">Hotline hỗ trợ</p>
-              <p className="text-sm font-semibold">0984 234 669</p>
+              <p className="text-sm font-semibold">0843.623986</p>
             </div>
           </div>
 

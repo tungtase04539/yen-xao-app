@@ -109,9 +109,9 @@ export default function Header() {
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs">
-            <a href="tel:0984234669" className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors">
+            <a href="tel:0843623986" className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors">
               <Phone className="w-3 h-3" />
-              <span className="tracking-wide">0984 234 669</span>
+              <span className="tracking-wide">0843.623986</span>
             </a>
             <div className="w-px h-3 bg-white/20" />
             <button
