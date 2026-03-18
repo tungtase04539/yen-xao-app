@@ -131,38 +131,108 @@ export default async function AboutPage() {
       </section>
 
       {/* Dynamic Sections (Nhà Máy, Nhà Yến, etc.) */}
-      {sections.map((section: { id: string; title: string; section_type: string; description: string; section_media: { id: string; media_url: string; media_type: string; caption: string; sort_order?: number }[] }, idx: number) => (
-        <section key={section.id} className={`py-16 md:py-24 ${idx % 2 === 0 ? 'bg-gradient-dark-luxury text-white' : 'bg-gradient-luxury'}`}>
-          <div className="container mx-auto px-4">
-            <div className="max-w-5xl mx-auto">
-              <div className="text-center mb-12">
-                <div className="ornament-divider mb-6">
-                  <span className="text-gold text-lg">
-                    {section.section_type === 'nha-may' ? '🏭' : section.section_type === 'nha-yen' ? '🏠' : section.section_type === 'co-so-thuc-te' ? '📸' : '✦'}
-                  </span>
-                </div>
-                <h2 className={`text-3xl md:text-4xl font-bold font-serif mb-4 ${idx % 2 === 0 ? 'text-white' : ''}`}>
-                  {section.title}
-                </h2>
-                {section.description && (
-                  <p className={`max-w-2xl mx-auto text-base leading-relaxed ${idx % 2 === 0 ? 'text-white/70' : 'text-muted-foreground'}`}>
-                    {section.description}
-                  </p>
-                )}
-              </div>
+      {(() => {
+        type SectionItem = { id: string; title: string; section_type: string; description: string; section_media: { id: string; media_url: string; media_type: string; caption: string; sort_order?: number }[] };
+        // Group small co-so-thuc-te sections (≤3 media) together
+        const groups: { sections: SectionItem[]; grouped: boolean }[] = [];
+        let cosoBuffer: SectionItem[] = [];
 
-              {section.section_media && section.section_media.length > 0 && (
-                <SectionMediaGrid
-                  media={section.section_media}
-                  sectionTitle={section.title}
-                  isDark={idx % 2 === 0}
-                  initialCount={6}
-                />
-              )}
-            </div>
-          </div>
-        </section>
-      ))}
+        sections.forEach((s: SectionItem) => {
+          if (s.section_type === 'co-so-thuc-te' && s.section_media && s.section_media.length <= 3) {
+            cosoBuffer.push(s);
+          } else {
+            if (cosoBuffer.length > 0) {
+              groups.push({ sections: cosoBuffer, grouped: true });
+              cosoBuffer = [];
+            }
+            groups.push({ sections: [s], grouped: false });
+          }
+        });
+        if (cosoBuffer.length > 0) groups.push({ sections: cosoBuffer, grouped: true });
+
+        let sectionIdx = 0;
+        return groups.map((group, gIdx) => {
+          if (group.grouped) {
+            // Render grouped co-so-thuc-te sections side by side
+            const isDark = sectionIdx % 2 === 0;
+            sectionIdx++;
+            return (
+              <section key={`group-${gIdx}`} className={`py-16 md:py-24 ${isDark ? 'bg-gradient-dark-luxury text-white' : 'bg-gradient-luxury'}`}>
+                <div className="container mx-auto px-4">
+                  <div className="max-w-5xl mx-auto">
+                    <div className="text-center mb-12">
+                      <div className="ornament-divider mb-6">
+                        <span className="text-gold text-lg">📸</span>
+                      </div>
+                      <h2 className={`text-3xl md:text-4xl font-bold font-serif mb-4 ${isDark ? 'text-white' : ''}`}>
+                        Cơ Sở Thực Tế
+                      </h2>
+                    </div>
+                    <div className={`grid gap-8 ${group.sections.length >= 2 ? 'md:grid-cols-2' : 'grid-cols-1 max-w-2xl mx-auto'}`}>
+                      {group.sections.map((s: SectionItem) => (
+                        <div key={s.id}>
+                          <h3 className={`text-xl font-bold font-serif mb-4 text-center ${isDark ? 'text-white' : 'text-burgundy'}`}>
+                            {s.title}
+                          </h3>
+                          {s.description && (
+                            <p className={`text-sm text-center mb-4 ${isDark ? 'text-white/60' : 'text-muted-foreground'}`}>
+                              {s.description}
+                            </p>
+                          )}
+                          {s.section_media && s.section_media.length > 0 && (
+                            <SectionMediaGrid
+                              media={s.section_media}
+                              sectionTitle={s.title}
+                              isDark={isDark}
+                              initialCount={6}
+                            />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            );
+          } else {
+            // Render normal section (nhà máy, nhà yến, etc.)
+            const s = group.sections[0];
+            const isDark = sectionIdx % 2 === 0;
+            sectionIdx++;
+            return (
+              <section key={s.id} className={`py-16 md:py-24 ${isDark ? 'bg-gradient-dark-luxury text-white' : 'bg-gradient-luxury'}`}>
+                <div className="container mx-auto px-4">
+                  <div className="max-w-5xl mx-auto">
+                    <div className="text-center mb-12">
+                      <div className="ornament-divider mb-6">
+                        <span className="text-gold text-lg">
+                          {s.section_type === 'nha-may' ? '🏭' : s.section_type === 'nha-yen' ? '🏠' : s.section_type === 'co-so-thuc-te' ? '📸' : '✦'}
+                        </span>
+                      </div>
+                      <h2 className={`text-3xl md:text-4xl font-bold font-serif mb-4 ${isDark ? 'text-white' : ''}`}>
+                        {s.title}
+                      </h2>
+                      {s.description && (
+                        <p className={`max-w-2xl mx-auto text-base leading-relaxed ${isDark ? 'text-white/70' : 'text-muted-foreground'}`}>
+                          {s.description}
+                        </p>
+                      )}
+                    </div>
+                    {s.section_media && s.section_media.length > 0 && (
+                      <SectionMediaGrid
+                        media={s.section_media}
+                        sectionTitle={s.title}
+                        isDark={isDark}
+                        initialCount={6}
+                      />
+                    )}
+                  </div>
+                </div>
+              </section>
+            );
+          }
+        });
+      })()}
     </div>
   );
 }

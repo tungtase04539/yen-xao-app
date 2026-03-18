@@ -88,12 +88,12 @@ export default function SectionMediaGrid({
             {m.media_type === 'video' ? (
               <LazyVideo src={m.media_url} caption={m.caption} />
             ) : (
-              <div className="relative w-full aspect-[4/3] overflow-hidden">
+              <div className="relative w-full aspect-[4/3] overflow-hidden bg-black/5">
                 <Image
                   src={m.media_url}
                   alt={m.caption || sectionTitle}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="object-contain group-hover:scale-105 transition-transform duration-500"
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   loading="lazy"
                 />
