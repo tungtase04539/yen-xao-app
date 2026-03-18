@@ -2,6 +2,16 @@ import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import CategoryPageClient from './CategoryPageClient';
 
+export const revalidate = 120;
+
+export async function generateStaticParams() {
+  const { data } = await supabase
+    .from('categories')
+    .select('slug')
+    .eq('type', 'product');
+  return (data || []).map((c) => ({ slug: c.slug }));
+}
+
 interface Props {
   params: Promise<{ slug: string }>;
   searchParams: Promise<{ page?: string; sort?: string }>;

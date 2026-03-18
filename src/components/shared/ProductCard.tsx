@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Eye } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
@@ -46,9 +47,13 @@ export default function ProductCard({ product }: ProductCardProps) {
       {/* Image */}
       <Link href={`/san-pham/${product.slug}`} className="block relative aspect-[4/3] overflow-hidden bg-cream">
         {product.thumbnail ? (
-          <div
-            className="w-full h-full bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110"
-            style={{ backgroundImage: `url(${product.thumbnail})` }}
+          <Image
+            src={product.thumbnail}
+            alt={product.name}
+            fill
+            className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+            sizes="(max-width: 768px) 50vw, 25vw"
+            loading="lazy"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-6xl transition-transform duration-700 group-hover:scale-110">

@@ -7,6 +7,18 @@ import { ChevronRight, Calendar, User, ArrowLeft, Clock } from 'lucide-react';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yensaocaocap.vn';
 
+export const revalidate = 60; // ISR: revalidate every 60 seconds
+
+// Pre-generate published blog post pages at build time
+export async function generateStaticParams() {
+  const { data } = await supabase
+    .from('posts')
+    .select('slug')
+    .in('status', ['published', 'scheduled'])
+    .lte('published_at', new Date().toISOString());
+  return (data || []).map((post) => ({ slug: post.slug }));
+}
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

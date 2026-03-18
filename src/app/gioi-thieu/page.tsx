@@ -5,7 +5,7 @@ import BackgroundVideo from '@/components/common/BackgroundVideo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import SectionMediaGrid from '@/components/gioi-thieu/SectionMediaGrid';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 export const metadata: Metadata = {
   title: 'Giới Thiệu',

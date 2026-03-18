@@ -54,7 +54,7 @@ function estimateReadTime(content: string | null): number {
   return Math.max(1, Math.ceil(wordCount / 200));
 }
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60; // ISR: revalidate every 60 seconds
 
 export default async function BlogPage() {
   const { data: posts } = await supabase

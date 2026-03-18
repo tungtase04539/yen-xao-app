@@ -3,6 +3,17 @@ import { supabase } from '@/lib/supabase';
 import ProductDetailClient from './ProductDetailClient';
 import type { Product } from '@/types';
 
+export const revalidate = 120; // ISR: revalidate every 2 minutes
+
+// Pre-generate product pages at build time
+export async function generateStaticParams() {
+  const { data } = await supabase
+    .from('products')
+    .select('slug')
+    .eq('is_active', true);
+  return (data || []).map((p) => ({ slug: p.slug }));
+}
+
 interface Props {
   params: Promise<{ slug: string }>;
 }

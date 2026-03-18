@@ -16,26 +16,16 @@ export default function CategoryTabs() {
 
   useEffect(() => {
     async function fetchCategories() {
+      // Single query with count join — replaces N+1 individual RPC calls
       const { data } = await supabase
         .from('categories')
-        .select('*')
+        .select('*, products(count)')
         .eq('type', 'product');
       if (data && data.length > 0) {
-        // Lấy số sản phẩm của từng danh mục để sắp xếp theo thứ tự nhiều đến ít
-        const checks = await Promise.all(
-          data.map((cat) =>
-            supabase.rpc('get_products_with_min_price', {
-              p_category_slug: cat.slug,
-              p_limit: 1000,
-              p_offset: 0,
-              p_sort: 'popular',
-            })
-          )
-        );
         const categoriesWithCount = data
-          .map((cat, i) => ({
+          .map((cat) => ({
             ...cat,
-            productCount: checks[i].data ? checks[i].data.length : 0,
+            productCount: (cat.products as { count: number }[])?.[0]?.count || 0,
           }))
           .filter((cat) => cat.productCount > 0)
           .sort((a, b) => b.productCount - a.productCount);

@@ -9,23 +9,23 @@ import { GoogleAnalytics } from "@next/third-parties/google";
 
 const heading = Cormorant_Garamond({
   variable: "--font-heading",
-  subsets: ["latin", "latin-ext", "vietnamese"],
+  subsets: ["latin", "vietnamese"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "600", "700"], // Reduced from 5 to 3 weights
 });
 
 const body = Be_Vietnam_Pro({
   variable: "--font-body",
-  subsets: ["latin", "latin-ext", "vietnamese"],
+  subsets: ["latin", "vietnamese"],
   display: "swap",
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["400", "500", "700"], // Reduced from 5 to 3 weights
 });
 
 const display = Playfair_Display({
   variable: "--font-display",
-  subsets: ["latin", "latin-ext", "vietnamese"],
+  subsets: ["latin", "vietnamese"],
   display: "swap",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  weight: ["400", "700"], // Reduced from 6 to 2 weights
 });
 
 export const metadata: Metadata = {
