@@ -75,7 +75,7 @@ export default function ExhibitionFormPage() {
       try {
         const ext = file.name.split('.').pop();
         const fileName = `exhibitions/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-        const { error } = await supabase.storage.from('products').upload(fileName, file, { cacheControl: '3600', upsert: false, contentType: file.type });
+        const { error } = await supabase.storage.from('products').upload(fileName, file, { cacheControl: '2592000', upsert: false, contentType: file.type });
         if (error) throw error;
 
         const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(fileName);

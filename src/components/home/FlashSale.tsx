@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Clock, Zap, Sparkles } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
@@ -131,9 +132,13 @@ export default function FlashSale() {
               <Link href={`/san-pham/${product.slug}`}>
                 <div className="relative aspect-square overflow-hidden bg-cream">
                   {product.thumbnail ? (
-                    <div
-                      className="w-full h-full bg-cover bg-center group-hover:scale-105 transition-transform duration-700"
-                      style={{ backgroundImage: `url(${product.thumbnail})` }}
+                    <Image
+                      src={product.thumbnail}
+                      alt={product.name}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-700"
+                      sizes="(max-width: 768px) 50vw, 25vw"
+                      loading="lazy"
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-5xl group-hover:scale-105 transition-transform duration-700">

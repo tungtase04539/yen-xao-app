@@ -39,7 +39,7 @@ export default async function Footer() {
           <div className="lg:col-span-1">
             <Link href="/" className="flex items-center mb-5">
               <div id="footer-logo" className="h-28 shrink-0">
-                <Image src="/logo-transparent.png" alt="QiQi Yến" width={112} height={112} className="h-full w-auto object-contain" loading="lazy" />
+                <Image src="/logo-transparent.png" alt="QiQi Yến" width={224} height={224} className="h-full w-auto object-contain" loading="lazy" />
               </div>
             </Link>
             <p className="text-sm text-white/50 leading-relaxed mb-3">

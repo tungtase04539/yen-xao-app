@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -162,9 +163,14 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
               }}
             >
               {galleryImages.length > 0 ? (
-                <div
-                  className="w-full h-full bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                  style={{ backgroundImage: `url(${galleryImages[mainImage]})` }}
+                <Image
+                  src={galleryImages[mainImage]}
+                  alt={product.name}
+                  fill
+                  unoptimized
+                  priority
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-9xl bg-cream group-hover:scale-105 transition-transform duration-700">
@@ -198,9 +204,14 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                         : 'border border-border/50 hover:border-gold/40 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <div
-                      className="w-full h-full bg-cover bg-center"
-                      style={{ backgroundImage: `url(${img})` }}
+                    <Image
+                      src={img}
+                      alt={`${product.name} - ${i + 1}`}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                      sizes="80px"
+                      loading="lazy"
                     />
                   </button>
                 ))}
@@ -480,10 +491,16 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
               className="max-w-4xl max-h-[80vh] w-full mx-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div
-                className="w-full aspect-square bg-contain bg-center bg-no-repeat rounded-2xl"
-                style={{ backgroundImage: `url(${galleryImages[lightboxIndex]})` }}
-              />
+              <div className="w-full aspect-square rounded-2xl relative">
+                <Image
+                  src={galleryImages[lightboxIndex]}
+                  alt={product.name}
+                  fill
+                  unoptimized
+                  className="object-contain rounded-2xl"
+                  sizes="(max-width: 1024px) 100vw, 896px"
+                />
+              </div>
             </motion.div>
 
             {/* Next */}

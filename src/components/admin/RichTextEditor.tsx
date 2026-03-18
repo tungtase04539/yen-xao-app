@@ -67,7 +67,7 @@ export default function RichTextEditor({ content, onChange, placeholder, bucket 
     try {
       const ext = file instanceof File ? file.name.split('.').pop() : 'png';
       const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
+      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '2592000', upsert: false });
       if (error) throw error;
       const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
       toast.success('Upload ảnh thành công!');
@@ -89,7 +89,7 @@ export default function RichTextEditor({ content, onChange, placeholder, bucket 
     try {
       const ext = file.name.split('.').pop() ?? 'mp4';
       const fileName = `${folder}/video-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '3600', upsert: false });
+      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '2592000', upsert: false });
       if (error) throw error;
       const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
       toast.success('Upload video thành công!');

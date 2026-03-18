@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShoppingBag, Menu, X, ChevronDown, Globe, Phone, Sparkles } from 'lucide-react';
@@ -136,7 +137,7 @@ export default function Header() {
             {/* Logo */}
             <Link href="/" className="flex items-center group">
               <div className={`relative h-20 md:h-24 shrink-0 transition-opacity duration-500 ${footerVisible || videoHeroVisible ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                <img src="/logo-transparent.png" alt="QiQi Yến" className="h-full w-auto object-contain" />
+                <Image src="/logo-transparent.png" alt="QiQi Yến" width={200} height={96} className="h-full w-auto object-contain" priority />
               </div>
             </Link>
 

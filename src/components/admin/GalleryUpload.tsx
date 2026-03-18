@@ -48,7 +48,7 @@ export default function GalleryUpload({
 
         const { error } = await supabase.storage
           .from(bucket)
-          .upload(fileName, file, { cacheControl: '3600', upsert: false });
+          .upload(fileName, file, { cacheControl: '2592000', upsert: false });
 
         if (error) {
           console.error(error);

@@ -51,6 +51,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             src={product.thumbnail}
             alt={product.name}
             fill
+            unoptimized
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
             sizes="(max-width: 768px) 50vw, 25vw"
             loading="lazy"

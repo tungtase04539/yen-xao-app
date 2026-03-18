@@ -1,10 +1,10 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { Shield } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
-import { imgCert } from '@/lib/imageUtils';
 
 interface Cert {
   id: string;
@@ -88,11 +88,14 @@ export default function Certifications() {
               >
                 {/* Badge image — to, không vòng tròn */}
                 {cert.image_url ? (
-                  <div className="w-full aspect-square rounded-xl overflow-hidden mb-3">
-                    <img
-                      src={imgCert(cert.image_url)}
+                  <div className="w-full aspect-square rounded-xl overflow-hidden mb-3 relative">
+                    <Image
+                      src={cert.image_url}
                       alt={cert.name}
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                      fill
+                      className="object-contain group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 768px) 33vw, 20vw"
+                      loading="lazy"
                     />
                   </div>
                 ) : (
