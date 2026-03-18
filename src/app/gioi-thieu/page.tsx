@@ -138,7 +138,7 @@ export default async function AboutPage() {
               <div className="text-center mb-12">
                 <div className="ornament-divider mb-6">
                   <span className="text-gold text-lg">
-                    {section.section_type === 'nha-may' ? '🏭' : section.section_type === 'nha-yen' ? '🏠' : '✦'}
+                    {section.section_type === 'nha-may' ? '🏭' : section.section_type === 'nha-yen' ? '🏠' : section.section_type === 'co-so-thuc-te' ? '📸' : '✦'}
                   </span>
                 </div>
                 <h2 className={`text-3xl md:text-4xl font-bold font-serif mb-4 ${idx % 2 === 0 ? 'text-white' : ''}`}>

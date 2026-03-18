@@ -175,6 +175,7 @@ export default function SectionFormPage() {
                 className="w-full rounded-md border border-input px-3 py-2 text-sm">
                 <option value="nha-may">🏭 Nhà Máy</option>
                 <option value="nha-yen">🏠 Nhà Yến</option>
+                <option value="co-so-thuc-te">📸 Cơ Sở Thực Tế</option>
                 <option value="other">📋 Khác</option>
               </select>
             </div>

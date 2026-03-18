@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 const typeLabels: Record<string, { label: string; icon: string }> = {
   'nha-may': { label: 'Nhà Máy', icon: '🏭' },
   'nha-yen': { label: 'Nhà Yến', icon: '🏠' },
+  'co-so-thuc-te': { label: 'Cơ Sở Thực Tế', icon: '📸' },
   'other': { label: 'Khác', icon: '📋' },
 };
 
