@@ -166,11 +166,11 @@ export default function Header() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           exit={{ opacity: 0, y: 10, scale: 0.98 }}
                           transition={{ duration: 0.2, ease: 'easeOut' }}
-                          className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[340px] rounded-2xl overflow-hidden"
+                          className="absolute top-full left-1/2 -translate-x-1/2 mt-3 w-[300px] rounded-2xl overflow-hidden"
                           style={{
-                            background: 'linear-gradient(160deg, #2e0810 0%, #4a0c16 60%, #2e0810 100%)',
-                            border: '1px solid rgba(201,165,90,0.25)',
-                            boxShadow: '0 20px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(201,165,90,0.12)',
+                            background: 'linear-gradient(160deg, #5a1020 0%, #7a1a2e 60%, #5a1020 100%)',
+                            border: '1px solid rgba(201,165,90,0.35)',
+                            boxShadow: '0 20px 60px rgba(0,0,0,0.55), inset 0 1px 0 rgba(201,165,90,0.2)',
                           }}
                         >
                           {/* Top shimmer */}
@@ -184,7 +184,7 @@ export default function Header() {
                                 href={`/danh-muc/${cat.slug}`}
                                 className="group/item relative flex items-center justify-between px-6 py-3.5 transition-all duration-200"
                                 onMouseEnter={e => {
-                                  (e.currentTarget as HTMLElement).style.background = 'rgba(201,165,90,0.07)';
+                                  (e.currentTarget as HTMLElement).style.background = 'rgba(201,165,90,0.12)';
                                 }}
                                 onMouseLeave={e => {
                                   (e.currentTarget as HTMLElement).style.background = 'transparent';
@@ -199,12 +199,10 @@ export default function Header() {
 
                                 {/* Name */}
                                 <span
-                                  className="text-metallic-gold text-[18px] font-extrabold tracking-wide transition-all duration-200"
+                                  className="text-[17px] font-bold tracking-wide transition-all duration-200 group-hover/item:text-[#f0dc9a]"
                                   style={{
                                     fontFamily: 'var(--font-heading)',
-                                    fontWeight: 800,
-                                    filter: 'drop-shadow(0 0 8px rgba(201,165,90,0.45))',
-                                    letterSpacing: '0.04em',
+                                    color: '#e8c97a',
                                   }}
                                 >
                                   {cat.name}
@@ -212,7 +210,7 @@ export default function Header() {
 
                                 {/* Arrow */}
                                 <svg
-                                  className="w-4 h-4 text-gold/30 group-hover/item:text-gold group-hover/item:translate-x-1 transition-all duration-200"
+                                  className="w-4 h-4 text-gold/40 group-hover/item:text-gold group-hover/item:translate-x-1 transition-all duration-200"
                                   fill="none" stroke="currentColor" strokeWidth={1.5}
                                   viewBox="0 0 24 24"
                                 >
@@ -223,7 +221,7 @@ export default function Header() {
                           </div>
 
                           {/* Divider */}
-                          <div className="mx-6 h-px" style={{ background: 'rgba(201,165,90,0.15)' }} />
+                          <div className="mx-6 h-px" style={{ background: 'rgba(201,165,90,0.2)' }} />
 
                           {/* View all */}
                           <div className="px-4 py-3">

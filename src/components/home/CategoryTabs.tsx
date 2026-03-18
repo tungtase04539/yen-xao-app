@@ -19,26 +19,30 @@ export default function CategoryTabs() {
       const { data } = await supabase
         .from('categories')
         .select('*')
-        .eq('type', 'product')
-        .order('sort_order');
+        .eq('type', 'product');
       if (data && data.length > 0) {
-        // Kiểm tra song song xem danh mục nào có sản phẩm
+        // Lấy số sản phẩm của từng danh mục để sắp xếp theo thứ tự nhiều đến ít
         const checks = await Promise.all(
           data.map((cat) =>
             supabase.rpc('get_products_with_min_price', {
               p_category_slug: cat.slug,
-              p_limit: 1,
+              p_limit: 1000,
               p_offset: 0,
               p_sort: 'popular',
             })
           )
         );
-        const categoriesWithProducts = data.filter(
-          (_, i) => checks[i].data && checks[i].data.length > 0
-        );
-        if (categoriesWithProducts.length > 0) {
-          setCategories(categoriesWithProducts);
-          setActiveSlug(categoriesWithProducts[0].slug);
+        const categoriesWithCount = data
+          .map((cat, i) => ({
+            ...cat,
+            productCount: checks[i].data ? checks[i].data.length : 0,
+          }))
+          .filter((cat) => cat.productCount > 0)
+          .sort((a, b) => b.productCount - a.productCount);
+
+        if (categoriesWithCount.length > 0) {
+          setCategories(categoriesWithCount);
+          setActiveSlug(categoriesWithCount[0].slug);
         }
       }
     }
