@@ -21,9 +21,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const { data: post } = await supabase
     .from('posts')
-    .select('title, summary, thumbnail, created_at, updated_at, author')
+    .select('title, summary, thumbnail, created_at, updated_at, author, published_at')
     .eq('slug', slug)
-    .eq('status', 'published')
+    .in('status', ['published', 'scheduled'])
+    .lte('published_at', new Date().toISOString())
     .single();
 
   if (!post) return { title: 'Bài viết không tìm thấy' };
@@ -63,7 +64,8 @@ export default async function BlogDetailPage({ params }: Props) {
     .from('posts')
     .select('*, category:categories(name, slug)')
     .eq('slug', slug)
-    .eq('status', 'published')
+    .in('status', ['published', 'scheduled'])
+    .lte('published_at', new Date().toISOString())
     .single();
 
   if (!post) notFound();
@@ -71,11 +73,12 @@ export default async function BlogDetailPage({ params }: Props) {
   // Related posts (same category)
   const { data: related } = await supabase
     .from('posts')
-    .select('id, title, slug, thumbnail, created_at, summary')
-    .eq('status', 'published')
+    .select('id, title, slug, thumbnail, created_at, published_at, summary')
+    .in('status', ['published', 'scheduled'])
+    .lte('published_at', new Date().toISOString())
     .eq('category_id', post.category_id)
     .neq('id', post.id)
-    .order('created_at', { ascending: false })
+    .order('published_at', { ascending: false })
     .limit(3);
 
   const canonical = `${SITE_URL}/blog/${slug}`;

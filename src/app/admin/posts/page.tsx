@@ -15,6 +15,7 @@ interface PostRow {
   slug: string;
   thumbnail: string | null;
   status: string;
+  published_at: string | null;
   created_at: string;
   category: { name: string } | null;
 }
@@ -26,7 +27,7 @@ export default function AdminPostsPage() {
   const fetchPosts = async () => {
     const { data } = await supabase
       .from('posts')
-      .select('id, title, slug, thumbnail, status, created_at, category:categories(name)')
+      .select('id, title, slug, thumbnail, status, published_at, created_at, category:categories(name)')
       .order('created_at', { ascending: false });
     setPosts((data as unknown as PostRow[]) || []);
     setLoading(false);
@@ -83,9 +84,14 @@ export default function AdminPostsPage() {
                 </td>
                 <td className="px-4 py-3 text-muted-foreground">{p.category?.name || '—'}</td>
                 <td className="px-4 py-3">
-                  <Badge className={`text-xs ${p.status === 'published' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
-                    {p.status === 'published' ? 'Đã đăng' : 'Nháp'}
+                  <Badge className={`text-xs ${p.status === 'published' ? 'bg-green-100 text-green-700' : p.status === 'scheduled' ? 'bg-blue-100 text-blue-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                    {p.status === 'published' ? 'Đã đăng' : p.status === 'scheduled' ? 'Lên lịch' : 'Nháp'}
                   </Badge>
+                  {p.status === 'scheduled' && p.published_at && (
+                    <div className="text-xs text-blue-600 mt-0.5">
+                      {new Date(p.published_at).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  )}
                 </td>
                 <td className="px-4 py-3 text-muted-foreground text-xs">{formatDate(p.created_at)}</td>
                 <td className="px-4 py-3 text-right">

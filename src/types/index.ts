@@ -62,8 +62,9 @@ export interface Post {
   content?: string;
   category_id?: string;
   author: string;
-  status: 'draft' | 'published';
+  status: 'draft' | 'published' | 'scheduled';
   view_count: number;
+  published_at?: string;
   created_at: string;
   updated_at: string;
   category?: Category;

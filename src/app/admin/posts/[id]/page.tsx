@@ -35,6 +35,7 @@ export default function PostFormPage() {
   const [content, setContent] = useState('');
   const [categoryId, setCategoryId] = useState('');
   const [status, setStatus] = useState('draft');
+  const [publishedAt, setPublishedAt] = useState('');
 
   const generateSlug = (text: string) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
@@ -51,6 +52,11 @@ export default function PostFormPage() {
           setContent(data.content || '');
           setCategoryId(data.category_id || '');
           setStatus(data.status);
+          if (data.published_at) {
+            const d = new Date(data.published_at);
+            d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+            setPublishedAt(d.toISOString().slice(0, 16));
+          }
         }
         setLoading(false);
       });
@@ -69,6 +75,11 @@ export default function PostFormPage() {
         content: content || null,
         category_id: categoryId || null,
         status,
+        published_at: status === 'scheduled' && publishedAt
+          ? new Date(publishedAt).toISOString()
+          : status === 'published'
+            ? new Date().toISOString()
+            : null,
       };
 
       if (isNew) {
@@ -125,8 +136,15 @@ export default function PostFormPage() {
               <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full h-10 rounded-md border border-input px-3 text-sm bg-white">
                 <option value="draft">Nháp</option>
                 <option value="published">Đã đăng</option>
+                <option value="scheduled">Lên lịch</option>
               </select>
             </div>
+            {status === 'scheduled' && (
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Thời gian đăng</label>
+              <Input type="datetime-local" value={publishedAt} onChange={(e) => setPublishedAt(e.target.value)} />
+            </div>
+            )}
           </div>
           <ImageUpload value={thumbnail} onChange={setThumbnail} bucket="posts" folder="thumbnails" label="Ảnh đại diện bài viết" />
           <div>

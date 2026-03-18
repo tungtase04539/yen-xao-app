@@ -59,9 +59,10 @@ export const dynamic = 'force-dynamic';
 export default async function BlogPage() {
   const { data: posts } = await supabase
     .from('posts')
-    .select('id, title, slug, thumbnail, summary, created_at, author, content, category:categories(name, slug)')
-    .eq('status', 'published')
-    .order('created_at', { ascending: false });
+    .select('id, title, slug, thumbnail, summary, created_at, published_at, author, content, category:categories(name, slug)')
+    .in('status', ['published', 'scheduled'])
+    .lte('published_at', new Date().toISOString())
+    .order('published_at', { ascending: false });
 
   const postList = (posts as unknown as PostItem[]) || [];
 
