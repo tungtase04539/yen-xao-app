@@ -21,6 +21,7 @@ const RichTextEditor = dynamic(() => import('@/components/admin/RichTextEditor')
 interface Variant {
   id?: string;
   title: string;
+  image?: string;
   price: number;
   sale_price: number | null;
   stock: number;
@@ -99,6 +100,7 @@ export default function ProductFormPage() {
   const addVariant = () => {
     setVariants([...variants, {
       title: '',
+      image: '',
       price: 0,
       sale_price: null,
       stock: 100,
@@ -163,6 +165,7 @@ export default function ProductFormPage() {
           const variantData = variants.map((v, i) => ({
             product_id: productId,
             title: v.title,
+            image: v.image || null,
             price: v.price,
             sale_price: v.sale_price || null,
             stock: v.stock,
@@ -289,26 +292,35 @@ export default function ProductFormPage() {
               ) : (
                 <div className="space-y-3">
                   {variants.map((v, i) => (
-                    <div key={i} className="grid grid-cols-5 gap-2 items-end p-3 bg-secondary/30 rounded-lg">
-                      <div>
-                        <label className="block text-[11px] font-medium mb-1">Tên (VD: 50g)</label>
-                        <Input value={v.title} onChange={(e) => updateVariant(i, 'title', e.target.value)} className="h-9 text-sm" />
+                    <div key={i} className="p-3 bg-secondary/30 rounded-lg space-y-2">
+                      <div className="grid grid-cols-5 gap-2 items-end">
+                        <div>
+                          <label className="block text-[11px] font-medium mb-1">Tên (VD: 1 hũ)</label>
+                          <Input value={v.title} onChange={(e) => updateVariant(i, 'title', e.target.value)} className="h-9 text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-medium mb-1">Giá gốc</label>
+                          <Input type="number" value={v.price} onChange={(e) => updateVariant(i, 'price', Number(e.target.value))} className="h-9 text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-medium mb-1">Giá sale</label>
+                          <Input type="number" value={v.sale_price || ''} onChange={(e) => updateVariant(i, 'sale_price', e.target.value ? Number(e.target.value) : null)} className="h-9 text-sm" />
+                        </div>
+                        <div>
+                          <label className="block text-[11px] font-medium mb-1">Tồn kho</label>
+                          <Input type="number" value={v.stock} onChange={(e) => updateVariant(i, 'stock', Number(e.target.value))} className="h-9 text-sm" />
+                        </div>
+                        <Button type="button" variant="ghost" size="sm" onClick={() => removeVariant(i)} className="h-9 text-red-500 hover:text-red-700">
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
                       </div>
-                      <div>
-                        <label className="block text-[11px] font-medium mb-1">Giá gốc</label>
-                        <Input type="number" value={v.price} onChange={(e) => updateVariant(i, 'price', Number(e.target.value))} className="h-9 text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-medium mb-1">Giá sale</label>
-                        <Input type="number" value={v.sale_price || ''} onChange={(e) => updateVariant(i, 'sale_price', e.target.value ? Number(e.target.value) : null)} className="h-9 text-sm" />
-                      </div>
-                      <div>
-                        <label className="block text-[11px] font-medium mb-1">Tồn kho</label>
-                        <Input type="number" value={v.stock} onChange={(e) => updateVariant(i, 'stock', Number(e.target.value))} className="h-9 text-sm" />
-                      </div>
-                      <Button type="button" variant="ghost" size="sm" onClick={() => removeVariant(i)} className="h-9 text-red-500 hover:text-red-700">
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
+                      <ImageUpload
+                        value={v.image || ''}
+                        onChange={(url) => updateVariant(i, 'image', url)}
+                        bucket="products"
+                        folder="variants"
+                        label={`Ảnh biến thể "${v.title || '...'}"`}
+                      />
                     </div>
                   ))}
                 </div>

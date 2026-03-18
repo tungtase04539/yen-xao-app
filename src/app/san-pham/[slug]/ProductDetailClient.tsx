@@ -49,12 +49,15 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mainImage, setMainImage] = useState(0);
 
-  // Build image gallery
-  const images = [
+  // Build image gallery — variant image replaces thumbnail when selected
+  const baseImages = [
     product.thumbnail,
     ...(product.image_gallery || []),
   ].filter(Boolean) as string[];
-  const galleryImages = images.length > 0 ? images : [];
+
+  const galleryImages = selectedVariant?.image
+    ? [selectedVariant.image, ...baseImages.filter(img => img !== selectedVariant.image)]
+    : baseImages;
 
   // Current price
   const currentPrice = isVariable
@@ -94,7 +97,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
       variant_id: selectedVariant?.id,
       product_name: product.name,
       variant_title: selectedVariant?.title,
-      thumbnail: product.thumbnail || undefined,
+      thumbnail: selectedVariant?.image || product.thumbnail || undefined,
       price: currentPrice,
       quantity,
       slug: product.slug,
@@ -111,7 +114,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
       variant_id: selectedVariant?.id,
       product_name: product.name,
       variant_title: selectedVariant?.title,
-      thumbnail: product.thumbnail || undefined,
+      thumbnail: selectedVariant?.image || product.thumbnail || undefined,
       price: currentPrice,
       quantity,
       slug: product.slug,
@@ -284,6 +287,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                       onClick={() => {
                         setSelectedVariant(variant);
                         setQuantity(1);
+                        setMainImage(0); // Reset to variant image
                       }}
                       className={`px-5 py-3 rounded-xl text-sm font-medium border-2 transition-all duration-300 ${
                         selectedVariant?.id === variant.id

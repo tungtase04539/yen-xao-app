@@ -43,6 +43,7 @@ export interface ProductVariant {
   id: string;
   product_id: string;
   title: string;
+  image?: string;
   price: number;
   sale_price?: number;
   stock: number;
