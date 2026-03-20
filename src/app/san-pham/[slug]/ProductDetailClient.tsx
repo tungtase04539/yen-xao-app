@@ -157,7 +157,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
           <div>
             {/* Main Image with Zoom */}
             <div
-              className="relative rounded-3xl overflow-hidden bg-white luxury-card cursor-zoom-in group"
+              className="relative rounded-3xl overflow-hidden luxury-card cursor-zoom-in group"
               onClick={() => {
                 if (galleryImages.length > 0) {
                   setLightboxIndex(mainImage);
@@ -166,18 +166,17 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
               }}
             >
               {galleryImages.length > 0 ? (
-                <div className="relative w-full aspect-[4/3] md:aspect-[4/3]">
-                  <Image
-                    src={galleryImages[mainImage]}
-                    alt={product.name}
-                    fill
-                    priority
-                    className="object-contain transition-transform duration-700 group-hover:scale-105 p-2"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                </div>
+                <Image
+                  src={galleryImages[mainImage]}
+                  alt={product.name}
+                  width={800}
+                  height={800}
+                  priority
+                  className="w-full h-auto rounded-3xl transition-transform duration-700 group-hover:scale-105"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                />
               ) : (
-                <div className="w-full aspect-[4/3] flex items-center justify-center text-9xl bg-cream group-hover:scale-105 transition-transform duration-700">
+                <div className="w-full aspect-[4/3] flex items-center justify-center text-9xl bg-cream">
                   🕊️
                 </div>
               )}
