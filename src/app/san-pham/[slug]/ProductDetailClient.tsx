@@ -157,7 +157,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
           <div>
             {/* Main Image with Zoom */}
             <div
-              className="relative aspect-square rounded-3xl overflow-hidden bg-white luxury-card cursor-zoom-in group"
+              className="relative rounded-3xl overflow-hidden bg-white luxury-card cursor-zoom-in group"
               onClick={() => {
                 if (galleryImages.length > 0) {
                   setLightboxIndex(mainImage);
@@ -166,17 +166,18 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
               }}
             >
               {galleryImages.length > 0 ? (
-                <Image
-                  src={galleryImages[mainImage]}
-                  alt={product.name}
-                  fill
-
-                  priority
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                  sizes="(max-width: 768px) 100vw, 50vw"
-                />
+                <div className="relative w-full aspect-[4/3] md:aspect-[4/3]">
+                  <Image
+                    src={galleryImages[mainImage]}
+                    alt={product.name}
+                    fill
+                    priority
+                    className="object-contain transition-transform duration-700 group-hover:scale-105 p-2"
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                  />
+                </div>
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-9xl bg-cream group-hover:scale-105 transition-transform duration-700">
+                <div className="w-full aspect-[4/3] flex items-center justify-center text-9xl bg-cream group-hover:scale-105 transition-transform duration-700">
                   🕊️
                 </div>
               )}
@@ -495,12 +496,11 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
               className="max-w-4xl max-h-[80vh] w-full mx-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-full aspect-square rounded-2xl relative">
+              <div className="w-full aspect-[4/3] md:aspect-[16/10] rounded-2xl relative">
                 <Image
                   src={galleryImages[lightboxIndex]}
                   alt={product.name}
                   fill
-
                   className="object-contain rounded-2xl"
                   sizes="(max-width: 1024px) 100vw, 896px"
                 />
