@@ -3,8 +3,6 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   devIndicators: false,
   images: {
-    // Skip Vercel image optimization — Supabase CDN already fast
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -12,6 +10,8 @@ const nextConfig: NextConfig = {
         pathname: '/storage/v1/object/public/**',
       },
     ],
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60 * 60 * 24 * 30, // Cache 30 ngày
   },
   // Compress responses
   compress: true,

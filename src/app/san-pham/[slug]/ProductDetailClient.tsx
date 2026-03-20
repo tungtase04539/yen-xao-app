@@ -170,7 +170,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                   src={galleryImages[mainImage]}
                   alt={product.name}
                   fill
-                  unoptimized
+
                   priority
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                   sizes="(max-width: 768px) 100vw, 50vw"
@@ -211,7 +211,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                       src={img}
                       alt={`${product.name} - ${i + 1}`}
                       fill
-                      unoptimized
+    
                       className="object-cover"
                       sizes="80px"
                       loading="lazy"
@@ -500,7 +500,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                   src={galleryImages[lightboxIndex]}
                   alt={product.name}
                   fill
-                  unoptimized
+
                   className="object-contain rounded-2xl"
                   sizes="(max-width: 1024px) 100vw, 896px"
                 />
