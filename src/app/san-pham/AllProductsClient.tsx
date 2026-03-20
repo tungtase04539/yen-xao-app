@@ -72,7 +72,13 @@ export default function AllProductsClient() {
 
       const { data, error } = await query;
       if (error) console.error('Products fetch error:', error);
-      setProducts((data as Product[]) || []);
+      // Map price fields for variable products so ProductCard can display correctly
+      const mapped = (data || []).map((p: Record<string, unknown>) => ({
+        ...p,
+        min_variant_price: p.type === 'variable' ? p.price : undefined,
+        min_variant_sale_price: p.type === 'variable' ? p.sale_price : undefined,
+      }));
+      setProducts(mapped as Product[]);
       setLoading(false);
     };
     fetchData();
