@@ -328,9 +328,6 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                       }`}
                     >
                       {variant.title}
-                      <span className="ml-2 text-xs opacity-70">
-                        {formatPrice(variant.sale_price || variant.price)}
-                      </span>
                     </button>
                   ))}
                 </div>

@@ -116,9 +116,9 @@ export default function AdminProductsPage() {
                     <td className="px-4 py-3">
                       <div>
                         <span className="font-semibold text-burgundy">
-                          {formatPrice(p.sale_price || p.price)}
+                          {p.type === 'variable' ? (p.price > 0 ? `Từ ${formatPrice(p.price)}` : '—') : formatPrice(p.sale_price || p.price)}
                         </span>
-                        {p.sale_price && p.sale_price < p.price && (
+                        {p.type === 'simple' && p.sale_price && p.sale_price < p.price && (
                           <span className="text-xs text-muted-foreground line-through ml-1">
                             {formatPrice(p.price)}
                           </span>
