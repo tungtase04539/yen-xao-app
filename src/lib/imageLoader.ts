@@ -12,14 +12,15 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
     return src;
   }
 
-  // Remote images — route through wsrv.nl CDN proxy
-  // wsrv.nl fetches from Supabase once, caches globally, serves fast
-  const params = new URLSearchParams({
-    url: src,
-    w: width.toString(),
-    q: (quality || 80).toString(),
-    output: 'webp',
-  });
+  // Supabase Storage — use built-in image transformation (Pro plan)
+  // Converts to WebP automatically, resizes on edge CDN
+  if (src.includes('supabase.co/storage/v1/object/public/')) {
+    const transformed = src.replace(
+      '/storage/v1/object/public/',
+      '/storage/v1/render/image/public/'
+    );
+    return `${transformed}?width=${width}&quality=${quality || 80}&format=origin`;
+  }
 
-  return `https://wsrv.nl/?${params.toString()}`;
+  return src;
 }

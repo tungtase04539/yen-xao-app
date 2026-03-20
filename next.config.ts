@@ -3,14 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   devIndicators: false,
   images: {
-    unoptimized: true,
-    remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: 'grwkaavwpylykedykadv.supabase.co',
-        pathname: '/storage/v1/object/public/**',
-      },
-    ],
+    loader: 'custom',
+    loaderFile: './src/lib/imageLoader.ts',
   },
   // Compress responses
   compress: true,
