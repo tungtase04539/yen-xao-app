@@ -43,10 +43,13 @@ export default function AdminCategoriesPage() {
     const slug = editSlug || generateSlug(editName);
 
     if (editId) {
-      await supabase.from('categories').update({ name: editName, slug, type: editType, image: editImage || null }).eq('id', editId);
+      const { error } = await supabase.from('categories').update({ name: editName, slug, type: editType, image: editImage || null }).eq('id', editId);
+      if (error) { toast.error(`Cập nhật thất bại: ${error.message}`); return; }
       toast.success('Đã cập nhật danh mục');
     } else {
-      await supabase.from('categories').insert({ name: editName, slug, type: editType, image: editImage || null, sort_order: categories.length });
+      const { data, error } = await supabase.from('categories').insert({ name: editName, slug, type: editType, image: editImage || null, sort_order: categories.length }).select('id');
+      if (error) { toast.error(`Thêm thất bại: ${error.message}`); return; }
+      if (!data || data.length === 0) { toast.error('Thêm thất bại: Kiểm tra RLS policy bảng categories'); return; }
       toast.success('Đã thêm danh mục mới');
     }
 
@@ -60,7 +63,8 @@ export default function AdminCategoriesPage() {
 
   const handleDelete = async (id: string, name: string) => {
     if (!confirm(`Xóa danh mục "${name}"?`)) return;
-    await supabase.from('categories').delete().eq('id', id);
+    const { error } = await supabase.from('categories').delete().eq('id', id);
+    if (error) { toast.error(`Xóa thất bại: ${error.message}`); return; }
     toast.success('Đã xóa danh mục');
     fetchCategories();
   };
