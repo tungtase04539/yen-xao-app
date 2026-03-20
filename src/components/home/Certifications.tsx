@@ -88,18 +88,18 @@ export default function Certifications() {
               >
                 {/* Badge image */}
                 {cert.image_url ? (
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden mb-3 relative flex-shrink-0">
+                  <div className="w-72 h-72 md:w-96 md:h-96 rounded-xl overflow-hidden mb-3 relative flex-shrink-0">
                     <Image
                       src={cert.image_url}
                       alt={cert.name}
                       fill
                       className="object-contain group-hover:scale-105 transition-transform duration-300"
-                      sizes="128px"
+                      sizes="384px"
                       loading="lazy"
                     />
                   </div>
                 ) : (
-                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl bg-gradient-gold flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                  <div className="w-72 h-72 md:w-96 md:h-96 rounded-xl bg-gradient-gold flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
                     <span className="text-burgundy font-bold text-sm md:text-base leading-tight text-center px-2">
                       {cert.name}
                     </span>
