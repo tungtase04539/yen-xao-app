@@ -81,9 +81,9 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <head>
-        {/* Preconnect to Supabase for faster image/video loading */}
-        <link rel="preconnect" href="https://dxrogturyjgaxyiqpxhs.supabase.co" />
-        <link rel="dns-prefetch" href="https://dxrogturyjgaxyiqpxhs.supabase.co" />
+        {/* Preconnect to Supabase for faster image/data loading */}
+        <link rel="preconnect" href="https://grwkaavwpylykedykadv.supabase.co" />
+        <link rel="dns-prefetch" href="https://grwkaavwpylykedykadv.supabase.co" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>

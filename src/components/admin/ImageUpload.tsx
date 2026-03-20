@@ -29,6 +29,37 @@ export default function ImageUpload({
 
   const isVideo = (url: string) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
 
+  // Compress image client-side: resize to max 1200px, convert to WebP
+  const compressImage = (file: File, maxWidth = 1200, quality = 0.82): Promise<File> => {
+    return new Promise((resolve) => {
+      const img = document.createElement('img');
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              resolve(new File([blob], file.name.replace(/\.\w+$/, '.webp'), { type: 'image/webp' }));
+            } else {
+              resolve(file); // Keep original if compression didn't help
+            }
+          },
+          'image/webp',
+          quality
+        );
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -58,12 +89,14 @@ export default function ImageUpload({
 
     setUploading(true);
     try {
-      const ext = file.name.split('.').pop();
+      // Compress images before upload (resize + WebP)
+      const uploadFile = isFileImage ? await compressImage(file) : file;
+      const ext = uploadFile.name.split('.').pop();
       const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
 
       const { error } = await supabase.storage
         .from(bucket)
-        .upload(fileName, file, { cacheControl: '2592000', upsert: false });
+        .upload(fileName, uploadFile, { cacheControl: '2592000', upsert: false });
 
       if (error) throw error;
 

@@ -12,10 +12,16 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
     return src;
   }
 
-  // Supabase Storage — serve original image directly
-  // (Image transformation only available on Pro plan)
+  // Supabase Storage — use built-in image transformation (Pro plan)
+  // Resize + WebP on edge CDN, massively reduces bandwidth
   if (src.includes('supabase.co/storage/v1/object/public/')) {
-    return src;
+    const transformed = src.replace(
+      '/storage/v1/object/public/',
+      '/storage/v1/render/image/public/'
+    );
+    // Cap width to reasonable max — no need to serve 4000px images
+    const w = Math.min(width, 1920);
+    return `${transformed}?width=${w}&quality=${quality || 75}&format=webp`;
   }
 
   return src;

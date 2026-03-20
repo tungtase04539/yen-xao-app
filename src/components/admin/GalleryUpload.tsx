@@ -23,6 +23,37 @@ export default function GalleryUpload({
   const [uploading, setUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Compress image client-side: resize to max 1200px, convert to WebP
+  const compressImage = (file: File, maxWidth = 1200, quality = 0.82): Promise<File> => {
+    return new Promise((resolve) => {
+      const img = document.createElement('img');
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let { width, height } = img;
+        if (width > maxWidth) {
+          height = Math.round((height * maxWidth) / width);
+          width = maxWidth;
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob(
+          (blob) => {
+            if (blob && blob.size < file.size) {
+              resolve(new File([blob], file.name.replace(/\.\w+$/, '.webp'), { type: 'image/webp' }));
+            } else {
+              resolve(file);
+            }
+          },
+          'image/webp',
+          quality
+        );
+      };
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
@@ -39,10 +70,11 @@ export default function GalleryUpload({
     try {
       const filesToUpload = Array.from(files).slice(0, remaining);
 
-      for (const file of filesToUpload) {
-        if (!file.type.startsWith('image/')) continue;
-        if (file.size > 5 * 1024 * 1024) continue;
+      for (const rawFile of filesToUpload) {
+        if (!rawFile.type.startsWith('image/')) continue;
+        if (rawFile.size > 5 * 1024 * 1024) continue;
 
+        const file = await compressImage(rawFile);
         const ext = file.name.split('.').pop();
         const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
 
