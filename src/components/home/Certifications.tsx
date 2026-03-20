@@ -86,21 +86,21 @@ export default function Certifications() {
                 transition={{ delay: i * 0.07 }}
                 className="group flex flex-col items-center text-center p-4 md:p-5 rounded-2xl luxury-card transition-all duration-300 hover:gold-glow hover:-translate-y-1"
               >
-                {/* Badge image — to, không vòng tròn */}
+                {/* Badge image */}
                 {cert.image_url ? (
-                  <div className="w-full aspect-square rounded-xl overflow-hidden mb-3 relative">
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl overflow-hidden mb-3 relative flex-shrink-0">
                     <Image
                       src={cert.image_url}
                       alt={cert.name}
                       fill
                       className="object-contain group-hover:scale-105 transition-transform duration-300"
-                      sizes="(max-width: 768px) 33vw, 20vw"
+                      sizes="128px"
                       loading="lazy"
                     />
                   </div>
                 ) : (
-                  <div className="w-full aspect-square rounded-xl bg-gradient-gold flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300">
-                    <span className="text-burgundy font-bold text-lg md:text-xl leading-tight text-center px-2">
+                  <div className="w-24 h-24 md:w-32 md:h-32 rounded-xl bg-gradient-gold flex items-center justify-center mb-3 group-hover:scale-105 transition-transform duration-300 flex-shrink-0">
+                    <span className="text-burgundy font-bold text-sm md:text-base leading-tight text-center px-2">
                       {cert.name}
                     </span>
                   </div>
