@@ -52,6 +52,14 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
   // Video detection helper
   const isVideo = (url: string) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(url) || url.includes('/video/upload/');
 
+  // Get video thumbnail from Cloudinary (extracts a frame as jpg)
+  const getVideoThumb = (url: string) => {
+    if (url.includes('res.cloudinary.com') && url.includes('/video/upload/')) {
+      return url.replace('/video/upload/', '/video/upload/so_0,w_200,h_200,c_fill,f_jpg/');
+    }
+    return '';
+  };
+
   // Build image gallery — variant image replaces thumbnail when selected
   const baseImages = [
     product.thumbnail,
@@ -222,8 +230,11 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                     }`}
                   >
                     {isVideo(img) ? (
-                      <div className="w-full h-full bg-black/90 flex items-center justify-center">
-                        <svg className="w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                      <div className="w-full h-full bg-black/80 flex items-center justify-center relative">
+                        {getVideoThumb(img) && (
+                          <img src={getVideoThumb(img)} alt="Video" className="absolute inset-0 w-full h-full object-cover opacity-70" />
+                        )}
+                        <svg className="w-7 h-7 text-white drop-shadow-lg relative z-10" fill="currentColor" viewBox="0 0 24 24">
                           <path d="M8 5v14l11-7z" />
                         </svg>
                       </div>
