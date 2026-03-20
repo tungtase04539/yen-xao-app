@@ -2,14 +2,13 @@
 
 import { useState, useRef } from 'react';
 import { uploadToCloudinary } from '@/lib/cloudinary';
-import { supabase } from '@/lib/supabase';
 import { Upload, X, Loader2, ImagePlus, Film } from 'lucide-react';
 import { toast } from 'sonner';
 
 interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
-  bucket?: string;       // only used for video uploads to Supabase
+  bucket?: string;       // kept for backward compat, not used
   folder?: string;
   label?: string;
   accept?: string;        // e.g. "image/*,video/mp4,video/webm"
@@ -19,7 +18,7 @@ interface ImageUploadProps {
 export default function ImageUpload({
   value,
   onChange,
-  bucket = 'products',
+  bucket: _bucket,
   folder = 'thumbnails',
   label = 'Ảnh đại diện',
   accept = 'image/*',
@@ -59,21 +58,8 @@ export default function ImageUpload({
 
     setUploading(true);
     try {
-      let publicUrl: string;
-
-      if (isFileImage) {
-        // Images → Cloudinary (free CDN + auto WebP)
-        publicUrl = await uploadToCloudinary(file, `qiqi-yen/${folder}`);
-      } else {
-        // Videos → Supabase Storage (Cloudinary free tier limited for video)
-        const ext = file.name.split('.').pop();
-        const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-        const { error } = await supabase.storage
-          .from(bucket)
-          .upload(fileName, file, { cacheControl: '2592000', upsert: false });
-        if (error) throw error;
-        publicUrl = supabase.storage.from(bucket).getPublicUrl(fileName).data.publicUrl;
-      }
+      // All files (images + videos) → Cloudinary
+      const publicUrl = await uploadToCloudinary(file, `qiqi-yen/${folder}`);
 
       onChange(publicUrl);
       toast.success('Upload thành công!');

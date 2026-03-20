@@ -43,14 +43,16 @@ function LazyVideo({ src, caption }: { src: string; caption?: string }) {
   }, [src, loaded]);
 
   return (
-    <video
-      ref={videoRef}
-      controls
-      playsInline
-      preload="none"
-      className="w-full aspect-video object-cover"
-      aria-label={caption || 'Video'}
-    />
+    <div className="relative w-full aspect-[4/3] bg-black">
+      <video
+        ref={videoRef}
+        controls
+        playsInline
+        preload="none"
+        className="absolute inset-0 w-full h-full object-contain"
+        aria-label={caption || 'Video'}
+      />
+    </div>
   );
 }
 
