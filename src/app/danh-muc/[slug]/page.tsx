@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import CategoryPageClient from './CategoryPageClient';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Always fetch fresh data
 
 export async function generateStaticParams() {

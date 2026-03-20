@@ -3,6 +3,7 @@ import { supabase } from '@/lib/supabase';
 import ProductDetailClient from './ProductDetailClient';
 import type { Product } from '@/types';
 
+export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Always fetch fresh data
 
 // Pre-generate product pages at build time
