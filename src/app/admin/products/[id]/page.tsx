@@ -158,15 +158,23 @@ export default function ProductFormPage() {
         if (error) throw error;
         productId = data.id;
       } else {
-        const { error } = await supabase.from('products').update(productData).eq('id', id);
+        const { data, error, count } = await supabase
+          .from('products')
+          .update(productData)
+          .eq('id', id)
+          .select('id');
         if (error) throw error;
+        if (!data || data.length === 0) {
+          throw new Error('Không thể cập nhật sản phẩm. Kiểm tra quyền truy cập (RLS policy).');
+        }
       }
 
       // Handle variants for variable products
       if (type === 'variable') {
         // Delete old variants
         if (!isNew) {
-          await supabase.from('product_variants').delete().eq('product_id', productId);
+          const { error: delErr } = await supabase.from('product_variants').delete().eq('product_id', productId);
+          if (delErr) throw new Error(`Xóa biến thể cũ thất bại: ${delErr.message}`);
         }
         // Insert new
         if (variants.length > 0) {
@@ -180,8 +188,14 @@ export default function ProductFormPage() {
             sort_order: i,
             is_active: v.is_active,
           }));
-          const { error } = await supabase.from('product_variants').insert(variantData);
-          if (error) throw error;
+          const { data: insertedVariants, error } = await supabase
+            .from('product_variants')
+            .insert(variantData)
+            .select('id');
+          if (error) throw new Error(`Thêm biến thể thất bại: ${error.message}`);
+          if (!insertedVariants || insertedVariants.length === 0) {
+            throw new Error('Không thể thêm biến thể. Kiểm tra quyền truy cập (RLS policy).');
+          }
         }
       }
 
