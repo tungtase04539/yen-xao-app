@@ -152,7 +152,7 @@ export default function Header() {
                   >
                     <button
                       onClick={() => setMegaMenuOpen(!megaMenuOpen)}
-                      className="relative flex items-center gap-1.5 px-5 py-2.5 text-xl font-bold text-metallic-gold transition-all rounded-lg group"
+                      className="relative flex items-center gap-1.5 px-5 py-2.5 text-[15px] font-semibold uppercase tracking-[0.12em] text-metallic-gold transition-all rounded-lg group"
                     >
                       {link.name}
                       <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-300 ${megaMenuOpen ? 'rotate-180' : ''}`} />
@@ -251,7 +251,7 @@ export default function Header() {
                   <Link
                     key={link.name}
                     href={link.href}
-                    className="relative px-5 py-2.5 text-xl font-bold text-metallic-gold transition-all rounded-lg group"
+                    className="relative px-5 py-2.5 text-[15px] font-semibold uppercase tracking-[0.12em] text-metallic-gold transition-all rounded-lg group"
                   >
                     {link.name}
                     <span className="absolute bottom-0 left-4 right-4 h-0.5 bg-[#C9A55A] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
