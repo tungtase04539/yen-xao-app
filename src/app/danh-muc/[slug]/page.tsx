@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import CategoryPageClient from './CategoryPageClient';
 
-export const revalidate = 120;
+export const revalidate = 0; // Always fetch fresh data
 
 export async function generateStaticParams() {
   const { data } = await supabase

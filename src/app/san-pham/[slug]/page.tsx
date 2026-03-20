@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import ProductDetailClient from './ProductDetailClient';
 import type { Product } from '@/types';
 
-export const revalidate = 120; // ISR: revalidate every 2 minutes
+export const revalidate = 0; // Always fetch fresh data
 
 // Pre-generate product pages at build time
 export async function generateStaticParams() {
