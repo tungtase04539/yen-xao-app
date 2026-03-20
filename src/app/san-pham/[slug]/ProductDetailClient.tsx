@@ -49,6 +49,9 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mainImage, setMainImage] = useState(0);
 
+  // Video detection helper
+  const isVideo = (url: string) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(url) || url.includes('/video/upload/');
+
   // Build image gallery — variant image replaces thumbnail when selected
   const baseImages = [
     product.thumbnail,
@@ -155,38 +158,47 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
         <div className="grid lg:grid-cols-2 gap-10 lg:gap-16">
           {/* LEFT: Image Gallery */}
           <div>
-            {/* Main Image with Zoom */}
-            <div
-              className="relative rounded-3xl overflow-hidden luxury-card cursor-zoom-in group"
-              onClick={() => {
-                if (galleryImages.length > 0) {
-                  setLightboxIndex(mainImage);
-                  setLightboxOpen(true);
-                }
-              }}
-            >
+            {/* Main Image/Video */}
+            <div className="relative rounded-3xl overflow-hidden luxury-card group">
               {galleryImages.length > 0 ? (
-                <div className="relative w-full aspect-square md:aspect-[4/3]">
-                  <Image
-                    src={galleryImages[mainImage]}
-                    alt={product.name}
-                    fill
-                    priority
-                    className="object-contain transition-transform duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    style={{ background: 'linear-gradient(135deg, #faf9f7 0%, #f5f0eb 100%)' }}
-                  />
-                </div>
+                isVideo(galleryImages[mainImage]) ? (
+                  <div className="relative w-full aspect-square md:aspect-[4/3] bg-black rounded-3xl">
+                    <video
+                      key={galleryImages[mainImage]}
+                      src={galleryImages[mainImage]}
+                      controls
+                      playsInline
+                      className="w-full h-full object-contain rounded-3xl"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    className="relative w-full aspect-square md:aspect-[4/3] cursor-zoom-in"
+                    onClick={() => {
+                      setLightboxIndex(mainImage);
+                      setLightboxOpen(true);
+                    }}
+                  >
+                    <Image
+                      src={galleryImages[mainImage]}
+                      alt={product.name}
+                      fill
+                      priority
+                      className="object-contain transition-transform duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      style={{ background: 'linear-gradient(135deg, #faf9f7 0%, #f5f0eb 100%)' }}
+                    />
+                    {/* Zoom icon */}
+                    <div className="absolute top-5 right-5 w-11 h-11 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm">
+                      <ZoomIn className="w-5 h-5 text-foreground/50" />
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="w-full aspect-square md:aspect-[4/3] flex items-center justify-center text-9xl bg-cream">
                   🕊️
                 </div>
               )}
-
-              {/* Zoom icon */}
-              <div className="absolute top-5 right-5 w-11 h-11 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm">
-                <ZoomIn className="w-5 h-5 text-foreground/50" />
-              </div>
 
               {/* Discount badge */}
               {discountPercent > 0 && (
@@ -209,15 +221,22 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                         : 'border border-border/50 hover:border-gold/40 opacity-70 hover:opacity-100'
                     }`}
                   >
-                    <Image
-                      src={img}
-                      alt={`${product.name} - ${i + 1}`}
-                      fill
-    
-                      className="object-cover"
-                      sizes="80px"
-                      loading="lazy"
-                    />
+                    {isVideo(img) ? (
+                      <div className="w-full h-full bg-black/90 flex items-center justify-center">
+                        <svg className="w-6 h-6 text-white/80" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                    ) : (
+                      <Image
+                        src={img}
+                        alt={`${product.name} - ${i + 1}`}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                        loading="lazy"
+                      />
+                    )}
                   </button>
                 ))}
               </div>
@@ -488,7 +507,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
               </button>
             )}
 
-            {/* Image */}
+            {/* Image/Video */}
             <motion.div
               key={lightboxIndex}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -497,15 +516,28 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
               className="max-w-4xl max-h-[80vh] w-full mx-4"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-full aspect-[4/3] md:aspect-[16/10] rounded-2xl relative">
-                <Image
-                  src={galleryImages[lightboxIndex]}
-                  alt={product.name}
-                  fill
-                  className="object-contain rounded-2xl"
-                  sizes="(max-width: 1024px) 100vw, 896px"
-                />
-              </div>
+              {isVideo(galleryImages[lightboxIndex]) ? (
+                <div className="w-full aspect-video rounded-2xl">
+                  <video
+                    key={galleryImages[lightboxIndex]}
+                    src={galleryImages[lightboxIndex]}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="w-full h-full object-contain rounded-2xl"
+                  />
+                </div>
+              ) : (
+                <div className="w-full aspect-[4/3] md:aspect-[16/10] rounded-2xl relative">
+                  <Image
+                    src={galleryImages[lightboxIndex]}
+                    alt={product.name}
+                    fill
+                    className="object-contain rounded-2xl"
+                    sizes="(max-width: 1024px) 100vw, 896px"
+                  />
+                </div>
+              )}
             </motion.div>
 
             {/* Next */}
