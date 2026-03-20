@@ -187,9 +187,10 @@ export default function ProductFormPage() {
 
       toast.success(isNew ? 'Tạo sản phẩm thành công!' : 'Cập nhật thành công!');
       router.push('/admin/products');
-    } catch (err) {
-      console.error(err);
-      toast.error('Lưu thất bại. Vui lòng thử lại.');
+    } catch (err: unknown) {
+      console.error('Product save error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Lưu thất bại: ${msg}`);
     } finally {
       setSaving(false);
     }
