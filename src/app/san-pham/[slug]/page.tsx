@@ -41,7 +41,7 @@ export default async function ProductDetailPage({ params }: Props) {
     .select(`
       *,
       category:categories(*),
-      variants:product_variants(*)
+      variants:product_variants(*, sort_order.asc)
     `)
     .eq('slug', slug)
     .eq('is_active', true)
