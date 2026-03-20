@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 import { supabase } from '@/lib/supabase';
 import { Upload, X, Loader2, ImagePlus, Film } from 'lucide-react';
 import { toast } from 'sonner';
@@ -8,7 +9,7 @@ import { toast } from 'sonner';
 interface ImageUploadProps {
   value: string;
   onChange: (url: string) => void;
-  bucket?: string;
+  bucket?: string;       // only used for video uploads to Supabase
   folder?: string;
   label?: string;
   accept?: string;        // e.g. "image/*,video/mp4,video/webm"
@@ -28,37 +29,6 @@ export default function ImageUpload({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const isVideo = (url: string) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
-
-  // Compress image client-side: resize to max 1200px, convert to WebP
-  const compressImage = (file: File, maxWidth = 1200, quality = 0.82): Promise<File> => {
-    return new Promise((resolve) => {
-      const img = document.createElement('img');
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        let { width, height } = img;
-        if (width > maxWidth) {
-          height = Math.round((height * maxWidth) / width);
-          width = maxWidth;
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext('2d')!;
-        ctx.drawImage(img, 0, 0, width, height);
-        canvas.toBlob(
-          (blob) => {
-            if (blob && blob.size < file.size) {
-              resolve(new File([blob], file.name.replace(/\.\w+$/, '.webp'), { type: 'image/webp' }));
-            } else {
-              resolve(file); // Keep original if compression didn't help
-            }
-          },
-          'image/webp',
-          quality
-        );
-      };
-      img.src = URL.createObjectURL(file);
-    });
-  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -89,18 +59,22 @@ export default function ImageUpload({
 
     setUploading(true);
     try {
-      // Compress images before upload (resize + WebP)
-      const uploadFile = isFileImage ? await compressImage(file) : file;
-      const ext = uploadFile.name.split('.').pop();
-      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+      let publicUrl: string;
 
-      const { error } = await supabase.storage
-        .from(bucket)
-        .upload(fileName, uploadFile, { cacheControl: '2592000', upsert: false });
+      if (isFileImage) {
+        // Images → Cloudinary (free CDN + auto WebP)
+        publicUrl = await uploadToCloudinary(file, `qiqi-yen/${folder}`);
+      } else {
+        // Videos → Supabase Storage (Cloudinary free tier limited for video)
+        const ext = file.name.split('.').pop();
+        const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+        const { error } = await supabase.storage
+          .from(bucket)
+          .upload(fileName, file, { cacheControl: '2592000', upsert: false });
+        if (error) throw error;
+        publicUrl = supabase.storage.from(bucket).getPublicUrl(fileName).data.publicUrl;
+      }
 
-      if (error) throw error;
-
-      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
       onChange(publicUrl);
       toast.success('Upload thành công!');
     } catch (err) {

@@ -12,14 +12,21 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
     return src;
   }
 
+  // Cloudinary — insert transform params into URL
+  // e.g. res.cloudinary.com/xxx/image/upload/v123/file.jpg
+  //   → res.cloudinary.com/xxx/image/upload/w_800,q_auto,f_auto/v123/file.jpg
+  if (src.includes('res.cloudinary.com')) {
+    const w = Math.min(width, 1200);
+    const q = quality || 'auto';
+    return src.replace('/image/upload/', `/image/upload/w_${w},q_${q},f_auto/`);
+  }
+
   // Supabase Storage — use built-in image transformation (Pro plan)
-  // Resize + WebP on edge CDN, massively reduces bandwidth
   if (src.includes('supabase.co/storage/v1/object/public/')) {
     const transformed = src.replace(
       '/storage/v1/object/public/',
       '/storage/v1/render/image/public/'
     );
-    // Cap width to reasonable max — no need to serve 4000px images
     const w = Math.min(width, 1920);
     return `${transformed}?width=${w}&quality=${quality || 75}&format=webp`;
   }

@@ -81,7 +81,9 @@ export default function RootLayout({
   return (
     <html lang="vi">
       <head>
-        {/* Preconnect to Supabase for faster image/data loading */}
+        {/* Preconnect to Cloudinary CDN + Supabase for data */}
+        <link rel="preconnect" href="https://res.cloudinary.com" />
+        <link rel="dns-prefetch" href="https://res.cloudinary.com" />
         <link rel="preconnect" href="https://grwkaavwpylykedykadv.supabase.co" />
         <link rel="dns-prefetch" href="https://grwkaavwpylykedykadv.supabase.co" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
