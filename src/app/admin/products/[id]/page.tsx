@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import ImageUpload from '@/components/admin/ImageUpload';
 import GalleryUpload from '@/components/admin/GalleryUpload';
-import { Loader2, Plus, Trash2, Save, ArrowLeft } from 'lucide-react';
+import { Loader2, Plus, Trash2, Save, ArrowLeft, ArrowUp, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
@@ -117,6 +117,14 @@ export default function ProductFormPage() {
 
   const removeVariant = (index: number) => {
     setVariants(variants.filter((_, i) => i !== index));
+  };
+
+  const moveVariant = (index: number, direction: 'up' | 'down') => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= variants.length) return;
+    const updated = [...variants];
+    [updated[index], updated[newIndex]] = [updated[newIndex], updated[index]];
+    setVariants(updated);
   };
 
   const handleSave = async () => {
@@ -293,24 +301,35 @@ export default function ProductFormPage() {
                 <div className="space-y-3">
                   {variants.map((v, i) => (
                     <div key={i} className="p-3 bg-secondary/30 rounded-lg space-y-2">
-                      <div className="grid grid-cols-5 gap-2 items-end">
-                        <div>
-                          <label className="block text-[11px] font-medium mb-1">Tên (VD: 1 hũ)</label>
-                          <Input value={v.title} onChange={(e) => updateVariant(i, 'title', e.target.value)} className="h-9 text-sm" />
+                      <div className="flex items-end gap-2">
+                        <div className="flex flex-col gap-1 shrink-0">
+                          <span className="text-[10px] font-medium text-muted-foreground text-center">#{i + 1}</span>
+                          <Button type="button" variant="ghost" size="sm" onClick={() => moveVariant(i, 'up')} disabled={i === 0} className="h-7 w-7 p-0">
+                            <ArrowUp className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button type="button" variant="ghost" size="sm" onClick={() => moveVariant(i, 'down')} disabled={i === variants.length - 1} className="h-7 w-7 p-0">
+                            <ArrowDown className="w-3.5 h-3.5" />
+                          </Button>
                         </div>
-                        <div>
-                          <label className="block text-[11px] font-medium mb-1">Giá gốc</label>
-                          <Input type="number" value={v.price} onChange={(e) => updateVariant(i, 'price', Number(e.target.value))} className="h-9 text-sm" />
+                        <div className="grid grid-cols-4 gap-2 flex-1 items-end">
+                          <div>
+                            <label className="block text-[11px] font-medium mb-1">Tên (VD: 1 hũ)</label>
+                            <Input value={v.title} onChange={(e) => updateVariant(i, 'title', e.target.value)} className="h-9 text-sm" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-medium mb-1">Giá gốc</label>
+                            <Input type="number" value={v.price} onChange={(e) => updateVariant(i, 'price', Number(e.target.value))} className="h-9 text-sm" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-medium mb-1">Giá sale</label>
+                            <Input type="number" value={v.sale_price || ''} onChange={(e) => updateVariant(i, 'sale_price', e.target.value ? Number(e.target.value) : null)} className="h-9 text-sm" />
+                          </div>
+                          <div>
+                            <label className="block text-[11px] font-medium mb-1">Tồn kho</label>
+                            <Input type="number" value={v.stock} onChange={(e) => updateVariant(i, 'stock', Number(e.target.value))} className="h-9 text-sm" />
+                          </div>
                         </div>
-                        <div>
-                          <label className="block text-[11px] font-medium mb-1">Giá sale</label>
-                          <Input type="number" value={v.sale_price || ''} onChange={(e) => updateVariant(i, 'sale_price', e.target.value ? Number(e.target.value) : null)} className="h-9 text-sm" />
-                        </div>
-                        <div>
-                          <label className="block text-[11px] font-medium mb-1">Tồn kho</label>
-                          <Input type="number" value={v.stock} onChange={(e) => updateVariant(i, 'stock', Number(e.target.value))} className="h-9 text-sm" />
-                        </div>
-                        <Button type="button" variant="ghost" size="sm" onClick={() => removeVariant(i)} className="h-9 text-red-500 hover:text-red-700">
+                        <Button type="button" variant="ghost" size="sm" onClick={() => removeVariant(i)} className="h-9 text-red-500 hover:text-red-700 shrink-0">
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
                       </div>
