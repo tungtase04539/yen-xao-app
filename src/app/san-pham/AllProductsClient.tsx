@@ -78,7 +78,7 @@ export default function AllProductsClient() {
         min_variant_price: p.type === 'variable' ? p.price : undefined,
         min_variant_sale_price: p.type === 'variable' ? p.sale_price : undefined,
       }));
-      setProducts(mapped as Product[]);
+      setProducts(mapped as unknown as Product[]);
       setLoading(false);
     };
     fetchData();
