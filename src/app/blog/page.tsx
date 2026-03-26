@@ -43,6 +43,7 @@ interface PostItem {
   thumbnail: string | null;
   summary: string | null;
   created_at: string;
+  published_at: string | null;
   author: string;
   content: string | null;
   category: { name: string; slug: string } | null;
