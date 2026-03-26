@@ -169,12 +169,16 @@ export default async function AboutPage() {
                       </h2>
                     </div>
                     {(() => {
-                      // Merge all media from grouped sections, tagging each with its section title as caption
+                      // Merge all media, keeping each section's photos together in order
+                      let idx = 0;
                       const allMedia = group.sections.flatMap((s: SectionItem) =>
-                        (s.section_media || []).map(m => ({
-                          ...m,
-                          caption: m.caption || s.title,
-                        }))
+                        (s.section_media || [])
+                          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0))
+                          .map(m => ({
+                            ...m,
+                            caption: m.caption || s.title,
+                            sort_order: idx++,
+                          }))
                       );
                       return (
                         <SectionMediaGrid
