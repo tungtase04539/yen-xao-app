@@ -168,28 +168,23 @@ export default async function AboutPage() {
                         Cơ Sở Thực Tế
                       </h2>
                     </div>
-                    <div className="space-y-12">
-                      {group.sections.map((s: SectionItem) => (
-                        <div key={s.id}>
-                          <h3 className={`text-xl font-bold font-serif mb-2 text-center ${isDark ? 'text-white' : 'text-burgundy'}`}>
-                            {s.title}
-                          </h3>
-                          {s.description && (
-                            <p className={`text-sm text-center mb-4 ${isDark ? 'text-white/60' : 'text-muted-foreground'}`}>
-                              {s.description}
-                            </p>
-                          )}
-                          {s.section_media && s.section_media.length > 0 && (
-                            <SectionMediaGrid
-                              media={s.section_media}
-                              sectionTitle={s.title}
-                              isDark={isDark}
-                              initialCount={6}
-                            />
-                          )}
-                        </div>
-                      ))}
-                    </div>
+                    {(() => {
+                      // Merge all media from grouped sections, tagging each with its section title as caption
+                      const allMedia = group.sections.flatMap((s: SectionItem) =>
+                        (s.section_media || []).map(m => ({
+                          ...m,
+                          caption: m.caption || s.title,
+                        }))
+                      );
+                      return (
+                        <SectionMediaGrid
+                          media={allMedia}
+                          sectionTitle="Cơ Sở Thực Tế"
+                          isDark={isDark}
+                          initialCount={9}
+                        />
+                      );
+                    })()}
                   </div>
                 </div>
               </section>
