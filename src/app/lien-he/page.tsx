@@ -97,10 +97,18 @@ export default function ContactPage() {
             <div className="mt-8 pt-8 border-t border-border/50">
               <p className="text-sm font-semibold text-foreground mb-3">Theo dõi chúng tôi</p>
               <div className="flex gap-3">
-                {['Facebook', 'Instagram', 'YouTube', 'TikTok'].map((name) => (
+                {[
+                  { name: 'Facebook', href: 'https://www.facebook.com/qiqiyensao' },
+                  { name: 'Instagram', href: '#' },
+                  { name: 'YouTube', href: '#' },
+                  { name: 'TikTok VN', href: 'https://www.tiktok.com/@yensaoqiqi' },
+                  { name: 'TikTok CN', href: 'https://www.douyin.com/user/58483434306' },
+                ].map(({ name, href }) => (
                   <a
                     key={name}
-                    href="#"
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="px-4 py-2 rounded-lg bg-secondary text-sm font-medium hover:bg-burgundy hover:text-white transition-colors"
                   >
                     {name}

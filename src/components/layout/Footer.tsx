@@ -50,9 +50,11 @@ export default async function Footer() {
             </p>
             <div className="flex gap-3">
               {[
-                { label: 'f', href: 'https://facebook.com' },
+                { label: 'f', href: 'https://www.facebook.com/qiqiyensao' },
                 { label: '📷', href: 'https://instagram.com' },
                 { label: '▶', href: 'https://youtube.com' },
+                { label: '♪', href: 'https://www.tiktok.com/@yensaoqiqi' },
+                { label: '抖', href: 'https://www.douyin.com/user/58483434306' },
               ].map((social) => (
                 <a
                   key={social.label}

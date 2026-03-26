@@ -8,6 +8,7 @@ import TiptapImage from '@tiptap/extension-image';
 import TextAlign from '@tiptap/extension-text-align';
 import Placeholder from '@tiptap/extension-placeholder';
 import { useRef, useState, useCallback } from 'react';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import {
@@ -65,13 +66,10 @@ export default function RichTextEditor({ content, onChange, placeholder, bucket 
     if (file.size > maxSize) { toast.error('Ảnh phải nhỏ hơn 5MB'); return null; }
     setUploading(true);
     try {
-      const ext = file instanceof File ? file.name.split('.').pop() : 'png';
-      const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '2592000', upsert: false });
-      if (error) throw error;
-      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      const actualFile = file instanceof File ? file : new File([file], 'pasted-image.png', { type: file.type });
+      const url = await uploadToCloudinary(actualFile, `qiqi-yen/${folder}`);
       toast.success('Upload ảnh thành công!');
-      return publicUrl;
+      return url;
     } catch (err) {
       console.error(err);
       toast.error('Upload ảnh thất bại');
@@ -79,7 +77,7 @@ export default function RichTextEditor({ content, onChange, placeholder, bucket 
     } finally {
       setUploading(false);
     }
-  }, [bucket, folder]);
+  }, [folder]);
 
   // Upload video (max 200 MB)
   const uploadVideoToStorage = useCallback(async (file: File): Promise<string | null> => {
@@ -87,13 +85,9 @@ export default function RichTextEditor({ content, onChange, placeholder, bucket 
     if (file.size > maxSize) { toast.error('Video phải nhỏ hơn 200MB'); return null; }
     setUploadingVideo(true);
     try {
-      const ext = file.name.split('.').pop() ?? 'mp4';
-      const fileName = `${folder}/video-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-      const { error } = await supabase.storage.from(bucket).upload(fileName, file, { cacheControl: '2592000', upsert: false });
-      if (error) throw error;
-      const { data: { publicUrl } } = supabase.storage.from(bucket).getPublicUrl(fileName);
+      const url = await uploadToCloudinary(file, `qiqi-yen/${folder}`);
       toast.success('Upload video thành công!');
-      return publicUrl;
+      return url;
     } catch (err) {
       console.error(err);
       toast.error('Upload video thất bại');
@@ -101,7 +95,7 @@ export default function RichTextEditor({ content, onChange, placeholder, bucket 
     } finally {
       setUploadingVideo(false);
     }
-  }, [bucket, folder]);
+  }, [folder]);
 
   const editor = useEditor({
     immediatelyRender: false,

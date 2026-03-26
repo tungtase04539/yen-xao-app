@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Save, ArrowLeft, Eye, EyeOff, Upload, X, Film, ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 
 interface SectionMedia {
   id?: string;
@@ -75,13 +76,9 @@ export default function SectionFormPage() {
       if (file.size > 50 * 1024 * 1024) { toast.error(`${file.name} quá lớn (>50MB)`); continue; }
 
       try {
-        const ext = file.name.split('.').pop();
-        const fileName = `sections/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-        const { error } = await supabase.storage.from('products').upload(fileName, file, { cacheControl: '2592000', upsert: false });
-        if (error) throw error;
-        const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(fileName);
+        const url = await uploadToCloudinary(file, 'qiqi-yen/sections');
         newMedia.push({
-          media_url: publicUrl,
+          media_url: url,
           media_type: isVideo ? 'video' : 'image',
           caption: '',
           sort_order: media.length + newMedia.length,

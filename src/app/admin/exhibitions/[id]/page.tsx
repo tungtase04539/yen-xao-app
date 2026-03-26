@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Loader2, Save, ArrowLeft, Eye, EyeOff, Upload, X, GripVertical, Film } from 'lucide-react';
 import { toast } from 'sonner';
+import { uploadToCloudinary } from '@/lib/cloudinary';
 import ImageUpload from '@/components/admin/ImageUpload';
 
 interface ExhibitionImage {
@@ -73,13 +74,8 @@ export default function ExhibitionFormPage() {
       if (file.size > 50 * 1024 * 1024) { toast.error(`${file.name} quá lớn (>50MB)`); continue; }
 
       try {
-        const ext = file.name.split('.').pop();
-        const fileName = `exhibitions/${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
-        const { error } = await supabase.storage.from('products').upload(fileName, file, { cacheControl: '2592000', upsert: false, contentType: file.type });
-        if (error) throw error;
-
-        const { data: { publicUrl } } = supabase.storage.from('products').getPublicUrl(fileName);
-        newItems.push({ image_url: publicUrl, media_type: isVideo ? 'video' : 'image', caption: '', sort_order: images.length + newItems.length });
+        const url = await uploadToCloudinary(file, 'qiqi-yen/exhibitions');
+        newItems.push({ image_url: url, media_type: isVideo ? 'video' : 'image', caption: '', sort_order: images.length + newItems.length });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : String(err);
         toast.error(`Upload ${file.name} thất bại: ${msg}`);
