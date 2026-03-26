@@ -156,8 +156,8 @@ export default async function BlogPage() {
                       </span>
                       <span className="flex items-center gap-1">
                         <Calendar className="w-3 h-3" />
-                        <time dateTime={post.created_at} itemProp="datePublished">
-                          {new Date(post.created_at).toLocaleDateString('vi-VN')}
+                        <time dateTime={post.published_at || post.created_at} itemProp="datePublished">
+                          {new Date(post.published_at || post.created_at).toLocaleDateString('vi-VN')}
                         </time>
                       </span>
                       <span className="flex items-center gap-1">

@@ -55,8 +55,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       url: canonical,
       type: 'article',
       siteName: 'QiQi Yến Sào',
-      publishedTime: post.created_at,
-      modifiedTime: post.updated_at || post.created_at,
+      publishedTime: post.published_at || post.created_at,
+      modifiedTime: post.updated_at || post.published_at || post.created_at,
       authors: [post.author],
       images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
     },
@@ -104,8 +104,8 @@ export default async function BlogDetailPage({ params }: Props) {
     description: post.summary || '',
     image: post.thumbnail || `${SITE_URL}/logo.png`,
     url: canonical,
-    datePublished: post.created_at,
-    dateModified: post.updated_at || post.created_at,
+    datePublished: post.published_at || post.created_at,
+    dateModified: post.updated_at || post.published_at || post.created_at,
     author: {
       '@type': 'Person',
       name: post.author,
@@ -192,8 +192,8 @@ export default async function BlogDetailPage({ params }: Props) {
               </span>
               <span className="flex items-center gap-1.5">
                 <Calendar className="w-4 h-4" />
-                <time dateTime={post.created_at}>
-                  {new Date(post.created_at).toLocaleDateString('vi-VN', {
+                <time dateTime={post.published_at || post.created_at}>
+                  {new Date(post.published_at || post.created_at).toLocaleDateString('vi-VN', {
                     day: '2-digit',
                     month: '2-digit',
                     year: 'numeric',
@@ -228,7 +228,7 @@ export default async function BlogDetailPage({ params }: Props) {
             itemType="https://schema.org/BlogPosting"
           >
             <meta itemProp="url" content={canonical} />
-            <meta itemProp="datePublished" content={post.created_at} />
+            <meta itemProp="datePublished" content={post.published_at || post.created_at} />
             <meta itemProp="author" content={post.author} />
             <div itemProp="articleBody" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
           </article>
@@ -262,8 +262,8 @@ export default async function BlogDetailPage({ params }: Props) {
                       <h3 className="text-sm font-semibold line-clamp-2 group-hover:text-burgundy transition-colors">
                         {r.title}
                       </h3>
-                      <time className="text-xs text-muted-foreground mt-1 block" dateTime={r.created_at}>
-                        {new Date(r.created_at).toLocaleDateString('vi-VN')}
+                      <time className="text-xs text-muted-foreground mt-1 block" dateTime={r.published_at || r.created_at}>
+                        {new Date(r.published_at || r.created_at).toLocaleDateString('vi-VN')}
                       </time>
                     </div>
                   </Link>
