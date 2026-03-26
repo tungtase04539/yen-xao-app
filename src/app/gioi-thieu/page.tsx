@@ -168,10 +168,10 @@ export default async function AboutPage() {
                         Cơ Sở Thực Tế
                       </h2>
                     </div>
-                    <div className={`grid gap-8 ${group.sections.length >= 2 ? 'md:grid-cols-2' : 'grid-cols-1 max-w-2xl mx-auto'}`}>
+                    <div className="space-y-12">
                       {group.sections.map((s: SectionItem) => (
                         <div key={s.id}>
-                          <h3 className={`text-xl font-bold font-serif mb-4 text-center ${isDark ? 'text-white' : 'text-burgundy'}`}>
+                          <h3 className={`text-xl font-bold font-serif mb-2 text-center ${isDark ? 'text-white' : 'text-burgundy'}`}>
                             {s.title}
                           </h3>
                           {s.description && (
