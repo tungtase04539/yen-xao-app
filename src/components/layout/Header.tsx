@@ -223,9 +223,9 @@ export default function Header() {
 
                                 {/* Name */}
                                 <span
-                                  className="text-[15px] font-semibold uppercase tracking-[0.1em] transition-all duration-200 group-hover/item:text-[#f0dc9a]"
+                                  className="text-[17px] font-bold transition-all duration-200 group-hover/item:text-[#f0dc9a]"
                                   style={{
-                                    fontFamily: 'var(--font-heading)',
+                                    fontFamily: 'var(--font-body)',
                                     color: '#e8c97a',
                                   }}
                                 >
