@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ChevronRight, Calendar, User, ArrowLeft, Clock } from 'lucide-react';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yensaocaocap.vn';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://qiqiyensao.com';
 
 export const revalidate = 60; // ISR: revalidate every 60 seconds
 

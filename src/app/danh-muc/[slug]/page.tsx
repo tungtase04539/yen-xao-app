@@ -22,13 +22,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const { data: category } = await supabase
     .from('categories')
-    .select('name')
+    .select('name, description, image')
     .eq('slug', slug)
     .single();
 
+  const title = category?.name || 'Danh mục sản phẩm';
+  const description = category?.description || `Khám phá các sản phẩm ${category?.name || 'yến sào cao cấp'} tại QiQi Yến Sào.`;
+  const image = category?.image || '/zalo-banner.jpg';
+
   return {
-    title: category?.name || 'Danh mục sản phẩm',
-    description: `Khám phá sản phẩm ${category?.name || 'yến sào cao cấp'} tại Yến Sào Cao Cấp.`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: `https://qiqiyensao.com/danh-muc/${slug}`,
+      images: [
+        {
+          url: image,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
   };
 }
 

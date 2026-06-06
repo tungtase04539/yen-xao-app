@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ChevronRight, Calendar, User, Clock } from 'lucide-react';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yensaocaocap.vn';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://qiqiyensao.com';
 
 export const metadata: Metadata = {
   title: 'Blog Yến Sào | Kiến Thức Sức Khỏe & Bí Quyết Dùng Yến',

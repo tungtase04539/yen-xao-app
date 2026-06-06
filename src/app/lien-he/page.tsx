@@ -4,7 +4,27 @@ import { ChevronRight, MapPin, Phone, Mail, Clock } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Liên Hệ',
-  description: 'Liên hệ với Yến Sào Cao Cấp - Hotline, địa chỉ, email và mạng xã hội.',
+  description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
+  openGraph: {
+    title: 'Liên Hệ | QiQi Yến Sào',
+    description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
+    type: 'website',
+    url: 'https://qiqiyensao.com/lien-he',
+    images: [
+      {
+        url: '/zalo-banner.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Liên Hệ - QiQi Yến Sào',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Liên Hệ | QiQi Yến Sào',
+    description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
+    images: ['/zalo-banner.jpg'],
+  },
 };
 
 const branches = [

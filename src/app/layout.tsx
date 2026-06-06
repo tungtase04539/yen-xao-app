@@ -29,6 +29,7 @@ const display = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://qiqiyensao.com'),
   title: {
     default: "QiQi Yến Sào - Trao sức khỏe, gửi trọn yêu thương",
     template: "%s | QiQi Yến Sào",

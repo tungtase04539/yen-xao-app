@@ -9,7 +9,27 @@ export const revalidate = 300; // ISR: revalidate every 5 minutes
 
 export const metadata: Metadata = {
   title: 'Giới Thiệu',
-  description: 'Câu chuyện thương hiệu Yến Sào Cao Cấp - Hành trình mang tinh hoa yến sào đến mọi gia đình Việt.',
+  description: 'Câu chuyện thương hiệu QiQi Yến Sào - Hành trình mang tinh hoa yến sào đến mọi gia đình Việt. Cam kết yến nguyên chất 100%.',
+  openGraph: {
+    title: 'Giới Thiệu | QiQi Yến Sào',
+    description: 'Câu chuyện thương hiệu QiQi Yến Sào - Hành trình mang tinh hoa yến sào đến mọi gia đình Việt. Cam kết yến nguyên chất 100%.',
+    type: 'website',
+    url: 'https://qiqiyensao.com/gioi-thieu',
+    images: [
+      {
+        url: '/tri-an-khach-hang.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Giới Thiệu - QiQi Yến Sào',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Giới Thiệu | QiQi Yến Sào',
+    description: 'Câu chuyện thương hiệu QiQi Yến Sào - Hành trình mang tinh hoa yến sào đến mọi gia đình Việt. Cam kết yến nguyên chất 100%.',
+    images: ['/tri-an-khach-hang.jpg'],
+  },
 };
 
 async function getAboutPage() {

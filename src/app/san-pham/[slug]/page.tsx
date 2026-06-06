@@ -23,13 +23,35 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const { data: product } = await supabase
     .from('products')
-    .select('name, short_description')
+    .select('name, short_description, thumbnail')
     .eq('slug', slug)
     .single();
 
+  const title = product?.name || 'Chi tiết sản phẩm';
+  const description = product?.short_description || 'Sản phẩm yến sào cao cấp';
+  const image = product?.thumbnail || '/zalo-banner.jpg';
+
   return {
-    title: product?.name || 'Chi tiết sản phẩm',
-    description: product?.short_description || 'Sản phẩm yến sào cao cấp',
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      url: `https://qiqiyensao.com/san-pham/${slug}`,
+      images: [
+        {
+          url: image,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [image],
+    },
   };
 }
 
