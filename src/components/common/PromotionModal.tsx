@@ -27,7 +27,7 @@ export default function PromotionModal() {
 
   const handleRedirect = () => {
     sessionStorage.setItem('qiqi_promo_seen', 'true');
-    window.open('https://m.me/qiqiyensao', '_blank', 'noopener,noreferrer');
+    window.open('https://www.messenger.com/t/392451147265403', '_blank', 'noopener,noreferrer');
     setIsOpen(false);
   };
 

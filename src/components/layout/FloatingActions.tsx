@@ -25,7 +25,7 @@ const actions = [
     id: 'messenger',
     icon: MessageCircle,
     label: 'Messenger',
-    href: 'https://m.me/yensaocaocap',
+    href: 'https://www.messenger.com/t/392451147265403',
     color: 'bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600',
     animate: false,
   },

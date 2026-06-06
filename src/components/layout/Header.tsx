@@ -101,7 +101,7 @@ export default function Header() {
     <>
       {/* Luxury Top Bar — always visible, links directly to Messenger for high conversion */}
       <a 
-        href="https://m.me/qiqiyensao" 
+        href="https://www.messenger.com/t/392451147265403" 
         target="_blank" 
         rel="noopener noreferrer" 
         className="block bg-burgundy-dark/40 text-white text-sm py-2 relative overflow-hidden group hover:brightness-110 transition-all duration-300" 
