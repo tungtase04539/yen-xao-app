@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import SideCart from '@/components/layout/SideCart';
 import FloatingActions from '@/components/layout/FloatingActions';
+import PromotionModal from '@/components/common/PromotionModal';
 
 export default function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -19,6 +20,7 @@ export default function LayoutShell({ children }: { children: React.ReactNode })
       <main className="flex-1">{children}</main>
       <SideCart />
       <FloatingActions />
+      <PromotionModal />
     </>
   );
 }

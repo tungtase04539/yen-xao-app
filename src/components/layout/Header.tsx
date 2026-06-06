@@ -99,24 +99,47 @@ export default function Header() {
 
   return (
     <>
-      {/* Luxury Top Bar — desktop only, scrolls away */}
-      <div className="hidden md:block bg-burgundy-dark/30 text-white text-sm py-2 relative overflow-hidden" style={{ background: 'linear-gradient(to right, #5a0e1a, #4a0c16)' }}>
+      {/* Luxury Top Bar — always visible, links directly to Messenger for high conversion */}
+      <a 
+        href="https://m.me/qiqiyensao" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        className="block bg-burgundy-dark/40 text-white text-sm py-2 relative overflow-hidden group hover:brightness-110 transition-all duration-300" 
+        style={{ background: 'linear-gradient(to right, #4c0712, #5a0e1a, #4c0712)' }}
+      >
         <div className="absolute inset-0 animate-gold-shimmer pointer-events-none" />
         <div className="container mx-auto px-4 flex justify-between items-center relative">
-          <div className="flex items-center gap-2">
-            <Sparkles className="w-3.5 h-3.5 text-gold" />
-            <p className="text-gold-light text-xs tracking-wider">
-              Miễn phí vận chuyển đơn hàng từ 1.000.000₫
+          
+          {/* Desktop Announcement */}
+          <div className="hidden lg:flex items-center gap-2">
+            <Sparkles className="w-3.5 h-3.5 text-gold animate-pulse" />
+            <p className="text-gold-light text-xs font-bold tracking-wider uppercase">
+              🎉 Đại tiệc tri ân: Combo Mix 6 Vị — Mua 6 Tặng 6 (Nhận 12 hũ) Chỉ 360.000₫ + Miễn phí vận chuyển toàn quốc!
             </p>
           </div>
-          <div className="flex items-center gap-4 text-xs">
-            <a href="tel:0843623986" className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors">
+
+          {/* Mobile/Tablet Announcement */}
+          <div className="lg:hidden flex items-center justify-center gap-1.5 w-full">
+            <Sparkles className="w-3.5 h-3.5 text-gold shrink-0 animate-pulse" />
+            <p className="text-gold-light text-[11px] font-bold tracking-widest text-center uppercase animate-pulse">
+              🎉 Mua 6 Tặng 6 (Mix 6 Vị) Chỉ 360k + Free Ship! Click nhận ngay
+            </p>
+          </div>
+
+          {/* Contact & Language — hidden on mobile to prioritize the promo text */}
+          <div className="hidden lg:flex items-center gap-4 text-xs">
+            <div className="w-px h-3 bg-white/20" />
+            <div className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors">
               <Phone className="w-3 h-3" />
-              <span className="tracking-wide">0843.623986</span>
-            </a>
+              <span className="tracking-wide">Hotline: 0843.623986</span>
+            </div>
             <div className="w-px h-3 bg-white/20" />
             <button
-              onClick={() => setLang(lang === 'vi' ? 'cn' : 'vi')}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setLang(lang === 'vi' ? 'cn' : 'vi');
+              }}
               className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors"
             >
               <Globe className="w-3 h-3" />
@@ -124,7 +147,7 @@ export default function Header() {
             </button>
           </div>
         </div>
-      </div>
+      </a>
 
       {/* Main Header — sticky */}
       <header className={`sticky top-0 z-50 transition-all duration-500 ${
