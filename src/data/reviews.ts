@@ -461,10 +461,11 @@ function seedRandom(seedStr: string) {
   let h = 0;
   for (let i = 0; i < seedStr.length; i++) {
     h = seedStr.charCodeAt(i) + ((h << 5) - h);
+    h = h | 0;
   }
   return function() {
-    h = (h * 16807) % 2147483647;
-    return (h - 1) / 2147483646;
+    h = (h * 1664525 + 1013904223) | 0;
+    return (h >>> 0) / 4294967296;
   };
 }
 
