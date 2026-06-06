@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -18,11 +18,13 @@ import {
   ZoomIn,
   ChevronLeft,
   Sparkles,
+  Star,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/store/cart';
 import { formatPrice } from '@/lib/format';
+import { getProductReviews, getProductRatingSummary, addProductReview } from '@/data/reviews';
 import ProductCard from '@/components/shared/ProductCard';
 import type { Product, ProductVariant, ProductListItem } from '@/types';
 
@@ -48,6 +50,81 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mainImage, setMainImage] = useState(0);
+
+  // Reviews state
+  const [reviewsList, setReviewsList] = useState<any[]>([]);
+  const [hasMounted, setHasMounted] = useState(false);
+
+  // Form state for writing a review
+  const [newReviewName, setNewReviewName] = useState('');
+  const [newReviewRating, setNewReviewRating] = useState(5);
+  const [newReviewContent, setNewReviewContent] = useState('');
+  const [hoveredStar, setHoveredStar] = useState<number | null>(null);
+
+  useEffect(() => {
+    setReviewsList(getProductReviews(product.slug));
+    setHasMounted(true);
+  }, [product.slug]);
+
+  const reviewCount = reviewsList.length;
+  const averageRating = reviewCount > 0
+    ? parseFloat((reviewsList.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1))
+    : 5.0;
+
+  const staticSummary = getProductRatingSummary(product.slug);
+  const displayRating = hasMounted ? averageRating : staticSummary.rating;
+  const displayCount = hasMounted ? reviewCount : staticSummary.count;
+
+  const handleAddReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newReviewName.trim()) {
+      toast.error('Vui lòng nhập tên của bạn');
+      return;
+    }
+    if (!newReviewContent.trim()) {
+      toast.error('Vui lòng nhập nội dung đánh giá');
+      return;
+    }
+
+    addProductReview(product.slug, newReviewName.trim(), newReviewRating, newReviewContent.trim());
+    setReviewsList(getProductReviews(product.slug));
+    
+    // Reset form
+    setNewReviewName('');
+    setNewReviewRating(5);
+    setNewReviewContent('');
+    
+    toast.success('Gửi đánh giá thành công!', {
+      description: 'Cảm ơn bạn đã phản hồi ý kiến cho chúng tôi.',
+    });
+  };
+
+  // Avatar helper
+  const getInitials = (name: string) => {
+    if (!name) return 'Q';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  };
+
+  // Avatar background color
+  const getAvatarColor = (name: string) => {
+    const colors = [
+      'bg-red-500/10 text-red-700',
+      'bg-amber-500/10 text-amber-700',
+      'bg-emerald-500/10 text-emerald-700',
+      'bg-blue-500/10 text-blue-700',
+      'bg-indigo-500/10 text-indigo-700',
+      'bg-rose-500/10 text-rose-700',
+      'bg-purple-500/10 text-purple-700'
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = name.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % colors.length;
+    return colors[index];
+  };
 
   // Video detection helper
   const isVideo = (url: string) => /\.(mp4|webm|ogg)(\?.*)?$/i.test(url) || url.includes('/video/upload/');
@@ -268,9 +345,39 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
             )}
 
             {/* Name */}
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-serif text-foreground mt-3 mb-5 leading-tight tracking-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold font-serif text-foreground mt-3 mb-2 leading-tight tracking-tight">
               {product.name}
             </h1>
+
+            {/* Ratings Summary Mini */}
+            <div 
+              className="flex items-center gap-2 mb-5 cursor-pointer group"
+              onClick={() => {
+                setActiveTab('reviews');
+                const reviewsTabElement = document.getElementById('product-tabs');
+                if (reviewsTabElement) {
+                  reviewsTabElement.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+            >
+              <div className="flex items-center text-amber-500">
+                {Array.from({ length: 5 }).map((_, i) => {
+                  const isFilled = i < Math.round(displayRating);
+                  return (
+                    <Star
+                      key={i}
+                      className={`w-4 h-4 ${isFilled ? 'fill-current' : 'text-muted-foreground/30'}`}
+                    />
+                  );
+                })}
+              </div>
+              <span className="text-xs font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/50">
+                {displayRating} / 5
+              </span>
+              <span className="text-xs text-muted-foreground group-hover:text-burgundy group-hover:underline transition-all font-medium">
+                ({displayCount} đánh giá)
+              </span>
+            </div>
 
             {/* Short Description */}
             {product.short_description && (
@@ -415,7 +522,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
         </div>
 
         {/* Tabs: Description & Reviews */}
-        <div className="mt-16 md:mt-20">
+        <div className="mt-16 md:mt-20" id="product-tabs">
           <div className="flex border-b border-gold/10">
             <button
               onClick={() => setActiveTab('description')}
@@ -438,7 +545,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                   : 'text-muted-foreground hover:text-foreground'
               }`}
             >
-              Đánh giá (0)
+              Đánh giá ({displayCount})
               {activeTab === 'reviews' && (
                 <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-gold" />
               )}
@@ -458,12 +565,182 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                 )}
               </div>
             ) : (
-              <div className="text-center py-16">
-                <div className="text-5xl mb-4">💬</div>
-                <p className="text-muted-foreground mb-2">Chưa có đánh giá nào</p>
-                <p className="text-sm text-muted-foreground/60">
-                  Hãy là người đầu tiên đánh giá sản phẩm này
-                </p>
+              <div className="grid lg:grid-cols-3 gap-10">
+                {/* Left Side: Summary & Distribution */}
+                <div className="lg:col-span-1 bg-cream/30 border border-gold/10 p-6 md:p-8 rounded-3xl h-fit">
+                  <h3 className="text-lg font-serif font-semibold text-burgundy mb-4">
+                    Đánh giá khách hàng
+                  </h3>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className="text-5xl font-bold font-serif text-foreground">
+                      {displayRating}
+                    </span>
+                    <span className="text-base text-muted-foreground">/ 5</span>
+                  </div>
+                  <div className="flex text-amber-500 mb-2">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-5 h-5 ${i < Math.round(displayRating) ? 'fill-current' : 'text-muted-foreground/20'}`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-6">
+                    Có tổng cộng {displayCount} đánh giá từ khách mua hàng
+                  </p>
+
+                  {/* Rating Distribution */}
+                  <div className="space-y-3">
+                    {Array.from({ length: 5 }).map((_, idx) => {
+                      const starNum = 5 - idx;
+                      const count = reviewsList.filter((r) => r.rating === starNum).length;
+                      const pct = displayCount > 0 ? (count / displayCount) * 100 : 0;
+
+                      return (
+                        <div key={starNum} className="flex items-center gap-3 text-sm">
+                          <span className="w-3 text-right text-muted-foreground">{starNum}</span>
+                          <Star className="w-3.5 h-3.5 text-amber-500 fill-current shrink-0" />
+                          <div className="flex-1 h-2 bg-muted-foreground/10 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-amber-500 rounded-full"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
+                          <span className="w-8 text-right text-xs text-muted-foreground">
+                            {Math.round(pct)}%
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Right Side: Review list and Form */}
+                <div className="lg:col-span-2 space-y-8">
+                  {/* Reviews List */}
+                  <div className="space-y-6">
+                    {reviewsList.length > 0 ? (
+                      reviewsList.map((review) => (
+                        <div key={review.id} className="border-b border-border/40 pb-6 last:border-b-0 last:pb-0">
+                          <div className="flex items-start gap-4">
+                            {/* Initials Avatar */}
+                            <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm shrink-0 shadow-sm ${getAvatarColor(review.name)}`}>
+                              {getInitials(review.name)}
+                            </div>
+                            <div className="flex-1">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
+                                <h4 className="font-semibold text-foreground">{review.name}</h4>
+                                <span className="text-xs text-muted-foreground">{review.date}</span>
+                              </div>
+                              <div className="flex text-amber-500 mb-2">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-current' : 'text-muted-foreground/20'}`}
+                                  />
+                                ))}
+                              </div>
+                              <p className="text-sm text-foreground/80 leading-relaxed">
+                                {review.content}
+                              </p>
+
+                              {/* Owner Response */}
+                              {review.reply && (
+                                <div className="mt-4 p-4 bg-cream/40 border-l-2 border-gold rounded-r-2xl text-xs space-y-1">
+                                  <p className="font-bold text-burgundy-light uppercase tracking-wider">
+                                    Phản hồi từ QiQi Yến Sào
+                                  </p>
+                                  <p className="text-foreground/70 leading-relaxed">
+                                    {review.reply}
+                                  </p>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="text-center py-10 bg-cream/10 border border-dashed border-gold/15 rounded-3xl">
+                        <p className="text-muted-foreground">Chưa có đánh giá nào cho sản phẩm này.</p>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Write a Review Form */}
+                  <div className="bg-warm-white border border-gold/10 p-6 md:p-8 rounded-3xl">
+                    <h3 className="text-lg font-serif font-semibold text-burgundy mb-6">
+                      Viết đánh giá của bạn
+                    </h3>
+                    <form onSubmit={handleAddReview} className="space-y-4">
+                      {/* Interactive Stars Selection */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Điểm số của bạn:
+                        </label>
+                        <div className="flex items-center gap-1.5 text-amber-500">
+                          {Array.from({ length: 5 }).map((_, i) => {
+                            const starValue = i + 1;
+                            const isHighlighted = hoveredStar !== null ? starValue <= hoveredStar : starValue <= newReviewRating;
+                            return (
+                              <button
+                                type="button"
+                                key={i}
+                                onClick={() => setNewReviewRating(starValue)}
+                                onMouseEnter={() => setHoveredStar(starValue)}
+                                onMouseLeave={() => setHoveredStar(null)}
+                                className="p-0.5 hover:scale-125 transition-transform"
+                              >
+                                <Star
+                                  className={`w-7 h-7 cursor-pointer ${isHighlighted ? 'fill-current' : 'text-muted-foreground/20'}`}
+                                />
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Name */}
+                      <div>
+                        <label htmlFor="reviewer-name" className="block text-sm font-semibold text-foreground mb-1">
+                          Họ và tên của bạn:
+                        </label>
+                        <input
+                          id="reviewer-name"
+                          type="text"
+                          required
+                          value={newReviewName}
+                          onChange={(e) => setNewReviewName(e.target.value)}
+                          placeholder="Ví dụ: Nguyễn Văn A..."
+                          className="w-full text-sm border border-border rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-gold/50"
+                        />
+                      </div>
+
+                      {/* Content */}
+                      <div>
+                        <label htmlFor="reviewer-content" className="block text-sm font-semibold text-foreground mb-1">
+                          Nội dung nhận xét:
+                        </label>
+                        <textarea
+                          id="reviewer-content"
+                          required
+                          rows={4}
+                          value={newReviewContent}
+                          onChange={(e) => setNewReviewContent(e.target.value)}
+                          placeholder="Chia sẻ trải nghiệm thực tế của bạn về sản phẩm (chất lượng, hương vị, đóng gói...)..."
+                          className="w-full text-sm border border-border rounded-xl px-4 py-3 bg-white focus:outline-none focus:ring-2 focus:ring-gold/50 resize-y"
+                        />
+                      </div>
+
+                      {/* Submit */}
+                      <Button
+                        type="submit"
+                        className="w-full sm:w-auto py-5 px-8 bg-burgundy hover:bg-burgundy-light text-white rounded-xl font-semibold transition-all"
+                      >
+                        Gửi Đánh Giá Của Bạn
+                      </Button>
+                    </form>
+                  </div>
+                </div>
               </div>
             )}
           </div>

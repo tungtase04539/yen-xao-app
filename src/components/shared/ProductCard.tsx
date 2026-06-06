@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ShoppingBag, Eye } from 'lucide-react';
+import { ShoppingBag, Eye, Star } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
+import { getProductRatingSummary } from '@/data/reviews';
 import type { ProductListItem } from '@/types';
 
 interface ProductCardProps {
@@ -27,6 +29,18 @@ export default function ProductCard({ product }: ProductCardProps) {
   const discountPercent = hasDiscount && originalPrice
     ? Math.round(((originalPrice - (displayPrice || 0)) / originalPrice) * 100)
     : 0;
+
+  const [ratingSummary, setRatingSummary] = useState({ rating: 5.0, count: 0 });
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setRatingSummary(getProductRatingSummary(product.slug));
+    setHasMounted(true);
+  }, [product.slug]);
+
+  const staticSummary = getProductRatingSummary(product.slug);
+  const displayRating = hasMounted ? ratingSummary.rating : staticSummary.rating;
+  const displayCount = hasMounted ? ratingSummary.count : staticSummary.count;
 
   return (
     <motion.div
@@ -111,6 +125,24 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.name}
           </h3>
         </Link>
+
+        {/* Rating Stars */}
+        <div className="flex items-center gap-1.5 mt-2.5 text-amber-500">
+          <div className="flex">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star
+                key={i}
+                className={`w-3.5 h-3.5 ${i < Math.round(displayRating) ? 'fill-current' : 'text-muted-foreground/20'}`}
+              />
+            ))}
+          </div>
+          <span className="text-[10px] font-semibold text-amber-700 bg-amber-50/50 px-1.5 py-0.5 rounded border border-amber-200/20">
+            {displayRating}
+          </span>
+          <span className="text-[10px] text-muted-foreground font-medium">
+            ({displayCount})
+          </span>
+        </div>
 
         {/* Price with gold underline */}
         <div className="mt-3 pt-3 flex items-baseline gap-2" style={{ borderTop: '1px solid rgba(212,175,55,0.15)' }}>
