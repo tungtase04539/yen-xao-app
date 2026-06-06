@@ -163,7 +163,7 @@ export const SEEDED_REVIEWS: Record<string, Review[]> = {
       rating: 5,
       content: 'Đã nhận đủ 10 hũ yến, đóng gói thùng xốp chống va đập cực tốt, không bị sứt mẻ hũ nào. Yến chưng đặc, đông trùng thơm lừng. Rất hài lòng.',
       date: '2026-05-28',
-      reply: 'Cảm ơn anh Cường đã đánh giá. Sự hài lòng của anh là động lực lớn cho QiQi Yến Sào!'
+      reply: 'Cảm ơn anh Cường đã đánh giá. Sự hài lòng của anh là động lực lớn nhất của QiQi Yến Sào!'
     }
   ],
   'set-10-hu-yen-duong-phen': [
@@ -380,7 +380,12 @@ const openingPhrases = [
   'Đóng hộp đỏ sang xịn mịn, đem đi biếu tặng rất lịch sự và đẳng cấp.',
   'Ấn tượng đầu tiên là đóng gói siêu chắc chắn và giao hàng siêu tốc.',
   'Hộp quà đẹp lắm nha mọi người, có túi xách đi kèm lịch sự.',
-  'Hàng chuẩn chính hãng, tem mác niêm phong đầy đủ rõ ràng.'
+  'Hàng chuẩn chính hãng, tem mác niêm phong đầy đủ rõ ràng.',
+  'Giao hàng nhanh, đóng gói kỹ lưỡng, vỏ hộp đẹp.',
+  'Nhận hàng rất ưng ý, shop đóng gói cẩn thận bằng hộp xốp bọc kỹ.',
+  'Đóng gói quá chuyên nghiệp, không sứt mẻ chai nào.',
+  'Đã nhận đủ hàng, mẫu mã sang trọng đúng như quảng cáo.',
+  'Giao hàng nhanh chóng, bọc xốp nổ dày dặn cực an tâm.'
 ];
 
 const generalQualityPhrases = [
@@ -390,7 +395,15 @@ const generalQualityPhrases = [
   'Yến thật chuẩn 2g khô nên chưng lên rất đặc, không bị pha trộn chất tạo sệt.',
   'Sợi yến giòn dai sần sật ăn đã miệng lắm, không bị vụn nát như loại khác.',
   'Sản phẩm chất lượng tốt, yến đặc nhiều sợi, độ ngọt thanh mát vừa vặn.',
-  'Hũ yến dày dặn sạch sẽ, yến chưng thơm mát dễ chịu cực kỳ.'
+  'Hũ yến dày dặn sạch sẽ, yến chưng thơm mát dễ chịu cực kỳ.',
+  'Yến đặc sệt ăn rất chất lượng chứ ko lỏng bỏng nước như các hãng khác.',
+  'Hương vị thơm ngon tự nhiên, sợi yến dai giòn đúng chuẩn nguyên chất.',
+  'Yến đặc nhiều, vị thanh ngọt mát họng rất dễ chịu.',
+  'Ăn thử thấy sợi yến dai sần sật giòn ngon, ngọt phèn dịu nhẹ.',
+  'Mở nắp ra thấy yến đặc sánh ngập hũ, rất đáng đồng tiền bát gạo.',
+  'Sợi yến to dài, không bị nát, ăn thơm ngon bổ dưỡng.',
+  'Hũ yến chưng sánh đặc, đầy đặn sợi yến thật chứ không độn mủ trôm.',
+  'Vị yến thơm tanh nhẹ đặc trưng của yến thật, ăn giòn dai thanh mát.'
 ];
 
 const shippingAndService = [
@@ -398,7 +411,12 @@ const shippingAndService = [
   'Nhân viên hỗ trợ nhiệt tình, giải đáp thắc mắc nhanh chóng.',
   'Shipper giao hàng lịch sự, vui vẻ, gọi trước khi giao.',
   'Dịch vụ chăm sóc khách hàng của shop rất tốt, 10 điểm.',
-  'Tặng kèm đầy đủ phụ kiện, shop phục vụ chu đáo.'
+  'Tặng kèm đầy đủ phụ kiện, shop phục vụ chu đáo.',
+  'Tư vấn nhanh chóng, nhiệt tình, đóng gói hàng giao siêu tốc.',
+  'Chăm sóc khách hàng siêu có tâm, nhắn tin trả lời ngay lập tức.',
+  'Shipper Hải Phòng thân thiện giao hàng siêu nhanh hỏa tốc.',
+  'Rất hài lòng về cách làm việc chuyên nghiệp của shop.',
+  'Hỗ trợ đổi trả nhanh chóng nếu gặp vấn đề, cực kỳ uy tín.'
 ];
 
 const recommendationPhrases = [
@@ -407,36 +425,55 @@ const recommendationPhrases = [
   'Sẽ giới thiệu cho bạn bè người thân ủng hộ shop.',
   'Đánh giá 5 sao cho chất lượng sản phẩm và dịch vụ của shop.',
   'Sản phẩm rất đáng tiền, mua làm quà biếu cực kỳ hợp lý.',
-  'Chắc chắn sẽ mua lại nhiều lần nữa.'
+  'Chắc chắn sẽ mua lại nhiều lần nữa.',
+  'Mọi người nên mua thử để trải nghiệm yến thật của shop nha.',
+  'Cực kỳ hài lòng, sẽ ủng hộ shop dài dài.',
+  'Sản phẩm chất lượng cao, xứng đáng nhận điểm 10.',
+  'Rất ưng ý từ sản phẩm đến dịch vụ phục vụ.'
 ];
 
-// Specific phrases
 const sugarFreePhrases = [
   'Dòng đường kiêng này rất hợp cho người tiểu đường hoặc đang ăn kiêng giảm cân.',
   'Ngọt dịu nhẹ từ đường củ cải isomalt ăn thanh mát mà không sợ tăng đường huyết.',
   'Mua biếu ông bà bị cao huyết áp với tiểu đường, ông bà khen ngon và an tâm ăn.',
-  'Vị ngọt thanh thanh nhẹ nhàng, ăn kiêng mà được bồi bổ yến sào này thì quá tuyệt.'
+  'Vị ngọt thanh thanh nhẹ nhàng, ăn kiêng mà được bồi bổ yến sào này thì quá tuyệt.',
+  'Đường ăn kiêng ngọt dịu thanh nhẹ, cực thích hợp cho chế độ healthy.',
+  'Thích nhất là vị ngọt thanh tự nhiên ko bị khé cổ, mẹ bầu tiểu đường thai kỳ ăn siêu an tâm.',
+  'Mua biếu bố mẹ bị tiểu đường hũ này bố mẹ ưng lắm, đỡ mất công tự chưng.',
+  'Vị ngọt dịu nhẹ nhàng, ăn ngon mát họng mà ko sợ béo.'
 ];
 
 const cordycepsPhrases = [
   'Sợi đông trùng hạ thảo dai dai thơm nhẹ, chưng cùng yến bổ dưỡng nhân đôi.',
   'Uống vào thấy người khỏe khoắn, giảm mệt mỏi, ngủ sâu giấc hơn hẳn.',
   'Mùi vị đông trùng tự nhiên thơm lắm, sợi đông trùng nhìn chất lượng cực kỳ.',
-  'Mua cho bố mẹ bồi bổ sức khỏe tuổi già, ai cũng khen vị đông trùng này thơm ngon.'
+  'Mua cho bố mẹ bồi bổ sức khỏe tuổi già, ai cũng khen vị đông trùng này thơm ngon.',
+  'Màu vàng đông trùng óng ánh đẹp mắt, hũ yến đặc sệt sợi đông trùng dai sần sật.',
+  'Ăn xế chiều hũ này thấy hồi phục năng lượng rất nhanh, người khỏe khoắn hẳn.',
+  'Mùi thơm nhẹ của đông trùng rất dễ chịu, vị ngọt phèn thanh dịu.',
+  'Bồi bổ sức khỏe cực tốt, ăn xong ngủ ngon giấc và sâu giấc hơn.'
 ];
 
 const ginsengPhrases = [
   'Mùi sâm thơm lừng rất dễ chịu, kết hợp đông trùng và yến uống bổ dưỡng lắm.',
   'Uống vào thấy tỉnh táo đầu óc, tràn đầy năng lượng làm việc cả ngày.',
   'Sâm thơm nhẹ nhàng dễ ăn, sợi yến dai sần sật bồi bổ cơ thể rất nhanh.',
-  'Mua cho ông nội phục hồi sau ốm, sâm bổ khí huyết giúp ông ăn ngủ ngon hơn.'
+  'Mua cho ông nội phục hồi sau ốm, sâm bổ khí huyết giúp ông ăn ngủ ngon hơn.',
+  'Sâm kết hợp đông trùng vị đậm đà rất bổ dưỡng, ông bà khen uống khỏe người.',
+  'Thơm nhẹ mùi nhân sâm cao cấp, uống mát lạnh bổ khí huyết cực tốt.',
+  'Yến chưng sâm uống tỉnh táo sảng khoái, giảm căng thẳng mệt mỏi công việc.',
+  'Món quà sức khỏe tuyệt vời cho người già và người cần hồi phục sức khỏe.'
 ];
 
 const rockSugarPhrases = [
   'Vị đường phèn truyền thống ngọt thanh mát lành dễ ăn nhất.',
   'Bé nhà mình thích vị này lắm, trộm vía bé ăn ngon miệng và tăng đề kháng.',
   'Cả nhà mình ai cũng chuộng vị đường phèn nguyên bản này, thanh mát giải nhiệt.',
-  'Đường phèn chưng thơm dịu, ngọt nhẹ thanh thanh chứ không bị khé cổ.'
+  'Đường phèn chưng thơm dịu, ngọt nhẹ thanh thanh chứ không bị khé cổ.',
+  'Đường phèn nguyên bản ngọt thanh dịu mát, yến nhiều sợi giòn sần sật.',
+  'Vị ngọt thanh cổ họng, yến sào kết hợp đường phèn truyền thống luôn là số 1.',
+  'Bé nhà mình lười ăn mà trộm vía ngày nào cũng đòi ăn 1 hũ yến đường phèn này.',
+  'Yến chưng đường phèn thanh mát giải nhiệt cực tốt cho những ngày nắng nóng.'
 ];
 
 const nestPhrases = [
@@ -444,7 +481,51 @@ const nestPhrases = [
   'Sợi yến dài dai giòn sần sật ăn sướng miệng, chưng bát yến chất lượng.',
   'Shop tặng kèm đầy đủ đường phèn, táo đỏ, hạt sen chưng ăn ngon tuyệt cú mèo.',
   'Yến sạch sẽ ít lông tơ (hoặc tinh chế ko có lông), chế biến rất nhàn.',
-  'Tai yến to dày dặn khô ráo, cân đủ trọng lượng, shop làm ăn rất uy tín.'
+  'Tai yến to dày dặn khô ráo, cân đủ trọng lượng, shop làm ăn rất uy tín.',
+  'Tổ yến khô giòn, ngâm nở bung rất nhiều sợi yến dài, dai ngon nguyên chất.',
+  'Tinh chế sạch bong ko còn một cọng lông, chưng cực nhanh cực tiện cho mẹ bầu.',
+  'Ăn yến tổ tự chưng thấy yên tâm nhất, sợi yến của shop dai nguyên bản.'
+];
+
+const shortReviews = [
+  'Yến ngon, vị ngọt thanh mát, giao hàng rất nhanh.',
+  'Đóng gói cẩn thận bọc chống sốc kỹ, sản phẩm đúng hình.',
+  'Yến chưng rất đặc nhiều sợi dai ngon, chuẩn 5 sao.',
+  'Vị ngọt vừa phải, yến sánh sệt ăn sần sật rất đã.',
+  'Shop tư vấn nhiệt tình, giao hỏa tốc siêu nhanh.',
+  'Mua lần thứ 3 của shop rồi, chất lượng yến luôn ổn định.',
+  'Hộp quà màu đỏ rất đẹp sang trọng, biếu tặng lịch sự lắm.',
+  'Yến thơm tự nhiên tanh nhẹ đặc trưng, ăn rất giòn dai.',
+  'Sản phẩm tốt đáng tiền mua bồi bổ cho gia đình.',
+  'Yến đặc sánh ngập hũ chứ ko loãng nước, rất ưng ý.',
+  'Giao đủ số lượng, chai thủy tinh đóng nắp niêm phong cẩn thận.',
+  'Yến chưng đường phèn ngọt mát dễ ăn, bé nhà mình rất thích.',
+  'Hũ yến nhiều sợi sền sệt giòn dai, chất lượng tuyệt vời.',
+  'Đáng đồng tiền bát gạo, shop uy tín giao hàng nhanh.',
+  'Ok lắm shop ơi, lần sau sẽ ủng hộ tiếp tục.'
+];
+
+const familyReviews = [
+  'Mua về cho bé con ăn dặm bồi bổ sức đề kháng, trộm vía bé ăn ngon miệng thích lắm.',
+  'Yến vị đường phèn ngọt thanh dịu, bé nhà mình lười ăn mà trộm vía ăn yến này lại rất hợp tác.',
+  'Bé nhà mình ăn yến đều đặn thấy da dẻ hồng hào, ít bị ốm vặt khi thay đổi thời tiết.',
+  'Mua cho bà ngoại bị cao huyết áp với tiểu đường, bà khen ngọt thanh dễ ăn mà khỏe người.',
+  'Bố mẹ mình lớn tuổi hay bị mất ngủ, tối nào cũng ăn 1 hũ yến sâm đông trùng thấy ngủ sâu giấc hơn.',
+  'Mua bồi bổ cho ông nội sau ốm, ông ăn yến sâm thấy người khỏe khoắn đi lại hoạt bát hẳn ra.',
+  'Vợ bầu nghén ăn hũ yến đường kiêng này thấy mát ruột dễ chịu, bổ dưỡng mà ko lo tăng đường huyết.',
+  'Yến sánh đặc nhiều sợi, cả nhà mình ai cũng thích ăn từ trẻ nhỏ đến người già.',
+  'Mua cho mẹ bầu ăn tẩm bổ thai kỳ, trộm vía đi khám bác sĩ khen mẹ khỏe bé phát triển tốt.',
+  'Sản phẩm bổ dưỡng tuyệt vời, cả gia đình mình đều dùng mỗi ngày để tăng sức đề kháng.'
+];
+
+const giftReviews = [
+  'Hộp quà tông đỏ mạ vàng cực kỳ sang trọng ấm cúng, mang đi biếu Tết đối tác rất lịch sự.',
+  'Set 6 hũ yến sâm đông trùng thiết kế hộp rất đẳng cấp sành điệu, mang tặng sếp cực chuẩn bài.',
+  'Túi xách đi kèm trang nhã lịch thiệp, chai thủy tinh dày dặn bọc chống sốc kỹ càng biếu tặng rất sang.',
+  'Mua set 10 hũ về chia quà biếu ông bà nội ngoại hai bên ai cũng khen yến đặc và hộp quà đẹp.',
+  'Hộp thiết kế rất tinh tế cao cấp, giá cả lại phải chăng tương xứng chất lượng quà tặng.',
+  'Món quà sức khỏe ý nghĩa nhất dành cho người thân bạn bè dịp lễ lộc.',
+  'Thiết kế bao bì xịn xò đẳng cấp, yến bên trong đặc sánh giòn dai sần sật biếu tặng sếp sếp khen mãi.'
 ];
 
 const shopReplies = [
@@ -472,7 +553,6 @@ function seedRandom(seedStr: string) {
 // Generate reviews list deterministically
 function generateDeterministicReviews(slug: string): Review[] {
   const rand = seedRandom(slug);
-  const slugHash = Math.abs(seedRandom(slug)());
   
   // Target total count: between 80 and 200 reviews
   const targetCount = 80 + Math.floor(rand() * 121);
@@ -491,17 +571,15 @@ function generateDeterministicReviews(slug: string): Review[] {
   while (reviews.length < targetCount) {
     const rVal = rand();
     
-    // Pick name
+    // Pick name (always full names: Họ + Tên Đệm + Tên hoặc Họ + Tên)
+    const first = FIRST_NAMES[Math.floor(rand() * FIRST_NAMES.length)];
+    const last = LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)];
     let name = '';
-    if (rVal < 0.45) {
-      const title = TITLES[Math.floor(rand() * TITLES.length)];
-      const last = LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)];
-      name = `${title} ${last}`;
-    } else {
-      const first = FIRST_NAMES[Math.floor(rand() * FIRST_NAMES.length)];
+    if (rand() < 0.85) {
       const middle = MIDDLE_NAMES[Math.floor(rand() * MIDDLE_NAMES.length)];
-      const last = LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)];
       name = `${first} ${middle} ${last}`;
+    } else {
+      name = `${first} ${last}`;
     }
     
     // Pick rating (mostly 5s, some 4s, rare 3s)
@@ -510,11 +588,11 @@ function generateDeterministicReviews(slug: string): Review[] {
     if (ratingVal < 0.08) rating = 4;
     else if (ratingVal < 0.09) rating = 3; // Rare 3 star
     
-    // Pick content by combining phrases
-    const open = openingPhrases[Math.floor(rand() * openingPhrases.length)];
-    const qual = generalQualityPhrases[Math.floor(rand() * generalQualityPhrases.length)];
+    // Construct content dynamically with varied templates
+    const templateVal = rand();
+    let content = '';
     
-    // Get category phrases
+    // Pick specific category phrase
     let catPhrase = '';
     if (slug.includes('kieng') || slug.includes('isomalt')) {
       catPhrase = sugarFreePhrases[Math.floor(rand() * sugarFreePhrases.length)];
@@ -527,14 +605,41 @@ function generateDeterministicReviews(slug: string): Review[] {
     } else if (slug.includes('tho') || slug.includes('tinh-che') || slug.includes('rut-long')) {
       catPhrase = nestPhrases[Math.floor(rand() * nestPhrases.length)];
     } else {
-      // General fallbacks
-      catPhrase = qual;
+      catPhrase = generalQualityPhrases[Math.floor(rand() * generalQualityPhrases.length)];
     }
-    
-    const ship = rand() < 0.5 ? shippingAndService[Math.floor(rand() * shippingAndService.length)] : '';
+
+    const open = openingPhrases[Math.floor(rand() * openingPhrases.length)];
+    const qual = generalQualityPhrases[Math.floor(rand() * generalQualityPhrases.length)];
+    const ship = shippingAndService[Math.floor(rand() * shippingAndService.length)];
     const end = recommendationPhrases[Math.floor(rand() * recommendationPhrases.length)];
-    
-    const content = [open, qual, catPhrase, ship, end].filter(Boolean).join(' ');
+
+    if (templateVal < 0.22) {
+      // Type 1: Short & Simple
+      content = shortReviews[Math.floor(rand() * shortReviews.length)];
+      if (rand() < 0.5) content += ' ' + end;
+    } else if (templateVal < 0.45) {
+      // Type 2: Family Focus
+      content = familyReviews[Math.floor(rand() * familyReviews.length)] + ' ' + catPhrase;
+      if (rand() < 0.5) content += ' ' + end;
+    } else if (templateVal < 0.65) {
+      // Type 3: Quality & Service Focus
+      content = open + ' ' + qual + ' ' + ship;
+      if (rand() < 0.4) content += ' ' + end;
+    } else if (templateVal < 0.8 && (slug.includes('set') || slug.includes('combo') || slug.includes('hu') || slug.includes('hũ'))) {
+      // Type 4: Gift focus
+      content = giftReviews[Math.floor(rand() * giftReviews.length)] + ' ' + catPhrase;
+      if (rand() < 0.5) content += ' ' + ship;
+    } else {
+      // Type 5: In-depth mix
+      const includeShip = rand() < 0.6;
+      const parts = [
+        open,
+        catPhrase,
+        includeShip ? ship : '',
+        end
+      ].filter(Boolean);
+      content = parts.join(' ');
+    }
     
     // Pick date (distributed in last 120 days)
     const reviewTimeMs = nowMs - Math.floor(rand() * dateRangeMs);
