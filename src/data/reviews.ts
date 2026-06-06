@@ -364,51 +364,235 @@ export const SEEDED_REVIEWS: Record<string, Review[]> = {
   ]
 };
 
-// Fallback reviews for products that don't have custom ones
-const DEFAULT_REVIEWS: Review[] = [
-  {
-    id: 'def-1',
-    name: 'Nguyễn Thị Minh',
-    rating: 5,
-    content: 'Sản phẩm chất lượng cao, đóng gói cực kỳ cẩn thận và giao hàng nhanh. Vị thanh nhẹ dễ uống, sợi yến dai ngon tự nhiên. Sẽ tiếp tục mua ủng hộ shop.',
-    date: '2026-05-20',
-    reply: 'Cảm ơn bạn đã tin dùng sản phẩm của QiQi Yến Sào ạ. Chúc bạn và gia đình thật nhiều sức khỏe!'
-  },
-  {
-    id: 'def-2',
-    name: 'Trần Văn Hoàng',
-    rating: 5,
-    content: 'Yến chưng sẵn đặc sợi yến, vị ngọt dịu nhẹ không bị gắt đường, ăn sần sật rất thích. Thiết kế hộp đẹp mang đi biếu làm quà tặng rất sang trọng và lịch sự.',
-    date: '2026-05-29',
-    reply: 'QiQi Yến Sào cảm ơn anh đã đánh giá tốt sản phẩm. Rất vui vì món quà của anh mang lại sự hài lòng!'
-  },
-  {
-    id: 'def-3',
-    name: 'Bác Hạnh (Hải Phòng)',
-    rating: 4,
-    content: 'Tôi mua cho gia đình dùng bồi bổ thấy rất hợp, nước yến đặc sánh, đóng gói lọ thuỷ tinh chắc chắn sạch sẽ. Phục vụ chu đáo, ship nhiệt tình.',
-    date: '2026-06-03',
-    reply: 'Cháu cảm ơn bác Hạnh ạ. Kính chúc bác và gia đình luôn mạnh khỏe, hạnh phúc!'
-  }
+// pools for review generation
+const FIRST_NAMES = ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Hoàng', 'Phan', 'Vũ', 'Võ', 'Đặng', 'Bùi', 'Đỗ', 'Hồ', 'Ngô', 'Dương', 'Lý'];
+const MIDDLE_NAMES = ['Thị', 'Văn', 'Minh', 'Thu', 'Hồng', 'Ngọc', 'Thanh', 'Đức', 'Hoài', 'Xuân', 'Kim', 'Khánh', 'Quốc', 'Anh'];
+const LAST_NAMES = ['Trang', 'Hương', 'Hạnh', 'Linh', 'Thảo', 'Vân', 'Anh', 'Tú', 'Lâm', 'Sơn', 'Tùng', 'Hùng', 'Cường', 'Nam', 'Hoàng', 'Bảo', 'Trâm', 'Yến', 'Lan', 'Vũ', 'Diệp', 'Oanh', 'Chi', 'Phương', 'Huyền', 'Mai', 'Giang', 'Huệ', 'Tú', 'Trà', 'My', 'Hà', 'Duy', 'Bình', 'Tuyết'];
+const TITLES = ['Chị', 'Anh', 'Mẹ', 'Bác', 'Cô', 'Bạn', 'Bà', 'Ông', 'Mẹ bầu', 'Em'];
+
+const openingPhrases = [
+  'Đã nhận được hàng, đóng gói rất cẩn thận bọc chống sốc kỹ càng.',
+  'Giao hàng nhanh cực kỳ, đóng gói hộp đỏ rất đẹp và sang trọng.',
+  'Sản phẩm đóng gói đẹp mắt, bọc chống sốc từng lọ thủy tinh chắc chắn.',
+  'Mua của shop nhiều lần rồi, lúc nào giao hàng cũng nhanh và đóng gói kỹ.',
+  'Nhận hàng nguyên vẹn không sứt mẻ hũ nào, shop đóng gói cẩn thận lắm.',
+  'Giao hỏa tốc siêu nhanh, bọc chống va đập tốt.',
+  'Đóng hộp đỏ sang xịn mịn, đem đi biếu tặng rất lịch sự và đẳng cấp.',
+  'Ấn tượng đầu tiên là đóng gói siêu chắc chắn và giao hàng siêu tốc.',
+  'Hộp quà đẹp lắm nha mọi người, có túi xách đi kèm lịch sự.',
+  'Hàng chuẩn chính hãng, tem mác niêm phong đầy đủ rõ ràng.'
 ];
 
+const generalQualityPhrases = [
+  'Yến chưng đặc sánh, nhiều sợi yến dai ngon sần sật chứ không bị loãng.',
+  'Mở nắp ra là thơm mùi yến tự nhiên, yến dạng sệt ăn rất chất lượng.',
+  'Nước yến ngọt thanh thanh dễ uống, sợi yến nhiều ăn ngập miệng.',
+  'Yến thật chuẩn 2g khô nên chưng lên rất đặc, không bị pha trộn chất tạo sệt.',
+  'Sợi yến giòn dai sần sật ăn đã miệng lắm, không bị vụn nát như loại khác.',
+  'Sản phẩm chất lượng tốt, yến đặc nhiều sợi, độ ngọt thanh mát vừa vặn.',
+  'Hũ yến dày dặn sạch sẽ, yến chưng thơm mát dễ chịu cực kỳ.'
+];
+
+const shippingAndService = [
+  'Shop tư vấn nhiệt tình, phục vụ chu đáo dã man.',
+  'Nhân viên hỗ trợ nhiệt tình, giải đáp thắc mắc nhanh chóng.',
+  'Shipper giao hàng lịch sự, vui vẻ, gọi trước khi giao.',
+  'Dịch vụ chăm sóc khách hàng của shop rất tốt, 10 điểm.',
+  'Tặng kèm đầy đủ phụ kiện, shop phục vụ chu đáo.'
+];
+
+const recommendationPhrases = [
+  'Sẽ tiếp tục ủng hộ shop lâu dài vì sản phẩm chất lượng.',
+  'Rất đáng tiền mua nha mọi người, nên mua bồi bổ cho gia đình.',
+  'Sẽ giới thiệu cho bạn bè người thân ủng hộ shop.',
+  'Đánh giá 5 sao cho chất lượng sản phẩm và dịch vụ của shop.',
+  'Sản phẩm rất đáng tiền, mua làm quà biếu cực kỳ hợp lý.',
+  'Chắc chắn sẽ mua lại nhiều lần nữa.'
+];
+
+// Specific phrases
+const sugarFreePhrases = [
+  'Dòng đường kiêng này rất hợp cho người tiểu đường hoặc đang ăn kiêng giảm cân.',
+  'Ngọt dịu nhẹ từ đường củ cải isomalt ăn thanh mát mà không sợ tăng đường huyết.',
+  'Mua biếu ông bà bị cao huyết áp với tiểu đường, ông bà khen ngon và an tâm ăn.',
+  'Vị ngọt thanh thanh nhẹ nhàng, ăn kiêng mà được bồi bổ yến sào này thì quá tuyệt.'
+];
+
+const cordycepsPhrases = [
+  'Sợi đông trùng hạ thảo dai dai thơm nhẹ, chưng cùng yến bổ dưỡng nhân đôi.',
+  'Uống vào thấy người khỏe khoắn, giảm mệt mỏi, ngủ sâu giấc hơn hẳn.',
+  'Mùi vị đông trùng tự nhiên thơm lắm, sợi đông trùng nhìn chất lượng cực kỳ.',
+  'Mua cho bố mẹ bồi bổ sức khỏe tuổi già, ai cũng khen vị đông trùng này thơm ngon.'
+];
+
+const ginsengPhrases = [
+  'Mùi sâm thơm lừng rất dễ chịu, kết hợp đông trùng và yến uống bổ dưỡng lắm.',
+  'Uống vào thấy tỉnh táo đầu óc, tràn đầy năng lượng làm việc cả ngày.',
+  'Sâm thơm nhẹ nhàng dễ ăn, sợi yến dai sần sật bồi bổ cơ thể rất nhanh.',
+  'Mua cho ông nội phục hồi sau ốm, sâm bổ khí huyết giúp ông ăn ngủ ngon hơn.'
+];
+
+const rockSugarPhrases = [
+  'Vị đường phèn truyền thống ngọt thanh mát lành dễ ăn nhất.',
+  'Bé nhà mình thích vị này lắm, trộm vía bé ăn ngon miệng và tăng đề kháng.',
+  'Cả nhà mình ai cũng chuộng vị đường phèn nguyên bản này, thanh mát giải nhiệt.',
+  'Đường phèn chưng thơm dịu, ngọt nhẹ thanh thanh chứ không bị khé cổ.'
+];
+
+const nestPhrases = [
+  'Yến tổ nở nhiều dã man, chưng lên thơm mùi tanh nhẹ tự nhiên của tổ yến.',
+  'Sợi yến dài dai giòn sần sật ăn sướng miệng, chưng bát yến chất lượng.',
+  'Shop tặng kèm đầy đủ đường phèn, táo đỏ, hạt sen chưng ăn ngon tuyệt cú mèo.',
+  'Yến sạch sẽ ít lông tơ (hoặc tinh chế ko có lông), chế biến rất nhàn.',
+  'Tai yến to dày dặn khô ráo, cân đủ trọng lượng, shop làm ăn rất uy tín.'
+];
+
+const shopReplies = [
+  'QiQi Yến Sào cảm ơn phản hồi của bạn ạ. Chúc bạn và gia đình luôn mạnh khỏe!',
+  'Cảm ơn bạn nhiều vì đã tin chọn sản phẩm của QiQi Yến Sào!',
+  'Dạ shop cảm ơn anh/chị nhiều ạ. Chúc gia đình mình luôn ngập tràn sức khỏe nha!',
+  'Sự hài lòng của khách hàng là động lực lớn nhất của QiQi Yến Sào. Cảm ơn bạn rất nhiều!',
+  'Dạ cháu cảm ơn cô/chú đã ủng hộ sản phẩm của cửa hàng ạ!',
+  'QiQi Yến Sào rất vui vì bạn hài lòng với sản phẩm và dịch vụ của shop!'
+];
+
+// Simple deterministic random generator based on a seed
+function seedRandom(seedStr: string) {
+  let h = 0;
+  for (let i = 0; i < seedStr.length; i++) {
+    h = seedStr.charCodeAt(i) + ((h << 5) - h);
+  }
+  return function() {
+    h = (h * 16807) % 2147483647;
+    return (h - 1) / 2147483646;
+  };
+}
+
+// Generate reviews list deterministically
+function generateDeterministicReviews(slug: string): Review[] {
+  const rand = seedRandom(slug);
+  const slugHash = Math.abs(seedRandom(slug)());
+  
+  // Target total count: between 80 and 200 reviews
+  const targetCount = 80 + Math.floor(rand() * 121);
+  
+  const reviews: Review[] = [];
+  
+  // 1. Add predefined custom reviews first (if any)
+  const predefined = SEEDED_REVIEWS[slug] || [];
+  reviews.push(...predefined);
+  
+  // 2. Generate the rest deterministically
+  let idCounter = 1;
+  const nowMs = new Date('2026-06-06').getTime();
+  const dateRangeMs = 120 * 24 * 60 * 60 * 1000; // 120 days ago
+  
+  while (reviews.length < targetCount) {
+    const rVal = rand();
+    
+    // Pick name
+    let name = '';
+    if (rVal < 0.45) {
+      const title = TITLES[Math.floor(rand() * TITLES.length)];
+      const last = LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)];
+      name = `${title} ${last}`;
+    } else {
+      const first = FIRST_NAMES[Math.floor(rand() * FIRST_NAMES.length)];
+      const middle = MIDDLE_NAMES[Math.floor(rand() * MIDDLE_NAMES.length)];
+      const last = LAST_NAMES[Math.floor(rand() * LAST_NAMES.length)];
+      name = `${first} ${middle} ${last}`;
+    }
+    
+    // Pick rating (mostly 5s, some 4s, rare 3s)
+    const ratingVal = rand();
+    let rating = 5;
+    if (ratingVal < 0.08) rating = 4;
+    else if (ratingVal < 0.09) rating = 3; // Rare 3 star
+    
+    // Pick content by combining phrases
+    const open = openingPhrases[Math.floor(rand() * openingPhrases.length)];
+    const qual = generalQualityPhrases[Math.floor(rand() * generalQualityPhrases.length)];
+    
+    // Get category phrases
+    let catPhrase = '';
+    if (slug.includes('kieng') || slug.includes('isomalt')) {
+      catPhrase = sugarFreePhrases[Math.floor(rand() * sugarFreePhrases.length)];
+    } else if (slug.includes('dong-trung')) {
+      catPhrase = cordycepsPhrases[Math.floor(rand() * cordycepsPhrases.length)];
+    } else if (slug.includes('sam')) {
+      catPhrase = ginsengPhrases[Math.floor(rand() * ginsengPhrases.length)];
+    } else if (slug.includes('phen')) {
+      catPhrase = rockSugarPhrases[Math.floor(rand() * rockSugarPhrases.length)];
+    } else if (slug.includes('tho') || slug.includes('tinh-che') || slug.includes('rut-long')) {
+      catPhrase = nestPhrases[Math.floor(rand() * nestPhrases.length)];
+    } else {
+      // General fallbacks
+      catPhrase = qual;
+    }
+    
+    const ship = rand() < 0.5 ? shippingAndService[Math.floor(rand() * shippingAndService.length)] : '';
+    const end = recommendationPhrases[Math.floor(rand() * recommendationPhrases.length)];
+    
+    const content = [open, qual, catPhrase, ship, end].filter(Boolean).join(' ');
+    
+    // Pick date (distributed in last 120 days)
+    const reviewTimeMs = nowMs - Math.floor(rand() * dateRangeMs);
+    const date = new Date(reviewTimeMs).toISOString().split('T')[0];
+    
+    // Pick owner reply (12% chance)
+    let reply: string | undefined = undefined;
+    if (rand() < 0.12) {
+      reply = shopReplies[Math.floor(rand() * shopReplies.length)];
+    }
+    
+    reviews.push({
+      id: `gen-${slug}-${idCounter++}`,
+      name,
+      rating,
+      content,
+      date,
+      reply
+    });
+  }
+  
+  // Sort reviews: newest date first, with predefined ones preserved at the very top if date is equal
+  return reviews.sort((a, b) => {
+    const diff = new Date(b.date).getTime() - new Date(a.date).getTime();
+    if (diff !== 0) return diff;
+    // Predefined reviews have priority if same date
+    if (a.id.startsWith('ydp') || a.id.startsWith('ydt') || a.id.startsWith('ydk') || a.id.startsWith('ys') || a.id.startsWith('s6') || a.id.startsWith('s10') || a.id.startsWith('yt')) {
+      return -1;
+    }
+    if (b.id.startsWith('ydp') || b.id.startsWith('ydt') || b.id.startsWith('ydk') || b.id.startsWith('ys') || b.id.startsWith('s6') || b.id.startsWith('s10') || b.id.startsWith('yt')) {
+      return 1;
+    }
+    return 0;
+  });
+}
+
 /**
- * Get all reviews for a product (combining seeded reviews and localStorage reviews)
+ * Get all reviews for a product (combining generated, seeded, and localStorage reviews)
  */
 export function getProductReviews(slug: string): Review[] {
+  const generated = generateDeterministicReviews(slug);
+
   if (typeof window === 'undefined') {
-    return SEEDED_REVIEWS[slug] || DEFAULT_REVIEWS;
+    return generated;
   }
 
   // Load from localStorage if present
   try {
     const localData = localStorage.getItem(`reviews_${slug}`);
     const localReviews: Review[] = localData ? JSON.parse(localData) : [];
-    const seeded = SEEDED_REVIEWS[slug] || DEFAULT_REVIEWS;
-    return [...localReviews, ...seeded];
+    // Combine local user reviews first, followed by generated reviews
+    // filter out any generated reviews that match local ones by id
+    const filteredGenerated = generated.filter(
+      (gen) => !localReviews.some((local) => local.id === gen.id)
+    );
+    return [...localReviews, ...filteredGenerated];
   } catch (e) {
     console.error('Error loading reviews from localStorage', e);
-    return SEEDED_REVIEWS[slug] || DEFAULT_REVIEWS;
+    return generated;
   }
 }
 
