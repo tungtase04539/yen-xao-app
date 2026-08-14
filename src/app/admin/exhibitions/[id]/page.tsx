@@ -119,27 +119,48 @@ export default function ExhibitionFormPage() {
       } else {
         const { error } = await supabase.from('exhibitions').update(exData).eq('id', id);
         if (error) throw error;
-        // Delete old images
-        await supabase.from('exhibition_images').delete().eq('exhibition_id', id);
       }
 
-      // Insert images
-      if (images.length > 0) {
-        const imgData = images.map((img, i) => ({
-          exhibition_id: exId,
-          image_url: img.image_url,
-          media_type: img.media_type || 'image',
-          caption: img.caption || null,
-          sort_order: i,
-        }));
-        const { error } = await supabase.from('exhibition_images').insert(imgData);
+      // Ghi trước, xóa sau: ảnh/video cũ chỉ bị gỡ khi admin thực sự xóa khỏi form và khi
+      // các thao tác ghi đã thành công — xóa trước rồi insert lỗi là mất sạch thư viện ảnh.
+      const buildRow = (img: ExhibitionImage, i: number) => ({
+        exhibition_id: exId,
+        image_url: img.image_url,
+        media_type: img.media_type || 'image',
+        caption: img.caption || null,
+        sort_order: i,
+      });
+
+      const indexed = images.map((img, i) => ({ img, i }));
+      const existing = indexed.filter(({ img }) => img.id);
+      const added = indexed.filter(({ img }) => !img.id);
+
+      if (existing.length > 0) {
+        const { error } = await supabase
+          .from('exhibition_images')
+          .upsert(existing.map(({ img, i }) => ({ id: img.id, ...buildRow(img, i) })));
+        if (error) throw error;
+      }
+
+      if (added.length > 0) {
+        const { error } = await supabase.from('exhibition_images').insert(added.map(({ img, i }) => buildRow(img, i)));
+        if (error) throw error;
+      }
+
+      if (!isNew) {
+        const keepIds = images.map((img) => img.id).filter(Boolean) as string[];
+        let removeQuery = supabase.from('exhibition_images').delete().eq('exhibition_id', id);
+        if (keepIds.length > 0) removeQuery = removeQuery.not('id', 'in', `(${keepIds.join(',')})`);
+        const { error } = await removeQuery;
         if (error) throw error;
       }
 
       toast.success(isNew ? 'Tạo triển lãm thành công!' : 'Cập nhật thành công!');
       router.push('/admin/exhibitions');
-    } catch {
-      toast.error('Lưu thất bại');
+    } catch (err: unknown) {
+      console.error('Exhibition save error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Lưu thất bại: ${msg}`);
     } finally {
       setSaving(false);
     }

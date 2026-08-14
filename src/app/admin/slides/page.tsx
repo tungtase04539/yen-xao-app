@@ -96,9 +96,11 @@ export default function AdminSlidesPage() {
       if (error) { toast.error('Cập nhật thất bại'); return; }
       toast.success('Đã cập nhật slide');
     } else {
+      // Tính từ sort_order lớn nhất chứ không từ độ dài mảng: sau khi xóa một slide ở
+      // giữa, độ dài mảng trùng với sort_order đang tồn tại và thứ tự hero thành bất định.
       const { error } = await supabase.from('hero_slides').insert({
         ...data,
-        sort_order: slides.length,
+        sort_order: slides.length > 0 ? Math.max(...slides.map((s) => s.sort_order)) + 1 : 0,
       });
       if (error) { toast.error('Thêm slide thất bại'); return; }
       toast.success('Đã thêm slide mới');
@@ -129,8 +131,19 @@ export default function AdminSlidesPage() {
     if (direction === 'down' && idx >= slides.length - 1) return;
 
     const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
-    await supabase.from('hero_slides').update({ sort_order: slides[swapIdx].sort_order }).eq('id', slides[idx].id);
-    await supabase.from('hero_slides').update({ sort_order: slides[idx].sort_order }).eq('id', slides[swapIdx].id);
+    const reordered = [...slides];
+    [reordered[idx], reordered[swapIdx]] = [reordered[swapIdx], reordered[idx]];
+
+    // Đánh lại số cả danh sách thay vì hoán đổi hai giá trị: các slide cũ có thể đang
+    // trùng sort_order, khi đó hoán đổi là no-op im lặng và nút ▲/▼ trông như hỏng.
+    const updates = reordered
+      .map((s, i) => ({ id: s.id, sortOrder: i, current: s.sort_order }))
+      .filter((u) => u.current !== u.sortOrder);
+
+    for (const u of updates) {
+      const { error } = await supabase.from('hero_slides').update({ sort_order: u.sortOrder }).eq('id', u.id);
+      if (error) { toast.error(`Đổi thứ tự thất bại: ${error.message}`); break; }
+    }
     fetchSlides();
   };
 

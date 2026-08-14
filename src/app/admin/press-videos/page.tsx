@@ -117,13 +117,18 @@ export default function PressVideosAdminPage() {
   const handleDelete = async (video: PressVideo) => {
     if (!confirm(`Xóa "${video.title}"?`)) return;
 
+    // Xóa row trước rồi mới xóa file: nếu làm ngược lại và lệnh xóa row bị chặn thì
+    // file MP4 đã mất trong khi card vẫn hiện ngoài trang chủ với video_url 404.
+    const { error } = await supabase.from('press_videos').delete().eq('id', video.id);
+    if (error) { toast.error(`Xóa thất bại: ${error.message}`); return; }
+
     // Extract storage path from URL
     const pathMatch = video.video_url.match(/\/videos\/(.+)$/);
     if (pathMatch) {
-      await supabase.storage.from('videos').remove([pathMatch[1]]);
+      const { error: storageErr } = await supabase.storage.from('videos').remove([pathMatch[1]]);
+      if (storageErr) console.error('Xóa file video trên storage thất bại:', storageErr);
     }
 
-    await supabase.from('press_videos').delete().eq('id', video.id);
     toast.success('Đã xóa');
     fetchVideos();
   };

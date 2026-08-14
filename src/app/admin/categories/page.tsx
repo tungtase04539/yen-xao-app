@@ -47,7 +47,11 @@ export default function AdminCategoriesPage() {
       if (error) { toast.error(`Cập nhật thất bại: ${error.message}`); return; }
       toast.success('Đã cập nhật danh mục');
     } else {
-      const { data, error } = await supabase.from('categories').insert({ name: editName, slug, type: editType, image: editImage || null, sort_order: categories.length }).select('id');
+      // Tính từ sort_order lớn nhất trong CÙNG type: `categories` gồm cả product lẫn blog
+      // nên dùng độ dài mảng sẽ sinh ra số trùng và làm lệch thứ tự menu sản phẩm.
+      const sameType = categories.filter((c) => c.type === editType);
+      const nextSortOrder = sameType.length > 0 ? Math.max(...sameType.map((c) => c.sort_order)) + 1 : 0;
+      const { data, error } = await supabase.from('categories').insert({ name: editName, slug, type: editType, image: editImage || null, sort_order: nextSortOrder }).select('id');
       if (error) { toast.error(`Thêm thất bại: ${error.message}`); return; }
       if (!data || data.length === 0) { toast.error('Thêm thất bại: Kiểm tra RLS policy bảng categories'); return; }
       toast.success('Đã thêm danh mục mới');

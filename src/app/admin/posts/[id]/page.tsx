@@ -36,6 +36,9 @@ export default function PostFormPage() {
   const [categoryId, setCategoryId] = useState('');
   const [status, setStatus] = useState('draft');
   const [publishedAt, setPublishedAt] = useState('');
+  // published_at đang lưu trong DB của bài ĐÃ đăng, giữ nguyên độ chính xác gốc (input
+  // datetime-local đã cắt mất giây) để lưu lại bài cũ không làm đổi ngày đăng.
+  const [savedPublishedAt, setSavedPublishedAt] = useState<string | null>(null);
 
   const generateSlug = (text: string) => text.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
@@ -52,6 +55,10 @@ export default function PostFormPage() {
           setContent(data.content || '');
           setCategoryId(data.category_id || '');
           setStatus(data.status);
+          // Bài đang 'scheduled' KHÔNG tính là đã đăng: chuyển nó sang 'Đã đăng' phải
+          // đóng dấu thời gian mới, vì /blog lọc published_at <= now nên giữ lại ngày
+          // hẹn ở tương lai sẽ khiến bài không hiện ra sau khi admin bấm đăng.
+          setSavedPublishedAt(data.status === 'published' ? data.published_at || null : null);
           if (data.published_at) {
             const d = new Date(data.published_at);
             d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
@@ -75,10 +82,13 @@ export default function PostFormPage() {
         content: content || null,
         category_id: categoryId || null,
         status,
+        // Chỉ đóng dấu thời gian mới khi bài lần đầu chuyển sang trạng thái đã đăng;
+        // bài đã có ngày đăng thì giữ nguyên, nếu không mỗi lần sửa lỗi chính tả là
+        // bài lại nhảy lên đầu /blog và datePublished trong JSON-LD bị dịch chuyển.
         published_at: status === 'scheduled' && publishedAt
           ? new Date(publishedAt).toISOString()
           : status === 'published'
-            ? new Date().toISOString()
+            ? (savedPublishedAt ?? new Date().toISOString())
             : null,
       };
 
@@ -92,8 +102,10 @@ export default function PostFormPage() {
 
       toast.success(isNew ? 'Tạo bài viết thành công!' : 'Cập nhật thành công!');
       router.push('/admin/posts');
-    } catch {
-      toast.error('Lưu thất bại');
+    } catch (err: unknown) {
+      console.error('Post save error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Lưu thất bại: ${msg}`);
     } finally {
       setSaving(false);
     }

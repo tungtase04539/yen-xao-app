@@ -1,6 +1,10 @@
 // Cloudinary configuration
-export const CLOUD_NAME = 'dmjrk2fov';
-export const UPLOAD_PRESET = 'QiQI Yen';
+// Đọc từ biến môi trường để đổi tài khoản/preset (ví dụ khi phải thu hồi preset đang
+// bị lạm dụng) mà không phải sửa code. Giá trị mặc định giữ nguyên hành vi cũ.
+// Lưu ý: đây vẫn là unsigned upload nên hai giá trị này nằm trong bundle client —
+// phải siết preset ở Cloudinary console mới thực sự chặn được upload từ bên ngoài.
+export const CLOUD_NAME = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dmjrk2fov';
+export const UPLOAD_PRESET = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'QiQI Yen';
 
 /**
  * Upload a file to Cloudinary (unsigned upload)

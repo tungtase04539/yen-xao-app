@@ -4,6 +4,27 @@ import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Package, ShoppingCart, FileText, Tag, TrendingUp, DollarSign } from 'lucide-react';
 import { formatPrice } from '@/lib/format';
+import { toast } from 'sonner';
+
+// PostgREST của Supabase cắt mọi SELECT ở 1000 dòng mà KHÔNG trả lỗi, nên phải đọc
+// doanh thu theo lô cho tới hết thay vì tin vào một lần select duy nhất.
+const PAGE_SIZE = 1000;
+
+async function sumCompletedRevenue(): Promise<number> {
+  let total = 0;
+  for (let from = 0; ; from += PAGE_SIZE) {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('total_amount')
+      .eq('status', 'completed')
+      .order('id')
+      .range(from, from + PAGE_SIZE - 1);
+    if (error) throw error;
+    if (!data || data.length === 0) return total;
+    total += data.reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
+    if (data.length < PAGE_SIZE) return total;
+  }
+}
 
 interface Stats {
   products: number;
@@ -21,27 +42,33 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     async function fetchStats() {
-      const [products, orders, posts, coupons] = await Promise.all([
-        supabase.from('products').select('id', { count: 'exact', head: true }),
-        supabase.from('orders').select('id, total_amount, status'),
-        supabase.from('posts').select('id', { count: 'exact', head: true }),
-        supabase.from('coupons').select('id', { count: 'exact', head: true }),
-      ]);
+      try {
+        const [products, orders, pendingOrders, posts, coupons, revenue] = await Promise.all([
+          supabase.from('products').select('id', { count: 'exact', head: true }),
+          supabase.from('orders').select('id', { count: 'exact', head: true }),
+          supabase.from('orders').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+          supabase.from('posts').select('id', { count: 'exact', head: true }),
+          supabase.from('coupons').select('id', { count: 'exact', head: true }),
+          sumCompletedRevenue(),
+        ]);
 
-      const orderData = orders.data || [];
-      const revenue = orderData
-        .filter((o) => o.status === 'completed')
-        .reduce((sum, o) => sum + Number(o.total_amount || 0), 0);
-      const pending = orderData.filter((o) => o.status === 'pending').length;
+        for (const res of [products, orders, pendingOrders, posts, coupons]) {
+          if (res.error) throw res.error;
+        }
 
-      setStats({
-        products: products.count || 0,
-        orders: orderData.length,
-        posts: posts.count || 0,
-        coupons: coupons.count || 0,
-        revenue,
-        pending_orders: pending,
-      });
+        setStats({
+          products: products.count || 0,
+          orders: orders.count || 0,
+          posts: posts.count || 0,
+          coupons: coupons.count || 0,
+          revenue,
+          pending_orders: pendingOrders.count || 0,
+        });
+      } catch (err: unknown) {
+        console.error('Dashboard stats error:', err);
+        const msg = err instanceof Error ? err.message : String(err);
+        toast.error(`Không tải được số liệu tổng quan: ${msg}`);
+      }
     }
     fetchStats();
   }, []);

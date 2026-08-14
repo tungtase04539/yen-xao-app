@@ -116,25 +116,48 @@ export default function SectionFormPage() {
       } else {
         const { error } = await supabase.from('page_sections').update(sectionData).eq('id', id);
         if (error) throw error;
-        await supabase.from('section_media').delete().eq('section_id', id);
       }
 
-      if (media.length > 0) {
-        const mediaData = media.map((m, i) => ({
-          section_id: sectionId,
-          media_url: m.media_url,
-          media_type: m.media_type,
-          caption: m.caption || null,
-          sort_order: i,
-        }));
-        const { error } = await supabase.from('section_media').insert(mediaData);
+      // Ghi trước, xóa sau: media cũ chỉ bị gỡ khi admin thực sự xóa khỏi form và khi
+      // các thao tác ghi đã thành công — xóa trước rồi insert lỗi là mất sạch ảnh/video.
+      const buildRow = (m: SectionMedia, i: number) => ({
+        section_id: sectionId,
+        media_url: m.media_url,
+        media_type: m.media_type,
+        caption: m.caption || null,
+        sort_order: i,
+      });
+
+      const indexed = media.map((m, i) => ({ m, i }));
+      const existing = indexed.filter(({ m }) => m.id);
+      const added = indexed.filter(({ m }) => !m.id);
+
+      if (existing.length > 0) {
+        const { error } = await supabase
+          .from('section_media')
+          .upsert(existing.map(({ m, i }) => ({ id: m.id, ...buildRow(m, i) })));
+        if (error) throw error;
+      }
+
+      if (added.length > 0) {
+        const { error } = await supabase.from('section_media').insert(added.map(({ m, i }) => buildRow(m, i)));
+        if (error) throw error;
+      }
+
+      if (!isNew) {
+        const keepIds = media.map((m) => m.id).filter(Boolean) as string[];
+        let removeQuery = supabase.from('section_media').delete().eq('section_id', id);
+        if (keepIds.length > 0) removeQuery = removeQuery.not('id', 'in', `(${keepIds.join(',')})`);
+        const { error } = await removeQuery;
         if (error) throw error;
       }
 
       toast.success(isNew ? 'Tạo mục thành công!' : 'Cập nhật thành công!');
       router.push('/admin/sections');
-    } catch {
-      toast.error('Lưu thất bại');
+    } catch (err: unknown) {
+      console.error('Section save error:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      toast.error(`Lưu thất bại: ${msg}`);
     } finally { setSaving(false); }
   };
 
