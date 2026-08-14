@@ -4,7 +4,8 @@ import { CheckCircle, Package, Phone, ArrowRight } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Đặt Hàng Thành Công',
-  description: 'Cảm ơn bạn đã đặt hàng tại Yến Sào Cao Cấp.',
+  description: 'Cảm ơn bạn đã đặt hàng tại QiQi Yến Sào.',
+  robots: { index: false, follow: false },
 };
 
 interface Props {
@@ -35,7 +36,7 @@ export default async function ThankYouPage({ searchParams }: Props) {
           )}
 
           <p className="text-muted-foreground leading-relaxed mb-8">
-            Cảm ơn bạn đã tin tưởng Yến Sào Cao Cấp. Đơn hàng của bạn đang được
+            Cảm ơn bạn đã tin tưởng QiQi Yến Sào. Đơn hàng của bạn đang được
             xử lý và chúng tôi sẽ liên hệ xác nhận trong thời gian sớm nhất.
           </p>
 
