@@ -4,6 +4,7 @@ import CheckoutClient from './CheckoutClient';
 export const metadata: Metadata = {
   title: 'Thanh Toán',
   description: 'Hoàn tất đơn hàng yến sào cao cấp của bạn.',
+  robots: { index: false, follow: false },
 };
 
 export default function CheckoutPage() {

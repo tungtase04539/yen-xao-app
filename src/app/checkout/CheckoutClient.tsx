@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useForm } from 'react-hook-form';
+import { useForm, type FieldErrors } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from 'framer-motion';
 import {
@@ -16,6 +16,7 @@ import {
   CheckCircle,
   Banknote,
   QrCode,
+  AlertTriangle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -23,8 +24,15 @@ import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { useCart } from '@/store/cart';
 import { formatPrice } from '@/lib/format';
-import { checkoutSchema, type CheckoutFormData } from '@/lib/checkout-schema';
-import { placeOrder, validateCoupon } from './actions';
+import {
+  calcDiscount,
+  calcShippingFee,
+  checkoutSchema,
+  FREE_SHIPPING_THRESHOLD,
+  type CheckoutFormData,
+  type CouponRule,
+} from '@/lib/checkout-schema';
+import { getCurrentCartPrices, placeOrder, validateCoupon } from './actions';
 
 // VN Address API
 const VN_API_BASE = 'https://provinces.open-api.vn/api';
@@ -32,9 +40,6 @@ const VN_API_BASE = 'https://provinces.open-api.vn/api';
 interface Province { code: number; name: string }
 interface District { code: number; name: string }
 interface Ward { code: number; name: string }
-
-const SHIPPING_FEE = 30000;
-const FREE_SHIPPING_THRESHOLD = 1000000;
 
 export default function CheckoutClient() {
   const router = useRouter();
@@ -47,29 +52,26 @@ export default function CheckoutClient() {
   const [wards, setWards] = useState<Ward[]>([]);
   const [selectedProvince, setSelectedProvince] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [provincesLoading, setProvincesLoading] = useState(true);
+  // API địa chỉ là dịch vụ bên thứ ba: khi nó lỗi thì cho khách nhập tay
+  // thay vì khóa cứng toàn bộ checkout
+  const [manualAddress, setManualAddress] = useState(false);
+
+  // Đối chiếu giá giỏ hàng với DB
+  const [priceNotices, setPriceNotices] = useState<string[]>([]);
+  const [cartIssues, setCartIssues] = useState<string[]>([]);
 
   // Coupon
   const [couponCode, setCouponCode] = useState('');
-  const [couponApplied, setCouponApplied] = useState<{
-    code: string;
-    amount: number;
-    type: 'percent' | 'fixed';
-  } | null>(null);
+  const [couponApplied, setCouponApplied] = useState<(CouponRule & { code: string }) | null>(null);
   const [couponLoading, setCouponLoading] = useState(false);
 
   // Submit
   const [submitting, setSubmitting] = useState(false);
 
   // Calculate amounts
-  const shippingFee = subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : SHIPPING_FEE;
-  let discountAmount = 0;
-  if (couponApplied) {
-    if (couponApplied.type === 'percent') {
-      discountAmount = Math.round(subtotal * (couponApplied.amount / 100));
-    } else {
-      discountAmount = couponApplied.amount;
-    }
-  }
+  const shippingFee = calcShippingFee(subtotal);
+  const discountAmount = calcDiscount(subtotal, couponApplied);
   const totalAmount = subtotal - discountAmount + shippingFee;
 
   // Form
@@ -89,12 +91,105 @@ export default function CheckoutClient() {
   const paymentMethod = watch('payment_method');
 
   // Fetch provinces
-  useEffect(() => {
-    fetch(`${VN_API_BASE}/p/`)
-      .then((r) => r.json())
-      .then((data) => setProvinces(data || []))
-      .catch(() => setProvinces([]));
+  const loadProvinces = useCallback(async () => {
+    setProvincesLoading(true);
+    try {
+      const res = await fetch(`${VN_API_BASE}/p/`);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const data = await res.json();
+      if (!Array.isArray(data) || data.length === 0) throw new Error('Empty province list');
+      setProvinces(data);
+      return true;
+    } catch {
+      setProvinces([]);
+      setManualAddress(true);
+      return false;
+    } finally {
+      setProvincesLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadProvinces();
+  }, [loadProvinces]);
+
+  const retryAddressApi = async () => {
+    const ok = await loadProvinces();
+    if (ok) {
+      setManualAddress(false);
+    } else {
+      toast.error('Vẫn chưa tải được danh sách địa chỉ, bạn vui lòng nhập tay giúp shop.');
+    }
+  };
+
+  // Đối chiếu giá và tồn kho của giỏ hàng với DB khi vào trang thanh toán:
+  // giá trong localStorage có thể đã cũ hàng tuần (xem #22)
+  useEffect(() => {
+    const cartItems = items;
+    if (cartItems.length === 0) return;
+
+    // Giỏ đổi liên tục (side cart) nên có thể có nhiều request chồng nhau —
+    // bỏ qua kết quả cũ để nó không ghi đè tình trạng giỏ mới nhất
+    let stale = false;
+
+    getCurrentCartPrices(
+      cartItems.map((item) => ({
+        product_id: item.product_id,
+        variant_id: item.variant_id,
+        quantity: item.quantity,
+      }))
+    ).then((res) => {
+      if (stale || 'error' in res) return;
+
+      const notices: string[] = [];
+      const issues: string[] = [];
+      const updates: { product_id: string; variant_id?: string; price: number }[] = [];
+
+      res.lines.forEach((line, index) => {
+        const item = cartItems[index];
+        if (!item) return;
+        const label = item.variant_title
+          ? `${item.product_name} (${item.variant_title})`
+          : item.product_name;
+
+        if (!line.available) {
+          issues.push(`"${label}" hiện không còn được bán, vui lòng xóa khỏi giỏ hàng.`);
+          return;
+        }
+        if (item.quantity > line.stock) {
+          issues.push(
+            line.stock > 0
+              ? `"${label}" chỉ còn ${line.stock} sản phẩm, vui lòng giảm số lượng.`
+              : `"${label}" đã hết hàng, vui lòng xóa khỏi giỏ hàng.`
+          );
+        }
+        if (line.price !== item.price) {
+          notices.push(
+            `"${label}": ${formatPrice(item.price)} → ${formatPrice(line.price)}`
+          );
+          updates.push({
+            product_id: item.product_id,
+            variant_id: item.variant_id,
+            price: line.price,
+          });
+        }
+      });
+
+      if (updates.length > 0) {
+        useCart.getState().syncPrices(updates);
+      }
+      // Giữ lại thông báo đổi giá qua các lần chạy lại: sau khi syncPrices cập nhật
+      // giỏ, vòng kiểm tra kế tiếp không còn thấy chênh lệch nữa
+      setPriceNotices((prev) =>
+        notices.length > 0 ? [...prev, ...notices.filter((n) => !prev.includes(n))] : prev
+      );
+      setCartIssues(issues);
+    });
+
+    return () => {
+      stale = true;
+    };
+  }, [items]);
 
   // Fetch districts when province changes
   const handleProvinceChange = useCallback(
@@ -116,10 +211,13 @@ export default function CheckoutClient() {
 
       try {
         const res = await fetch(`${VN_API_BASE}/p/${code}?depth=2`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        setDistricts(data.districts || []);
+        if (!data.districts?.length) throw new Error('Empty district list');
+        setDistricts(data.districts);
       } catch {
         setDistricts([]);
+        setManualAddress(true);
       }
     },
     [provinces, setValue]
@@ -142,10 +240,13 @@ export default function CheckoutClient() {
 
       try {
         const res = await fetch(`${VN_API_BASE}/d/${code}?depth=2`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
         const data = await res.json();
-        setWards(data.wards || []);
+        if (!data.wards?.length) throw new Error('Empty ward list');
+        setWards(data.wards);
       } catch {
         setWards([]);
+        setManualAddress(true);
       }
     },
     [districts, setValue]
@@ -165,16 +266,27 @@ export default function CheckoutClient() {
     setCouponLoading(true);
     try {
       const result = await validateCoupon(couponCode.trim());
-      if (result.valid) {
-        setCouponApplied({
-          code: couponCode.trim().toUpperCase(),
-          amount: result.discount_amount,
-          type: result.discount_type,
-        });
-        toast.success('Áp dụng mã giảm giá thành công!');
-      } else {
+      if (!result.valid) {
         toast.error(result.message || 'Mã giảm giá không hợp lệ');
+        return;
       }
+
+      const rule: CouponRule = {
+        amount: result.discount_amount ?? 0,
+        type: result.discount_type ?? 'fixed',
+        min_order_amount: result.min_order_amount ?? 0,
+        max_discount: result.max_discount ?? 0,
+      };
+
+      if (subtotal < rule.min_order_amount) {
+        toast.error(
+          `Mã này chỉ áp dụng cho đơn hàng từ ${formatPrice(rule.min_order_amount)}`
+        );
+        return;
+      }
+
+      setCouponApplied({ code: couponCode.trim().toUpperCase(), ...rule });
+      toast.success('Áp dụng mã giảm giá thành công!');
     } catch {
       toast.error('Không thể kiểm tra mã giảm giá');
     } finally {
@@ -194,24 +306,26 @@ export default function CheckoutClient() {
       return;
     }
 
+    if (cartIssues.length > 0) {
+      toast.error(cartIssues[0]);
+      return;
+    }
+
     setSubmitting(true);
     try {
+      // Chỉ gửi id + số lượng: giá và tổng tiền do server tự tính lại từ DB
       const result = await placeOrder({
         ...formData,
         email: formData.email || undefined,
         order_notes: formData.order_notes || undefined,
-        subtotal,
-        discount_amount: discountAmount,
-        shipping_fee: shippingFee,
         total_amount: totalAmount,
-        coupon_code: couponApplied?.code,
+        // Mã chưa đạt đơn tối thiểu thì không gửi lên: tổng tiền hiển thị vốn đã
+        // không có giảm giá, gửi lên chỉ khiến server từ chối cả đơn hàng
+        coupon_code: discountAmount > 0 ? couponApplied?.code : undefined,
         items: items.map((item) => ({
           product_id: item.product_id,
           variant_id: item.variant_id,
-          product_name: item.product_name,
-          variant_title: item.variant_title,
           quantity: item.quantity,
-          price: item.price,
         })),
       });
 
@@ -225,6 +339,18 @@ export default function CheckoutClient() {
       toast.error('Đã xảy ra lỗi. Vui lòng thử lại.');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // Submit không hợp lệ: trước đây hoàn toàn im lặng vì nút Đặt Hàng nằm ở cột
+  // sticky bên phải còn thông báo lỗi nằm ở cột trái
+  const onInvalid = (formErrors: FieldErrors<CheckoutFormData>) => {
+    toast.error('Vui lòng kiểm tra lại thông tin đơn hàng');
+    const firstField = Object.keys(formErrors)[0];
+    const el = firstField ? document.getElementById(firstField) : null;
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.focus({ preventScroll: true });
     }
   };
 
@@ -269,7 +395,36 @@ export default function CheckoutClient() {
           Thanh Toán
         </h1>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        {(priceNotices.length > 0 || cartIssues.length > 0) && (
+          <div className="mb-6 rounded-xl border border-gold/40 bg-gold/10 p-4">
+            <div className="flex items-start gap-2 text-sm">
+              <AlertTriangle className="w-4 h-4 mt-0.5 shrink-0 text-gold-dark" />
+              <div className="space-y-1">
+                {priceNotices.length > 0 && (
+                  <>
+                    <p className="font-semibold text-gold-dark">
+                      Giá một số sản phẩm đã thay đổi so với lúc bạn thêm vào giỏ:
+                    </p>
+                    <ul className="list-disc pl-5 text-muted-foreground">
+                      {priceNotices.map((notice) => (
+                        <li key={notice}>{notice}</li>
+                      ))}
+                    </ul>
+                  </>
+                )}
+                {cartIssues.length > 0 && (
+                  <ul className="list-disc pl-5 text-destructive font-medium">
+                    {cartIssues.map((issue) => (
+                      <li key={issue}>{issue}</li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit(onSubmit, onInvalid)}>
           <div className="grid lg:grid-cols-3 gap-8">
             {/* LEFT: Billing Info (2/3 width) */}
             <div className="lg:col-span-2 space-y-6">
@@ -283,47 +438,56 @@ export default function CheckoutClient() {
                 <div className="grid md:grid-cols-2 gap-4">
                   {/* Name */}
                   <div>
-                    <label className="block text-sm font-medium mb-1.5">
+                    <label htmlFor="customer_name" className="block text-sm font-medium mb-1.5">
                       Họ và tên <span className="text-destructive">*</span>
                     </label>
                     <Input
+                      id="customer_name"
                       {...register('customer_name')}
                       placeholder="Nguyễn Văn A"
+                      aria-invalid={!!errors.customer_name}
+                      aria-describedby={errors.customer_name ? 'customer_name-error' : undefined}
                       className={errors.customer_name ? 'border-destructive' : ''}
                     />
                     {errors.customer_name && (
-                      <p className="text-xs text-destructive mt-1">{errors.customer_name.message}</p>
+                      <p id="customer_name-error" className="text-xs text-destructive mt-1">{errors.customer_name.message}</p>
                     )}
                   </div>
 
                   {/* Phone */}
                   <div>
-                    <label className="block text-sm font-medium mb-1.5">
+                    <label htmlFor="phone" className="block text-sm font-medium mb-1.5">
                       Số điện thoại <span className="text-destructive">*</span>
                     </label>
                     <Input
+                      id="phone"
                       {...register('phone')}
                       placeholder="0901234567"
+                      aria-invalid={!!errors.phone}
+                      aria-describedby={errors.phone ? 'phone-error' : undefined}
                       className={errors.phone ? 'border-destructive' : ''}
                     />
                     {errors.phone && (
-                      <p className="text-xs text-destructive mt-1">{errors.phone.message}</p>
+                      <p id="phone-error" className="text-xs text-destructive mt-1">{errors.phone.message}</p>
                     )}
                   </div>
 
                   {/* Email */}
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-medium mb-1.5">
+                    <label htmlFor="email" className="block text-sm font-medium mb-1.5">
                       Email (không bắt buộc)
                     </label>
                     <Input
+                      id="email"
                       {...register('email')}
                       type="email"
                       placeholder="email@example.com"
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'email-error' : undefined}
                       className={errors.email ? 'border-destructive' : ''}
                     />
                     {errors.email && (
-                      <p className="text-xs text-destructive mt-1">{errors.email.message}</p>
+                      <p id="email-error" className="text-xs text-destructive mt-1">{errors.email.message}</p>
                     )}
                   </div>
                 </div>
@@ -336,106 +500,198 @@ export default function CheckoutClient() {
                   Địa chỉ giao hàng
                 </h2>
 
+                {manualAddress && (
+                  <div className="mb-4 flex items-start justify-between gap-3 rounded-lg bg-gold/10 p-3 text-xs text-gold-dark">
+                    <span>
+                      Hiện không tải được danh sách Tỉnh/Quận/Phường. Bạn vui lòng nhập tay
+                      địa chỉ bên dưới, đơn hàng vẫn được gửi bình thường.
+                    </span>
+                    <button
+                      type="button"
+                      onClick={retryAddressApi}
+                      className="shrink-0 font-semibold underline"
+                    >
+                      Thử tải lại
+                    </button>
+                  </div>
+                )}
+
                 <div className="grid md:grid-cols-3 gap-4 mb-4">
-                  {/* Province */}
-                  <div>
-                    <label className="block text-sm font-medium mb-1.5">
-                      Tỉnh/Thành phố <span className="text-destructive">*</span>
-                    </label>
-                    <select
-                      value={selectedProvince}
-                      onChange={(e) => handleProvinceChange(e.target.value)}
-                      className={`w-full h-10 rounded-md border px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring ${
-                        errors.province ? 'border-destructive' : 'border-input'
-                      }`}
-                    >
-                      <option value="">-- Chọn Tỉnh/TP --</option>
-                      {provinces.map((p) => (
-                        <option key={p.code} value={p.code}>
-                          {p.name}
-                        </option>
-                      ))}
-                    </select>
-                    <input type="hidden" {...register('province')} />
-                    {errors.province && (
-                      <p className="text-xs text-destructive mt-1">{errors.province.message}</p>
-                    )}
-                  </div>
+                  {manualAddress ? (
+                    <>
+                      {/* Province (nhập tay) */}
+                      <div>
+                        <label htmlFor="province" className="block text-sm font-medium mb-1.5">
+                          Tỉnh/Thành phố <span className="text-destructive">*</span>
+                        </label>
+                        <Input
+                          id="province"
+                          {...register('province')}
+                          placeholder="VD: Hà Nội"
+                          aria-invalid={!!errors.province}
+                          aria-describedby={errors.province ? 'province-error' : undefined}
+                          className={errors.province ? 'border-destructive' : ''}
+                        />
+                        {errors.province && (
+                          <p id="province-error" className="text-xs text-destructive mt-1">{errors.province.message}</p>
+                        )}
+                      </div>
 
-                  {/* District */}
-                  <div>
-                    <label className="block text-sm font-medium mb-1.5">
-                      Quận/Huyện <span className="text-destructive">*</span>
-                    </label>
-                    <select
-                      value={selectedDistrict}
-                      onChange={(e) => handleDistrictChange(e.target.value)}
-                      disabled={!selectedProvince}
-                      className={`w-full h-10 rounded-md border px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 ${
-                        errors.district ? 'border-destructive' : 'border-input'
-                      }`}
-                    >
-                      <option value="">-- Chọn Quận/Huyện --</option>
-                      {districts.map((d) => (
-                        <option key={d.code} value={d.code}>
-                          {d.name}
-                        </option>
-                      ))}
-                    </select>
-                    <input type="hidden" {...register('district')} />
-                    {errors.district && (
-                      <p className="text-xs text-destructive mt-1">{errors.district.message}</p>
-                    )}
-                  </div>
+                      {/* District (nhập tay) */}
+                      <div>
+                        <label htmlFor="district" className="block text-sm font-medium mb-1.5">
+                          Quận/Huyện <span className="text-destructive">*</span>
+                        </label>
+                        <Input
+                          id="district"
+                          {...register('district')}
+                          placeholder="VD: Cầu Giấy"
+                          aria-invalid={!!errors.district}
+                          aria-describedby={errors.district ? 'district-error' : undefined}
+                          className={errors.district ? 'border-destructive' : ''}
+                        />
+                        {errors.district && (
+                          <p id="district-error" className="text-xs text-destructive mt-1">{errors.district.message}</p>
+                        )}
+                      </div>
 
-                  {/* Ward */}
-                  <div>
-                    <label className="block text-sm font-medium mb-1.5">
-                      Phường/Xã <span className="text-destructive">*</span>
-                    </label>
-                    <select
-                      onChange={(e) => handleWardChange(e.target.value)}
-                      disabled={!selectedDistrict}
-                      className={`w-full h-10 rounded-md border px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 ${
-                        errors.ward ? 'border-destructive' : 'border-input'
-                      }`}
-                    >
-                      <option value="">-- Chọn Phường/Xã --</option>
-                      {wards.map((w) => (
-                        <option key={w.code} value={w.code}>
-                          {w.name}
-                        </option>
-                      ))}
-                    </select>
-                    <input type="hidden" {...register('ward')} />
-                    {errors.ward && (
-                      <p className="text-xs text-destructive mt-1">{errors.ward.message}</p>
-                    )}
-                  </div>
+                      {/* Ward (nhập tay) */}
+                      <div>
+                        <label htmlFor="ward" className="block text-sm font-medium mb-1.5">
+                          Phường/Xã <span className="text-destructive">*</span>
+                        </label>
+                        <Input
+                          id="ward"
+                          {...register('ward')}
+                          placeholder="VD: Dịch Vọng"
+                          aria-invalid={!!errors.ward}
+                          aria-describedby={errors.ward ? 'ward-error' : undefined}
+                          className={errors.ward ? 'border-destructive' : ''}
+                        />
+                        {errors.ward && (
+                          <p id="ward-error" className="text-xs text-destructive mt-1">{errors.ward.message}</p>
+                        )}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      {/* Province */}
+                      <div>
+                        <label htmlFor="province" className="block text-sm font-medium mb-1.5">
+                          Tỉnh/Thành phố <span className="text-destructive">*</span>
+                        </label>
+                        <select
+                          id="province"
+                          value={selectedProvince}
+                          onChange={(e) => handleProvinceChange(e.target.value)}
+                          disabled={provincesLoading}
+                          aria-invalid={!!errors.province}
+                          aria-describedby={errors.province ? 'province-error' : undefined}
+                          className={`w-full h-10 rounded-md border px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 ${
+                            errors.province ? 'border-destructive' : 'border-input'
+                          }`}
+                        >
+                          <option value="">
+                            {provincesLoading ? 'Đang tải danh sách...' : '-- Chọn Tỉnh/TP --'}
+                          </option>
+                          {provinces.map((p) => (
+                            <option key={p.code} value={p.code}>
+                              {p.name}
+                            </option>
+                          ))}
+                        </select>
+                        <input type="hidden" {...register('province')} />
+                        {errors.province && (
+                          <p id="province-error" className="text-xs text-destructive mt-1">{errors.province.message}</p>
+                        )}
+                      </div>
+
+                      {/* District */}
+                      <div>
+                        <label htmlFor="district" className="block text-sm font-medium mb-1.5">
+                          Quận/Huyện <span className="text-destructive">*</span>
+                        </label>
+                        <select
+                          id="district"
+                          value={selectedDistrict}
+                          onChange={(e) => handleDistrictChange(e.target.value)}
+                          disabled={!selectedProvince}
+                          aria-invalid={!!errors.district}
+                          aria-describedby={errors.district ? 'district-error' : undefined}
+                          className={`w-full h-10 rounded-md border px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 ${
+                            errors.district ? 'border-destructive' : 'border-input'
+                          }`}
+                        >
+                          <option value="">-- Chọn Quận/Huyện --</option>
+                          {districts.map((d) => (
+                            <option key={d.code} value={d.code}>
+                              {d.name}
+                            </option>
+                          ))}
+                        </select>
+                        <input type="hidden" {...register('district')} />
+                        {errors.district && (
+                          <p id="district-error" className="text-xs text-destructive mt-1">{errors.district.message}</p>
+                        )}
+                      </div>
+
+                      {/* Ward */}
+                      <div>
+                        <label htmlFor="ward" className="block text-sm font-medium mb-1.5">
+                          Phường/Xã <span className="text-destructive">*</span>
+                        </label>
+                        <select
+                          id="ward"
+                          onChange={(e) => handleWardChange(e.target.value)}
+                          disabled={!selectedDistrict}
+                          aria-invalid={!!errors.ward}
+                          aria-describedby={errors.ward ? 'ward-error' : undefined}
+                          className={`w-full h-10 rounded-md border px-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-50 ${
+                            errors.ward ? 'border-destructive' : 'border-input'
+                          }`}
+                        >
+                          <option value="">-- Chọn Phường/Xã --</option>
+                          {wards.map((w) => (
+                            <option key={w.code} value={w.code}>
+                              {w.name}
+                            </option>
+                          ))}
+                        </select>
+                        <input type="hidden" {...register('ward')} />
+                        {errors.ward && (
+                          <p id="ward-error" className="text-xs text-destructive mt-1">{errors.ward.message}</p>
+                        )}
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* Exact Address */}
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">
+                  <label htmlFor="exact_address" className="block text-sm font-medium mb-1.5">
                     Địa chỉ chi tiết <span className="text-destructive">*</span>
                   </label>
                   <Input
+                    id="exact_address"
                     {...register('exact_address')}
                     placeholder="Số nhà, tên đường, tòa nhà..."
+                    aria-invalid={!!errors.exact_address}
+                    aria-describedby={errors.exact_address ? 'exact_address-error' : undefined}
                     className={errors.exact_address ? 'border-destructive' : ''}
                   />
                   {errors.exact_address && (
-                    <p className="text-xs text-destructive mt-1">{errors.exact_address.message}</p>
+                    <p id="exact_address-error" className="text-xs text-destructive mt-1">{errors.exact_address.message}</p>
                   )}
                 </div>
               </div>
 
               {/* Order Notes */}
               <div className="bg-white rounded-xl p-6 border border-border/50 shadow-sm">
-                <label className="block text-sm font-medium mb-1.5">
+                <label htmlFor="order_notes" className="block text-sm font-medium mb-1.5">
                   Ghi chú đơn hàng
                 </label>
                 <textarea
+                  id="order_notes"
                   {...register('order_notes')}
                   rows={3}
                   placeholder="Ghi chú thêm cho đơn hàng (không bắt buộc)..."
@@ -610,6 +866,7 @@ export default function CheckoutClient() {
                         <button
                           type="button"
                           onClick={removeCoupon}
+                          aria-label="Xóa mã giảm giá"
                           className="text-muted-foreground hover:text-destructive"
                         >
                           <X className="w-4 h-4" />
@@ -623,6 +880,7 @@ export default function CheckoutClient() {
                             value={couponCode}
                             onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                             placeholder="Mã giảm giá"
+                            aria-label="Mã giảm giá"
                             className="pl-9 uppercase"
                           />
                         </div>
@@ -636,6 +894,14 @@ export default function CheckoutClient() {
                           {couponLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Áp dụng'}
                         </Button>
                       </div>
+                    )}
+
+                    {/* Giỏ hàng có thể tụt xuống dưới mức tối thiểu sau khi đã áp mã */}
+                    {couponApplied && subtotal < couponApplied.min_order_amount && (
+                      <p className="text-xs text-destructive mt-2">
+                        Đơn hàng cần đạt tối thiểu{' '}
+                        {formatPrice(couponApplied.min_order_amount)} để áp dụng mã này.
+                      </p>
                     )}
                   </div>
 
@@ -684,7 +950,7 @@ export default function CheckoutClient() {
                   {/* Submit */}
                   <Button
                     type="submit"
-                    disabled={submitting || items.length === 0}
+                    disabled={submitting || items.length === 0 || cartIssues.length > 0}
                     className="w-full mt-6 py-6 text-base bg-burgundy hover:bg-burgundy-light text-white font-semibold rounded-xl gap-2"
                   >
                     {submitting ? (
