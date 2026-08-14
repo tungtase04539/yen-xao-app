@@ -4,6 +4,9 @@ import { supabase } from '@/lib/supabase';
 import BackgroundVideo from '@/components/common/BackgroundVideo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import SectionMediaGrid from '@/components/gioi-thieu/SectionMediaGrid';
+import { ogImage } from '@/lib/og';
+
+const OG_PAGE = ogImage('/tri-an-khach-hang.jpg', 'Giới Thiệu - QiQi Yến Sào');
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
 
@@ -15,20 +18,13 @@ export const metadata: Metadata = {
     description: 'Câu chuyện thương hiệu QiQi Yến Sào - Hành trình mang tinh hoa yến sào đến mọi gia đình Việt. Cam kết yến nguyên chất 100%.',
     type: 'website',
     url: 'https://qiqiyensao.com/gioi-thieu',
-    images: [
-      {
-        url: '/tri-an-khach-hang.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Giới Thiệu - QiQi Yến Sào',
-      },
-    ],
+    images: [OG_PAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Giới Thiệu | QiQi Yến Sào',
     description: 'Câu chuyện thương hiệu QiQi Yến Sào - Hành trình mang tinh hoa yến sào đến mọi gia đình Việt. Cam kết yến nguyên chất 100%.',
-    images: ['/tri-an-khach-hang.jpg'],
+    images: [OG_PAGE.url],
   },
 };
 

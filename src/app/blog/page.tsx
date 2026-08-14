@@ -3,8 +3,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ChevronRight, Calendar, User, Clock } from 'lucide-react';
+import { SITE_URL, ogImage } from '@/lib/og';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://qiqiyensao.com';
+const OG_BLOG = ogImage(null, 'Blog Yến Sào - QiQi Yến Sào');
 
 export const metadata: Metadata = {
   title: 'Blog Yến Sào | Kiến Thức Sức Khỏe & Bí Quyết Dùng Yến',
@@ -26,13 +27,13 @@ export const metadata: Metadata = {
     url: `${SITE_URL}/blog`,
     type: 'website',
     siteName: 'QiQi Yến Sào',
-    images: [{ url: `${SITE_URL}/logo.png`, width: 800, height: 600, alt: 'QiQi Yến Sào Blog' }],
+    images: [OG_BLOG],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Blog Yến Sào | QiQi Yến Sào',
     description: 'Kiến thức, tin tức và bí quyết sử dụng yến sào hiệu quả.',
-    images: [`${SITE_URL}/logo.png`],
+    images: [OG_BLOG.url],
   },
 };
 

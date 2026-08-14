@@ -4,8 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ChevronRight, Calendar, User, ArrowLeft, Clock } from 'lucide-react';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://qiqiyensao.com';
+import { SITE_URL, ogImage } from '@/lib/og';
 
 export const revalidate = 60; // ISR: revalidate every 60 seconds
 
@@ -42,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: 'Bài viết không tìm thấy' };
 
   const canonical = `${SITE_URL}/blog/${slug}`;
-  const ogImage = post.thumbnail || `${SITE_URL}/logo.png`;
+  const image = ogImage(post.thumbnail, post.title);
 
   return {
     title: post.title,
@@ -58,13 +57,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       publishedTime: post.published_at || post.created_at,
       modifiedTime: post.updated_at || post.published_at || post.created_at,
       authors: [post.author],
-      images: [{ url: ogImage, width: 1200, height: 630, alt: post.title }],
+      images: [image],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description: post.summary || `Đọc bài viết tại QiQi Yến Sào.`,
-      images: [ogImage],
+      images: [image.url],
     },
   };
 }

@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { ogImage } from '@/lib/og';
+
+const OG_PAGE = ogImage('/zalo-banner.jpg', 'Chính Sách Bảo Hành - QiQi Yến Sào');
 
 export const metadata: Metadata = {
   title: 'Chính Sách Bảo Hành',
@@ -8,20 +11,13 @@ export const metadata: Metadata = {
     description: 'Chính sách bảo hành và đổi trả của QiQi Yến Sào - Cam kết chất lượng, bảo vệ quyền lợi khách hàng tối đa.',
     type: 'website',
     url: 'https://qiqiyensao.com/chinh-sach-bao-hanh',
-    images: [
-      {
-        url: '/zalo-banner.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Chính Sách Bảo Hành - QiQi Yến Sào',
-      },
-    ],
+    images: [OG_PAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Chính Sách Bảo Hành | QiQi Yến Sào',
     description: 'Chính sách bảo hành và đổi trả của QiQi Yến Sào - Cam kết chất lượng, bảo vệ quyền lợi khách hàng tối đa.',
-    images: ['/zalo-banner.jpg'],
+    images: [OG_PAGE.url],
   },
 };
 

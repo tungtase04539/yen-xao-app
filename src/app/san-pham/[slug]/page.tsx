@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import ProductDetailClient from './ProductDetailClient';
 import type { Product } from '@/types';
+import { SITE_URL, ogImage } from '@/lib/og';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Always fetch fresh data
@@ -29,28 +30,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = product?.name || 'Chi tiết sản phẩm';
   const description = product?.short_description || 'Sản phẩm yến sào cao cấp';
-  const image = product?.thumbnail || '/zalo-banner.jpg';
+  const image = ogImage(product?.thumbnail, title);
+  const canonical = `${SITE_URL}/san-pham/${slug}`;
 
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: {
       title,
       description,
       type: 'website',
-      url: `https://qiqiyensao.com/san-pham/${slug}`,
-      images: [
-        {
-          url: image,
-          alt: title,
-        },
-      ],
+      siteName: 'QiQi Yến Sào',
+      url: canonical,
+      images: [image],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [image],
+      images: [image.url],
     },
   };
 }

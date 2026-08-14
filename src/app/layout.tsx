@@ -6,6 +6,9 @@ import LayoutShell from "@/components/layout/LayoutShell";
 import SmoothScroll from "@/components/layout/SmoothScroll";
 import Footer from "@/components/layout/Footer";
 import { GoogleAnalytics } from "@next/third-parties/google";
+import { SITE_URL, ogImage } from "@/lib/og";
+
+const OG_HOME = ogImage('/zalo-banner.jpg', 'QiQi Yến Sào');
 
 const heading = Cormorant_Garamond({
   variable: "--font-heading",
@@ -29,7 +32,7 @@ const display = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://qiqiyensao.com'),
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "QiQi Yến Sào - Trao sức khỏe, gửi trọn yêu thương",
     template: "%s | QiQi Yến Sào",
@@ -48,24 +51,17 @@ export const metadata: Metadata = {
   openGraph: {
     type: 'website',
     locale: 'vi_VN',
-    url: 'https://qiqiyensao.com',
+    url: SITE_URL,
     siteName: 'QiQi Yến Sào',
     title: 'QiQi Yến Sào - Trao sức khỏe, gửi trọn yêu thương',
     description: 'QIQI Yến (thuộc Công ty TNHH TM ĐT PT Phúc Thịnh) chuyên cung cấp các sản phẩm yến sào thiên nhiên nguyên chất và yến chưng chăm sóc sức khỏe toàn diện, cam kết an toàn, chất lượng.',
-    images: [
-      {
-        url: '/zalo-banner.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'QiQi Yến Sào',
-      },
-    ],
+    images: [OG_HOME],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'QiQi Yến Sào - Trao sức khỏe, gửi trọn yêu thương',
     description: 'QIQI Yến (thuộc Công ty TNHH TM ĐT PT Phúc Thịnh) chuyên cung cấp các sản phẩm yến sào thiên nhiên nguyên chất và yến chưng chăm sóc sức khỏe toàn diện, cam kết an toàn, chất lượng.',
-    images: ['/zalo-banner.jpg'],
+    images: [OG_HOME.url],
   },
   icons: {
     icon: '/a.png',

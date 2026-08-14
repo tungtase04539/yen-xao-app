@@ -1,6 +1,9 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronRight, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { ogImage } from '@/lib/og';
+
+const OG_PAGE = ogImage('/zalo-banner.jpg', 'Liên Hệ - QiQi Yến Sào');
 
 export const metadata: Metadata = {
   title: 'Liên Hệ',
@@ -10,20 +13,13 @@ export const metadata: Metadata = {
     description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
     type: 'website',
     url: 'https://qiqiyensao.com/lien-he',
-    images: [
-      {
-        url: '/zalo-banner.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Liên Hệ - QiQi Yến Sào',
-      },
-    ],
+    images: [OG_PAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Liên Hệ | QiQi Yến Sào',
     description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
-    images: ['/zalo-banner.jpg'],
+    images: [OG_PAGE.url],
   },
 };
 

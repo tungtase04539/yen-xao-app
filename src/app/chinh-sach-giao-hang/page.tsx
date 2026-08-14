@@ -1,4 +1,7 @@
 import type { Metadata } from 'next';
+import { ogImage } from '@/lib/og';
+
+const OG_PAGE = ogImage('/zalo-banner.jpg', 'Chính Sách Giao Hàng - QiQi Yến Sào');
 
 export const metadata: Metadata = {
   title: 'Chính Sách Giao Hàng',
@@ -8,20 +11,13 @@ export const metadata: Metadata = {
     description: 'Chính sách vận chuyển và giao nhận hàng của QiQi Yến Sào - Giao hàng nhanh toàn quốc, miễn phí cho đơn từ 1 triệu đồng.',
     type: 'website',
     url: 'https://qiqiyensao.com/chinh-sach-giao-hang',
-    images: [
-      {
-        url: '/zalo-banner.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Chính Sách Giao Hàng - QiQi Yến Sào',
-      },
-    ],
+    images: [OG_PAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Chính Sách Giao Hàng | QiQi Yến Sào',
     description: 'Chính sách vận chuyển và giao nhận hàng của QiQi Yến Sào - Giao hàng nhanh toàn quốc, miễn phí cho đơn từ 1 triệu đồng.',
-    images: ['/zalo-banner.jpg'],
+    images: [OG_PAGE.url],
   },
 };
 

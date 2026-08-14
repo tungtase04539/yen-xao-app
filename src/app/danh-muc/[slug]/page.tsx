@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { supabase } from '@/lib/supabase';
 import CategoryPageClient from './CategoryPageClient';
+import { SITE_URL, ogImage } from '@/lib/og';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Always fetch fresh data
@@ -28,28 +29,26 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = category?.name || 'Danh mục sản phẩm';
   const description = category?.description || `Khám phá các sản phẩm ${category?.name || 'yến sào cao cấp'} tại QiQi Yến Sào.`;
-  const image = category?.image || '/zalo-banner.jpg';
+  const image = ogImage(category?.image, title);
+  const canonical = `${SITE_URL}/danh-muc/${slug}`;
 
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: {
       title,
       description,
       type: 'website',
-      url: `https://qiqiyensao.com/danh-muc/${slug}`,
-      images: [
-        {
-          url: image,
-          alt: title,
-        },
-      ],
+      siteName: 'QiQi Yến Sào',
+      url: canonical,
+      images: [image],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [image],
+      images: [image.url],
     },
   };
 }
