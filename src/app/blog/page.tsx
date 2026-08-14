@@ -58,15 +58,34 @@ function estimateReadTime(content: string | null): number {
 
 export const revalidate = 60; // ISR: revalidate every 60 seconds
 
-export default async function BlogPage() {
-  const { data: posts } = await supabase
+interface Props {
+  searchParams: Promise<{ category?: string }>;
+}
+
+async function getPosts(categoryId?: string) {
+  let query = supabase
     .from('posts')
     .select('id, title, slug, thumbnail, summary, created_at, published_at, author, content, category:categories(name, slug)')
     .in('status', ['published', 'scheduled'])
-    .lte('published_at', new Date().toISOString())
-    .order('published_at', { ascending: false });
+    .lte('published_at', new Date().toISOString());
 
-  const postList = (posts as unknown as PostItem[]) || [];
+  if (categoryId) query = query.eq('category_id', categoryId);
+
+  const { data } = await query.order('published_at', { ascending: false });
+  return (data as unknown as PostItem[]) || [];
+}
+
+export default async function BlogPage({ searchParams }: Props) {
+  // Nhãn danh mục ở /blog/[slug] trỏ về đây kèm ?category=<slug>
+  const categorySlug = (await searchParams).category?.trim() || null;
+
+  const { data: activeCategory } = categorySlug
+    ? await supabase.from('categories').select('id, name').eq('slug', categorySlug).single()
+    : { data: null };
+
+  // Slug không tồn tại ⇒ trả danh sách rỗng, tránh hiển thị nhầm toàn bộ bài viết
+  const postList =
+    categorySlug && !activeCategory ? [] : await getPosts(activeCategory?.id);
 
   return (
     <div className="min-h-screen bg-warm-white">
@@ -108,10 +127,25 @@ export default async function BlogPage() {
 
       {/* Post Grid */}
       <div className="container mx-auto px-4 py-12">
+        {categorySlug && (
+          <div className="flex items-center justify-center gap-3 mb-10 text-sm">
+            <span className="text-muted-foreground">
+              Danh mục:{' '}
+              <span className="font-semibold text-gold uppercase tracking-wider">
+                {activeCategory?.name || categorySlug}
+              </span>
+            </span>
+            <Link href="/blog" className="font-semibold text-burgundy hover:text-burgundy-light transition-colors">
+              Xem tất cả bài viết
+            </Link>
+          </div>
+        )}
         {postList.length === 0 ? (
           <div className="text-center py-20">
             <div className="text-6xl mb-4">📝</div>
-            <h2 className="text-xl font-semibold text-foreground mb-2">Chưa có bài viết nào</h2>
+            <h2 className="text-xl font-semibold text-foreground mb-2">
+              {categorySlug ? 'Chưa có bài viết trong danh mục này' : 'Chưa có bài viết nào'}
+            </h2>
             <p className="text-muted-foreground">Các bài viết sẽ sớm được cập nhật!</p>
           </div>
         ) : (

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { ChevronRight, Calendar, User, ArrowLeft, Clock } from 'lucide-react';
 import { SITE_URL, ogImage } from '@/lib/og';
+import { sanitizeHtml, safeJsonLd } from '@/lib/sanitize';
 
 export const revalidate = 60; // ISR: revalidate every 60 seconds
 
@@ -129,7 +130,7 @@ export default async function BlogDetailPage({ params }: Props) {
       {/* JSON-LD */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       {/* Breadcrumbs — schema.org BreadcrumbList */}
@@ -229,7 +230,7 @@ export default async function BlogDetailPage({ params }: Props) {
             <meta itemProp="url" content={canonical} />
             <meta itemProp="datePublished" content={post.published_at || post.created_at} />
             <meta itemProp="author" content={post.author} />
-            <div itemProp="articleBody" dangerouslySetInnerHTML={{ __html: post.content || '' }} />
+            <div itemProp="articleBody" dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }} />
           </article>
 
           {/* Related Posts */}

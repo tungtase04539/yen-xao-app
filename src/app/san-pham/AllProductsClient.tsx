@@ -15,6 +15,13 @@ const sortOptions = [
   { value: 'price_desc', label: 'Giá giảm dần' },
 ];
 
+// Khớp với số sản phẩm mỗi trang của route danh mục (/danh-muc/[slug])
+const PAGE_SIZE = 12;
+
+// Đúng những cột ProductCard cần. Trước đây select('*') kéo về cả `content`
+// (HTML mô tả đầy đủ) và `image_gallery` cho mọi dòng dù lưới chỉ hiện thumbnail.
+const PRODUCT_COLUMNS = 'id, name, slug, thumbnail, type, price, sale_price, is_featured, category_id';
+
 interface Product {
   id: string;
   name: string;
@@ -24,6 +31,8 @@ interface Product {
   sale_price?: number;
   thumbnail?: string;
   category_id?: string;
+  category_name?: string;
+  category_slug?: string;
   is_featured: boolean;
   type: 'simple' | 'variable';
 }
@@ -39,10 +48,14 @@ export default function AllProductsClient() {
   const searchParams = useSearchParams();
   const currentSort = searchParams.get('sort') || 'popular';
   const currentCat = searchParams.get('cat') || '';
+  const currentPage = Math.max(1, parseInt(searchParams.get('page') || '1') || 1);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -59,7 +72,8 @@ export default function AllProductsClient() {
       // Build product query
       let query = supabase
         .from('products')
-        .select('*');
+        .select(PRODUCT_COLUMNS, { count: 'exact' })
+        .eq('is_active', true);
 
       if (currentCat) {
         query = query.eq('category_id', currentCat);
@@ -70,19 +84,31 @@ export default function AllProductsClient() {
       else if (currentSort === 'price_desc') query = query.order('price', { ascending: false });
       else query = query.order('created_at', { ascending: false });
 
-      const { data, error } = await query;
+      const offset = (currentPage - 1) * PAGE_SIZE;
+      const { data, error, count } = await query.range(offset, offset + PAGE_SIZE - 1);
       if (error) console.error('Products fetch error:', error);
+
+      const catById = new Map((cats || []).map((c: Category) => [c.id, c]));
+
       // Map price fields for variable products so ProductCard can display correctly
-      const mapped = (data || []).map((p: Record<string, unknown>) => ({
-        ...p,
-        min_variant_price: p.type === 'variable' ? p.price : undefined,
-        min_variant_sale_price: p.type === 'variable' ? p.sale_price : undefined,
-      }));
+      const mapped = (data || []).map((p: Record<string, unknown>) => {
+        const cat = catById.get(p.category_id as string);
+        return {
+          ...p,
+          // ProductCard đọc category_name/category_slug (RPC của trang danh mục trả
+          // sẵn hai cột này); ở đây tra từ danh sách danh mục vừa fetch.
+          category_name: cat?.name,
+          category_slug: cat?.slug,
+          min_variant_price: p.type === 'variable' ? p.price : undefined,
+          min_variant_sale_price: p.type === 'variable' ? p.sale_price : undefined,
+        };
+      });
       setProducts(mapped as unknown as Product[]);
+      setTotalCount(count || 0);
       setLoading(false);
     };
     fetchData();
-  }, [currentSort, currentCat]);
+  }, [currentSort, currentCat, currentPage]);
 
   const updateParams = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -193,10 +219,45 @@ export default function AllProductsClient() {
           </div>
         )}
 
+        {/* Pagination */}
+        {!loading && totalPages > 1 && (
+          <div className="flex justify-center items-center gap-2 mt-12 flex-wrap">
+            <button
+              onClick={() => updateParams('page', String(currentPage - 1))}
+              disabled={currentPage <= 1}
+              className="px-4 py-2 text-sm border border-border rounded-lg hover:border-gold hover:text-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              ← Trước
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+              <button
+                key={p}
+                onClick={() => updateParams('page', String(p))}
+                className={`w-10 h-10 text-sm rounded-lg font-medium transition-all ${
+                  p === currentPage
+                    ? 'bg-burgundy text-white shadow-md'
+                    : 'border border-border hover:border-gold hover:text-gold'
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+
+            <button
+              onClick={() => updateParams('page', String(currentPage + 1))}
+              disabled={currentPage >= totalPages}
+              className="px-4 py-2 text-sm border border-border rounded-lg hover:border-gold hover:text-gold transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              Sau →
+            </button>
+          </div>
+        )}
+
         {/* Total count */}
         {!loading && products.length > 0 && (
           <p className="text-center text-sm text-muted-foreground mt-8">
-            Hiển thị {products.length} sản phẩm
+            Hiển thị {products.length} / {totalCount} sản phẩm
           </p>
         )}
       </section>

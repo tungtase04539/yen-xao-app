@@ -1,4 +1,5 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import CategoryPageClient from './CategoryPageClient';
 import { SITE_URL, ogImage } from '@/lib/og';
@@ -27,9 +28,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .eq('slug', slug)
     .single();
 
-  const title = category?.name || 'Danh mục sản phẩm';
-  const description = category?.description || `Khám phá các sản phẩm ${category?.name || 'yến sào cao cấp'} tại QiQi Yến Sào.`;
-  const image = ogImage(category?.image, title);
+  // Danh mục không tồn tại sẽ trả 404 ở page component bên dưới — không phát
+  // canonical tự trỏ cho URL rác.
+  if (!category) {
+    return { title: 'Không tìm thấy danh mục' };
+  }
+
+  const title = category.name;
+  const description = category.description || `Khám phá các sản phẩm ${category.name} tại QiQi Yến Sào.`;
+  const image = ogImage(category.image, title);
   const canonical = `${SITE_URL}/danh-muc/${slug}`;
 
   return {
@@ -65,6 +72,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
     .select('*')
     .eq('slug', slug)
     .single();
+
+  if (!category) {
+    notFound();
+  }
 
   // Fetch products
   const limit = 12;
