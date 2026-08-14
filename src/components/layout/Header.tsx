@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Menu, X, ChevronDown, Globe, Phone, Sparkles } from 'lucide-react';
+import { ShoppingBag, Menu, X, ChevronDown, Phone, Sparkles } from 'lucide-react';
 import { useCart } from '@/store/cart';
 import { supabase } from '@/lib/supabase';
 
@@ -32,8 +32,10 @@ export default function Header() {
   const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [megaMenuOpen, setMegaMenuOpen] = useState(false);
+  // Accordion "Sản Phẩm" trong menu mobile phải có state RIÊNG: nó nằm ngoài megaMenuRef
+  // nên listener outside-click bên dưới sẽ đóng nó ngay ở mousedown, trước khi click kịp bắn.
+  const [mobileSubmenuOpen, setMobileSubmenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [lang, setLang] = useState<'vi' | 'cn'>('vi');
   const { openCart, getTotalItems } = useCart();
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const [footerVisible, setFooterVisible] = useState(false);
@@ -99,55 +101,55 @@ export default function Header() {
 
   return (
     <>
-      {/* Luxury Top Bar — always visible, links directly to Messenger for high conversion */}
-      <a 
-        href="https://www.messenger.com/t/392451147265403" 
-        target="_blank" 
-        rel="noopener noreferrer" 
-        className="block bg-burgundy-dark/40 text-white text-sm py-2 relative overflow-hidden group hover:brightness-110 transition-all duration-300" 
+      {/* Luxury Top Bar — chỉ phần khuyến mãi là link Messenger; hotline là link tel:
+          riêng, vì <a> lồng trong <a> là HTML không hợp lệ và trước đây bấm số điện thoại
+          lại mở Messenger. */}
+      <div
+        className="bg-burgundy-dark/40 text-white text-sm py-2 relative overflow-hidden"
         style={{ background: 'linear-gradient(to right, #4c0712, #5a0e1a, #4c0712)' }}
       >
         <div className="absolute inset-0 animate-gold-shimmer pointer-events-none" />
         <div className="container mx-auto px-4 flex justify-between items-center relative">
-          
+
           {/* Desktop Announcement */}
-          <div className="hidden lg:flex items-center gap-2">
+          <a
+            href="https://www.messenger.com/t/392451147265403"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden lg:flex items-center gap-2 hover:brightness-110 transition-all duration-300"
+          >
             <Sparkles className="w-3.5 h-3.5 text-gold animate-pulse" />
             <p className="text-gold-light text-xs font-bold tracking-wider uppercase">
               🎉 Đại tiệc tri ân: Combo Mix 6 Vị — Mua 6 Tặng 6 (Nhận 12 hũ) Chỉ 360.000₫ + Miễn phí vận chuyển toàn quốc!
             </p>
-          </div>
+          </a>
 
           {/* Mobile/Tablet Announcement */}
-          <div className="lg:hidden flex items-center justify-center gap-1.5 w-full">
+          <a
+            href="https://www.messenger.com/t/392451147265403"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="lg:hidden flex items-center justify-center gap-1.5 w-full hover:brightness-110 transition-all duration-300"
+          >
             <Sparkles className="w-3.5 h-3.5 text-gold shrink-0 animate-pulse" />
             <p className="text-gold-light text-[11px] font-bold tracking-widest text-center uppercase animate-pulse">
               🎉 Mua 6 Tặng 6 (Mix 6 Vị) Chỉ 360k + Free Ship! Click nhận ngay
             </p>
-          </div>
+          </a>
 
-          {/* Contact & Language — hidden on mobile to prioritize the promo text */}
+          {/* Hotline — hidden on mobile to prioritize the promo text */}
           <div className="hidden lg:flex items-center gap-4 text-xs">
             <div className="w-px h-3 bg-white/20" />
-            <div className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors">
-              <Phone className="w-3 h-3" />
-              <span className="tracking-wide">Hotline: 0843.623986</span>
-            </div>
-            <div className="w-px h-3 bg-white/20" />
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setLang(lang === 'vi' ? 'cn' : 'vi');
-              }}
+            <a
+              href="tel:0843623986"
               className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors"
             >
-              <Globe className="w-3 h-3" />
-              {lang === 'vi' ? 'VI' : '中文'}
-            </button>
+              <Phone className="w-3 h-3" />
+              <span className="tracking-wide">Hotline: 0843.623986</span>
+            </a>
           </div>
         </div>
-      </a>
+      </div>
 
       {/* Main Header — sticky */}
       <header className={`sticky top-0 z-50 transition-all duration-500 ${
@@ -175,6 +177,7 @@ export default function Header() {
                   >
                     <button
                       onClick={() => setMegaMenuOpen(!megaMenuOpen)}
+                      aria-expanded={megaMenuOpen}
                       className="relative flex items-center gap-1.5 px-5 py-2.5 text-xl font-bold text-metallic-gold transition-all rounded-lg group"
                     >
                       {link.name}
@@ -202,7 +205,7 @@ export default function Header() {
 
                           {/* Items list */}
                           <div className="py-3">
-                            {productCategories.map((cat, i) => (
+                            {productCategories.map((cat) => (
                               <Link
                                 key={cat.slug}
                                 href={`/danh-muc/${cat.slug}`}
@@ -307,7 +310,8 @@ export default function Header() {
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
                 className="lg:hidden p-2.5 rounded-xl hover:bg-white/10 transition-all text-white"
-                aria-label="Menu"
+                aria-label={mobileOpen ? 'Đóng menu' : 'Mở menu'}
+                aria-expanded={mobileOpen}
               >
                 {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
               </button>
@@ -338,27 +342,31 @@ export default function Header() {
                 <div className="px-4 py-2">
                   <button
                     onClick={() => {
-                      if (megaMenuOpen) {
+                      if (mobileSubmenuOpen) {
                         setMobileOpen(false);
-                        setMegaMenuOpen(false);
+                        setMobileSubmenuOpen(false);
                         router.push('/san-pham');
                       } else {
-                        setMegaMenuOpen(true);
+                        setMobileSubmenuOpen(true);
                       }
                     }}
+                    aria-expanded={mobileSubmenuOpen}
                     className="flex items-center justify-between w-full text-lg font-bold text-[#C9A55A] uppercase tracking-wider mb-2"
                   >
                     Sản Phẩm
-                    <ChevronDown className={`w-4 h-4 transition-transform ${megaMenuOpen ? 'rotate-180' : ''}`} />
+                    <ChevronDown className={`w-4 h-4 transition-transform ${mobileSubmenuOpen ? 'rotate-180' : ''}`} />
                   </button>
-                  {megaMenuOpen && (
+                  {mobileSubmenuOpen && (
                     <div className="space-y-0.5 pl-2">
                       {productCategories.map((cat) => (
                         <Link
                           key={cat.slug}
                           href={`/danh-muc/${cat.slug}`}
                           className="flex items-center px-3 py-2.5 rounded-lg text-base text-white/70 hover:bg-white/10 hover:text-[#C9A55A] transition-colors"
-                          onClick={() => setMobileOpen(false)}
+                          onClick={() => {
+                            setMobileOpen(false);
+                            setMobileSubmenuOpen(false);
+                          }}
                         >
                           {cat.name}
                         </Link>
