@@ -66,6 +66,18 @@ export default function PressSection() {
     return () => { document.body.style.overflow = ''; };
   }, [activeVideo, activeArticle]);
 
+  // Escape để đóng — overlay tự viết nên không có sẵn hành vi này như Radix Dialog.
+  useEffect(() => {
+    if (!activeVideo && !activeArticle) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      setActiveVideo(null);
+      setActiveArticle(null);
+    };
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [activeVideo, activeArticle]);
+
   return (
     <section className="py-16 md:py-24 relative overflow-hidden" style={{ background: '#faf6f0' }}>
       <div className="absolute top-0 inset-x-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${GOLD}40, transparent)` }} />
@@ -188,9 +200,15 @@ export default function PressSection() {
                 transition={{ duration: 0.2 }}
                 style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', pointerEvents: 'none' }}
               >
-                <div style={{ position: 'relative', width: '100%', maxWidth: '768px', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.6)', background: '#0a0003', pointerEvents: 'auto' }}>
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label={activeVideo.title}
+                  style={{ position: 'relative', width: '100%', maxWidth: '768px', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.6)', background: '#0a0003', pointerEvents: 'auto' }}
+                >
                   <button
                     onClick={() => setActiveVideo(null)}
+                    aria-label="Đóng"
                     style={{ position: 'absolute', top: '0.75rem', right: '0.75rem', zIndex: 10, width: '2.25rem', height: '2.25rem', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.6)', color: 'white', border: 'none', cursor: 'pointer' }}
                   >
                     <X size={18} />
@@ -230,11 +248,17 @@ export default function PressSection() {
                 transition={{ duration: 0.2 }}
                 style={{ position: 'fixed', inset: 0, zIndex: 9999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem', pointerEvents: 'none' }}
               >
-                <div style={{ position: 'relative', width: '100%', maxWidth: '28rem', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.4)', background: 'white', pointerEvents: 'auto' }}>
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label={activeArticle.desc}
+                  style={{ position: 'relative', width: '100%', maxWidth: '28rem', borderRadius: '1rem', overflow: 'hidden', boxShadow: '0 25px 60px rgba(0,0,0,0.4)', background: 'white', pointerEvents: 'auto' }}
+                >
                   {/* Gold top bar */}
                   <div style={{ height: '6px', background: `linear-gradient(90deg, ${BURGUNDY}, ${GOLD}, ${BURGUNDY})` }} />
                   <button
                     onClick={() => setActiveArticle(null)}
+                    aria-label="Đóng"
                     style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'none', border: 'none', cursor: 'pointer', color: '#888', padding: '0.25rem' }}
                   >
                     <X size={20} />
