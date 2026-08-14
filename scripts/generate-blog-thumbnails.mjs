@@ -2,15 +2,16 @@
  * Script sinh ảnh thumbnail cho 30 bài blog bằng Gemini Imagen API
  * và upload lên Supabase Storage.
  *
- * Chạy: node scripts/generate-blog-thumbnails.mjs
+ * Chạy: node --env-file=.env.local scripts/generate-blog-thumbnails.mjs
  */
 
 import { createClient } from '@supabase/supabase-js';
+import { requireEnv } from './lib/env.mjs';
 
 // === CONFIG ===
-const GEMINI_API_KEY = 'AIzaSyA9HxR3AbzpkRGZOOT3iEloB7dfzOTuJ_4';
-const SUPABASE_URL = 'https://dxrogturyjgaxyiqpxhs.supabase.co';
-const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR4cm9ndHVyeWpnYXh5aXFweGhzIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MjUyNDg5NiwiZXhwIjoyMDg4MTAwODk2fQ.9GVYU04oxxNBbhu8CEGbMX8BuzHLUEZrU3JvtwFd62Y';
+const GEMINI_API_KEY = requireEnv('GEMINI_API_KEY');
+const SUPABASE_URL = requireEnv('SUPABASE_URL');
+const SUPABASE_SERVICE_KEY = requireEnv('SUPABASE_SERVICE_ROLE_KEY');
 const BUCKET = 'posts';
 const FOLDER = 'thumbnails';
 
