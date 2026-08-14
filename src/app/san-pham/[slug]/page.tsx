@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
+import { notFound } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import ProductDetailClient from './ProductDetailClient';
 import type { Product } from '@/types';
+import { SITE_URL, ogImage } from '@/lib/og';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0; // Always fetch fresh data
@@ -25,32 +27,37 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     .from('products')
     .select('name, short_description, thumbnail')
     .eq('slug', slug)
+    .eq('is_active', true)
     .single();
 
-  const title = product?.name || 'Chi tiết sản phẩm';
-  const description = product?.short_description || 'Sản phẩm yến sào cao cấp';
-  const image = product?.thumbnail || '/zalo-banner.jpg';
+  // Slug không tồn tại (hoặc đã tắt) sẽ trả 404 ở page component bên dưới — không
+  // phát canonical tự trỏ cho URL rác, tránh để Google index như một trang thật.
+  if (!product) {
+    return { title: 'Không tìm thấy sản phẩm' };
+  }
+
+  const title = product.name;
+  const description = product.short_description || 'Sản phẩm yến sào cao cấp';
+  const image = ogImage(product.thumbnail, title);
+  const canonical = `${SITE_URL}/san-pham/${slug}`;
 
   return {
     title,
     description,
+    alternates: { canonical },
     openGraph: {
       title,
       description,
       type: 'website',
-      url: `https://qiqiyensao.com/san-pham/${slug}`,
-      images: [
-        {
-          url: image,
-          alt: title,
-        },
-      ],
+      siteName: 'QiQi Yến Sào',
+      url: canonical,
+      images: [image],
     },
     twitter: {
       card: 'summary_large_image',
       title,
       description,
-      images: [image],
+      images: [image.url],
     },
   };
 }
@@ -71,22 +78,7 @@ export default async function ProductDetailPage({ params }: Props) {
     .single();
 
   if (!product) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-6xl mb-4">🕊️</div>
-          <h1 className="text-2xl font-bold font-serif text-burgundy mb-2">
-            Không tìm thấy sản phẩm
-          </h1>
-          <p className="text-muted-foreground mb-6">
-            Sản phẩm bạn tìm kiếm không tồn tại hoặc đã bị xóa.
-          </p>
-          <a href="/" className="text-burgundy font-semibold hover:text-burgundy-light">
-            ← Về trang chủ
-          </a>
-        </div>
-      </div>
-    );
+    notFound();
   }
 
   // Sort variants by sort_order

@@ -1,6 +1,10 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { ChevronRight, MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { ogImage } from '@/lib/og';
+import ContactForm from './ContactForm';
+
+const OG_PAGE = ogImage('/zalo-banner.jpg', 'Liên Hệ - QiQi Yến Sào');
 
 export const metadata: Metadata = {
   title: 'Liên Hệ',
@@ -10,20 +14,13 @@ export const metadata: Metadata = {
     description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
     type: 'website',
     url: 'https://qiqiyensao.com/lien-he',
-    images: [
-      {
-        url: '/zalo-banner.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Liên Hệ - QiQi Yến Sào',
-      },
-    ],
+    images: [OG_PAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Liên Hệ | QiQi Yến Sào',
     description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
-    images: ['/zalo-banner.jpg'],
+    images: [OG_PAGE.url],
   },
 };
 
@@ -163,68 +160,7 @@ export default function ContactPage() {
           </div>
 
           {/* Right: Contact Form */}
-          <div className="bg-white rounded-2xl p-6 md:p-8 border border-border/50 shadow-sm">
-            <h2 className="text-xl font-bold font-serif text-burgundy mb-6">
-              Gửi tin nhắn cho chúng tôi
-            </h2>
-
-            <form className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Họ tên</label>
-                  <input
-                    type="text"
-                    placeholder="Nguyễn Văn A"
-                    className="w-full rounded-lg border border-input px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Số điện thoại</label>
-                  <input
-                    type="tel"
-                    placeholder="0901234567"
-                    className="w-full rounded-lg border border-input px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1.5">Email</label>
-                <input
-                  type="email"
-                  placeholder="email@example.com"
-                  className="w-full rounded-lg border border-input px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1.5">Chủ đề</label>
-                <select className="w-full rounded-lg border border-input px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy">
-                  <option>Tư vấn sản phẩm</option>
-                  <option>Hỏi về đơn hàng</option>
-                  <option>Hợp tác kinh doanh</option>
-                  <option>Khiếu nại / Góp ý</option>
-                  <option>Khác</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium mb-1.5">Nội dung</label>
-                <textarea
-                  rows={4}
-                  placeholder="Nội dung tin nhắn..."
-                  className="w-full rounded-lg border border-input px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-burgundy/20 focus:border-burgundy resize-none"
-                />
-              </div>
-
-              <button
-                type="submit"
-                className="w-full py-3 bg-burgundy text-white font-semibold rounded-xl hover:bg-burgundy-light transition-colors"
-              >
-                Gửi tin nhắn
-              </button>
-            </form>
-          </div>
+          <ContactForm />
         </div>
       </div>
     </div>

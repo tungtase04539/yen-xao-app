@@ -550,10 +550,19 @@ function seedRandom(seedStr: string) {
   };
 }
 
+// Cache kết quả theo slug: hàm sinh dưới đây dựng 80-200 review (mỗi review ~15 lượt
+// PRNG + nhiều phép nối chuỗi) và được gọi lại ở MỌI lần render ProductCard /
+// ProductDetailClient. Vì đầu ra chỉ phụ thuộc slug và hoàn toàn tất định nên cache
+// một lần là đủ; ở phía server cache sống theo vòng đời process, phía client theo tab.
+const generatedCache = new Map<string, Review[]>();
+
 // Generate reviews list deterministically
 function generateDeterministicReviews(slug: string): Review[] {
+  const cached = generatedCache.get(slug);
+  if (cached) return cached;
+
   const rand = seedRandom(slug);
-  
+
   // Target total count: between 80 and 200 reviews
   const targetCount = 80 + Math.floor(rand() * 121);
   
@@ -662,7 +671,7 @@ function generateDeterministicReviews(slug: string): Review[] {
   }
   
   // Sort reviews: newest date first, with predefined ones preserved at the very top if date is equal
-  return reviews.sort((a, b) => {
+  const sorted = reviews.sort((a, b) => {
     const diff = new Date(b.date).getTime() - new Date(a.date).getTime();
     if (diff !== 0) return diff;
     // Predefined reviews have priority if same date
@@ -674,6 +683,9 @@ function generateDeterministicReviews(slug: string): Review[] {
     }
     return 0;
   });
+
+  generatedCache.set(slug, sorted);
+  return sorted;
 }
 
 /**

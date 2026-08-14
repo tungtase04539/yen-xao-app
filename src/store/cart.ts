@@ -4,6 +4,14 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { CartItem } from '@/types';
 
+const CART_STORAGE_KEY = 'yen-xao-cart';
+
+export interface CartPriceUpdate {
+  product_id: string;
+  variant_id?: string;
+  price: number;
+}
+
 interface CartState {
   items: CartItem[];
   isOpen: boolean;
@@ -13,6 +21,7 @@ interface CartState {
   addItem: (item: CartItem) => void;
   removeItem: (productId: string, variantId?: string) => void;
   updateQuantity: (productId: string, quantity: number, variantId?: string) => void;
+  syncPrices: (updates: CartPriceUpdate[]) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
@@ -72,6 +81,18 @@ export const useCart = create<CartState>()(
         }));
       },
 
+      syncPrices: (updates: CartPriceUpdate[]) => {
+        set((state) => ({
+          items: state.items.map((item) => {
+            const update = updates.find(
+              (u) =>
+                u.product_id === item.product_id && u.variant_id === item.variant_id
+            );
+            return update ? { ...item, price: update.price } : item;
+          }),
+        }));
+      },
+
       clearCart: () => set({ items: [] }),
 
       getTotalItems: () => {
@@ -86,9 +107,19 @@ export const useCart = create<CartState>()(
       },
     }),
     {
-      name: 'yen-xao-cart',
+      name: CART_STORAGE_KEY,
       // Only persist items, not isOpen state
       partialize: (state) => ({ items: state.items }),
     }
   )
 );
+
+// persist chỉ hydrate một lần lúc tải trang, nên nếu không nghe sự kiện storage
+// thì tab mở trước sẽ ghi đè giỏ hàng mà tab khác vừa cập nhật.
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === CART_STORAGE_KEY) {
+      useCart.persist.rehydrate();
+    }
+  });
+}

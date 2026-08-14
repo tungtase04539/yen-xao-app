@@ -1,5 +1,7 @@
 'use client';
 
+import { cloudinaryUrl } from './imageUtils';
+
 interface ImageLoaderParams {
   src: string;
   width: number;
@@ -13,12 +15,8 @@ export default function imageLoader({ src, width, quality }: ImageLoaderParams):
   }
 
   // Cloudinary — insert transform params into URL
-  // e.g. res.cloudinary.com/xxx/image/upload/v123/file.jpg
-  //   → res.cloudinary.com/xxx/image/upload/w_800,q_auto,f_auto/v123/file.jpg
   if (src.includes('res.cloudinary.com')) {
-    const w = Math.min(width, 1200);
-    const q = quality || 'auto';
-    return src.replace('/image/upload/', `/image/upload/w_${w},q_${q},f_auto/`);
+    return cloudinaryUrl(src, Math.min(width, 1200), quality ?? 'auto');
   }
 
   // Supabase Storage — use built-in image transformation (Pro plan)

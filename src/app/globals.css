@@ -77,7 +77,9 @@ html {
   /* Custom Brand Colors */
   --color-gold: #d4af37;
   --color-gold-light: #e8d48b;
-  --color-gold-dark: #b8960f;
+  /* Sắc vàng dùng cho CHỮ trên nền sáng — phải đủ tối để đạt 4.5:1 (WCAG AA).
+     #b8960f cũ chỉ được 2.7:1 nên không đọc được ngoài nắng. */
+  --color-gold-dark: #8a6f00;
   --color-burgundy: #7c000a;
   --color-burgundy-light: #a02020;
   --color-burgundy-dark: #550005;
@@ -105,7 +107,9 @@ html {
   --destructive: #dc2626;
   --border: #e8dfd0;
   --input: #e8dfd0;
-  --ring: #d4af37;
+  /* Vòng focus phải nhìn thấy được: vàng #d4af37 chỉ đạt ~2:1 trên nền kem,
+     burgundy đạt >10:1 và vẫn đúng nhận diện thương hiệu. */
+  --ring: #7c000a;
   --chart-1: #d4af37;
   --chart-2: #7c000a;
   --chart-3: #2a5a3a;
@@ -118,7 +122,7 @@ html {
   --sidebar-accent: #f5f0e8;
   --sidebar-accent-foreground: #1a1a1a;
   --sidebar-border: #e8dfd0;
-  --sidebar-ring: #d4af37;
+  --sidebar-ring: #7c000a;
 }
 
 @layer base {
@@ -126,7 +130,7 @@ html {
     font-size: 18px;
   }
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
   }
   body {
     @apply bg-background text-foreground;
@@ -289,14 +293,8 @@ html {
   }
 }
 
-@keyframes gold-shimmer {
-  0% {
-    background-position: -100% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
+/* @keyframes gold-shimmer được khai báo một lần duy nhất ở cuối file —
+   bản trùng tên khai báo trước đó luôn bị bản sau ghi đè nên đã gỡ bỏ. */
 
 @keyframes float {
   0%,
@@ -751,4 +749,25 @@ html {
 @keyframes gold-shimmer {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
+}
+
+/* ============================================================
+   GIẢM CHUYỂN ĐỘNG (prefers-reduced-motion)
+   Các animation infinite ở trên (shimmer, float, phone-ring, ping…)
+   gây triệu chứng tiền đình; tắt hết khi người dùng đã bật tùy chọn này.
+   Đặt ở CUỐI file để thắng mọi khai báo phía trên.
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

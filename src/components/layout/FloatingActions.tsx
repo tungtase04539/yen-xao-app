@@ -39,6 +39,8 @@ export default function FloatingActions() {
       {/* Toggle Button */}
       <motion.button
         onClick={() => setIsExpanded(!isExpanded)}
+        aria-label={isExpanded ? 'Đóng menu liên hệ' : 'Mở menu liên hệ'}
+        aria-expanded={isExpanded}
         className="w-11 h-11 md:w-14 md:h-14 rounded-full text-white shadow-lg flex items-center justify-center transition-all"
         style={{ background: 'linear-gradient(135deg, #d4af37 0%, #C9A55A 50%, #b8943e 100%)' }}
         whileHover={{ scale: 1.1 }}

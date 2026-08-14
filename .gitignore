@@ -32,6 +32,8 @@ yarn-error.log*
 
 # env files (can opt-in for committing if needed)
 .env*
+# ...trừ bản mẫu: chỉ liệt kê TÊN biến, không có giá trị thật
+!.env.example
 
 # vercel
 .vercel
@@ -39,3 +41,13 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Script thử nghiệm dùng một lần — chứa khoá service_role và thao tác ghi thẳng
+# lên database, TUYỆT ĐỐI không được commit (repo này đang public).
+/scratch/
+
+# Metadata cục bộ của Supabase CLI (chứa project ref, pooler URL)
+/supabase/.temp/
+
+# Cấu hình Claude Code cục bộ của từng máy
+.claude/settings.local.json

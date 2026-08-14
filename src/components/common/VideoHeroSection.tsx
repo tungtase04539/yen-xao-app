@@ -1,17 +1,25 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useSyncExternalStore } from 'react';
 
 interface VideoHeroSectionProps {
   src: string;
   fallbackSrc?: string; // image shown in Zalo WebView instead of video
 }
 
+// User agent không đổi trong vòng đời trang nên không cần đăng ký lắng nghe.
+const subscribeUserAgent = () => () => {};
+const isZaloOnClient = () => /zalo/i.test(navigator.userAgent);
+const isZaloOnServer = () => false;
+
 export default function VideoHeroSection({ src, fallbackSrc }: VideoHeroSectionProps) {
   const sentinelRef = useRef<HTMLDivElement>(null);
 
-  // Detect Zalo WebView — Zalo hijacks <video> and opens native player
-  const isZalo = typeof window !== 'undefined' && /zalo/i.test(navigator.userAgent);
+  // Detect Zalo WebView — Zalo hijacks <video> and opens native player.
+  // Đọc thẳng navigator.userAgent lúc render sẽ lệch giữa server (luôn false) và
+  // client trong Zalo (true), khiến React vứt bỏ kết quả hydrate. useSyncExternalStore
+  // cho phép khai báo riêng giá trị phía server và phía client nên không lệch.
+  const isZalo = useSyncExternalStore(subscribeUserAgent, isZaloOnClient, isZaloOnServer);
 
   useEffect(() => {
     const sentinel = sentinelRef.current;

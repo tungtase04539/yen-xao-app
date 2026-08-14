@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -24,13 +24,42 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { useCart } from '@/store/cart';
 import { formatPrice } from '@/lib/format';
-import { getProductReviews, getProductRatingSummary, addProductReview } from '@/data/reviews';
+import { getProductReviews, getProductRatingSummary, addProductReview, type Review } from '@/data/reviews';
 import ProductCard from '@/components/shared/ProductCard';
+import { sanitizeHtml, safeJsonLd } from '@/lib/sanitize';
+import { SITE_URL } from '@/lib/og';
 import type { Product, ProductVariant, ProductListItem } from '@/types';
 
 interface Props {
   product: Product;
   relatedProducts: ProductListItem[];
+}
+
+// Avatar helper
+function getInitials(name: string) {
+  if (!name) return 'Q';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+  return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+}
+
+// Avatar background color
+const AVATAR_COLORS = [
+  'bg-red-500/10 text-red-700',
+  'bg-amber-500/10 text-amber-700',
+  'bg-emerald-500/10 text-emerald-700',
+  'bg-blue-500/10 text-blue-700',
+  'bg-indigo-500/10 text-indigo-700',
+  'bg-rose-500/10 text-rose-700',
+  'bg-purple-500/10 text-purple-700',
+];
+
+function getAvatarColor(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return AVATAR_COLORS[Math.abs(hash) % AVATAR_COLORS.length];
 }
 
 export default function ProductDetailClient({ product, relatedProducts }: Props) {
@@ -51,8 +80,11 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [mainImage, setMainImage] = useState(0);
 
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  const zoomTriggerRef = useRef<HTMLButtonElement>(null);
+
   // Reviews state
-  const [reviewsList, setReviewsList] = useState<any[]>([]);
+  const [reviewsList, setReviewsList] = useState<Review[]>([]);
   const [hasMounted, setHasMounted] = useState(false);
 
   // Form state for writing a review
@@ -67,13 +99,73 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
   }, [product.slug]);
 
   const reviewCount = reviewsList.length;
-  const averageRating = reviewCount > 0
-    ? parseFloat((reviewsList.reduce((acc, r) => acc + r.rating, 0) / reviewCount).toFixed(1))
-    : 5.0;
 
-  const staticSummary = getProductRatingSummary(product.slug);
+  // Một lượt duyệt duy nhất cho cả điểm trung bình lẫn phân bố 5 mức sao — trước
+  // đây là 1 reduce + 5 lần filter, chạy lại mỗi khi rê chuột qua hàng sao chấm điểm.
+  const { averageRating, ratingCounts } = useMemo(() => {
+    const counts = [0, 0, 0, 0, 0]; // index 0 = 1 sao … index 4 = 5 sao
+    let sum = 0;
+    for (const r of reviewsList) {
+      sum += r.rating;
+      if (r.rating >= 1 && r.rating <= 5) counts[r.rating - 1]++;
+    }
+    return {
+      averageRating: reviewsList.length > 0
+        ? parseFloat((sum / reviewsList.length).toFixed(1))
+        : 5.0,
+      ratingCounts: counts,
+    };
+  }, [reviewsList]);
+
+  const staticSummary = useMemo(() => getProductRatingSummary(product.slug), [product.slug]);
   const displayRating = hasMounted ? averageRating : staticSummary.rating;
   const displayCount = hasMounted ? reviewCount : staticSummary.count;
+
+  // Danh sách 80-200 dòng, mỗi dòng 5 icon sao. Memo hoá theo reviewsList để việc rê
+  // chuột qua ô chấm điểm bên dưới (state hoveredStar) không reconcile lại cả danh sách.
+  const reviewItems = useMemo(
+    () =>
+      reviewsList.map((review) => (
+        <div key={review.id} className="border-b border-border/40 pb-6 last:border-b-0 last:pb-0">
+          <div className="flex items-start gap-4">
+            {/* Initials Avatar */}
+            <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm shrink-0 shadow-sm ${getAvatarColor(review.name)}`}>
+              {getInitials(review.name)}
+            </div>
+            <div className="flex-1">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
+                <h4 className="font-semibold text-foreground">{review.name}</h4>
+                <span className="text-xs text-muted-foreground">{review.date}</span>
+              </div>
+              <div className="flex text-amber-500 mb-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-current' : 'text-muted-foreground/20'}`}
+                  />
+                ))}
+              </div>
+              <p className="text-sm text-foreground/80 leading-relaxed">
+                {review.content}
+              </p>
+
+              {/* Owner Response */}
+              {review.reply && (
+                <div className="mt-4 p-4 bg-cream/40 border-l-2 border-gold rounded-r-2xl text-xs space-y-1">
+                  <p className="font-bold text-burgundy-light uppercase tracking-wider">
+                    Phản hồi từ QiQi Yến Sào
+                  </p>
+                  <p className="text-foreground/70 leading-relaxed">
+                    {review.reply}
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )),
+    [reviewsList]
+  );
 
   const handleAddReview = (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,36 +186,13 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
     setNewReviewRating(5);
     setNewReviewContent('');
     
-    toast.success('Gửi đánh giá thành công!', {
-      description: 'Cảm ơn bạn đã phản hồi ý kiến cho chúng tôi.',
+    // addProductReview chỉ ghi vào localStorage — chưa có bảng reviews trên Supabase
+    // và cũng không có màn hình duyệt đánh giá trong /admin. Báo "gửi thành công" ở
+    // đây là nói sai với khách: một lời khiếu nại đi qua form này sẽ mất trắng trong
+    // khi khách tin là shop đã nhận. Nói đúng những gì thật sự xảy ra.
+    toast.info('Đã lưu đánh giá của bạn', {
+      description: 'Đánh giá hiện chỉ được lưu trên trình duyệt này và chưa gửi tới shop. Nếu bạn cần shop phản hồi, vui lòng liên hệ qua hotline hoặc Messenger.',
     });
-  };
-
-  // Avatar helper
-  const getInitials = (name: string) => {
-    if (!name) return 'Q';
-    const parts = name.trim().split(/\s+/);
-    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
-    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
-  };
-
-  // Avatar background color
-  const getAvatarColor = (name: string) => {
-    const colors = [
-      'bg-red-500/10 text-red-700',
-      'bg-amber-500/10 text-amber-700',
-      'bg-emerald-500/10 text-emerald-700',
-      'bg-blue-500/10 text-blue-700',
-      'bg-indigo-500/10 text-indigo-700',
-      'bg-rose-500/10 text-rose-700',
-      'bg-purple-500/10 text-purple-700'
-    ];
-    let hash = 0;
-    for (let i = 0; i < name.length; i++) {
-      hash = name.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const index = Math.abs(hash) % colors.length;
-    return colors[index];
   };
 
   // Video detection helper
@@ -137,15 +206,19 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
     return '';
   };
 
-  // Build image gallery — variant image replaces thumbnail when selected
-  const baseImages = [
-    product.thumbnail,
-    ...(product.image_gallery || []),
-  ].filter(Boolean) as string[];
+  // Build image gallery — variant image replaces thumbnail when selected.
+  // useMemo để mảng giữ nguyên identity giữa các lần render — effect focus trap của
+  // lightbox phụ thuộc vào nó.
+  const galleryImages = useMemo(() => {
+    const base = [
+      product.thumbnail,
+      ...(product.image_gallery || []),
+    ].filter(Boolean) as string[];
 
-  const galleryImages = selectedVariant?.image
-    ? [selectedVariant.image, ...baseImages.filter(img => img !== selectedVariant.image)]
-    : baseImages;
+    return selectedVariant?.image
+      ? [selectedVariant.image, ...base.filter((img) => img !== selectedVariant.image)]
+      : base;
+  }, [product.thumbnail, product.image_gallery, selectedVariant]);
 
   // Current price
   const currentPrice = isVariable
@@ -175,7 +248,9 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
   }, []);
 
   const increaseQty = useCallback(() => {
-    setQuantity((q) => Math.min(currentStock || 999, q + 1));
+    // `currentStock || 999` cũ rơi về 999 khi hết hàng (0 là falsy), cho phép tăng
+    // số lượng vượt tồn kho rồi bị server chặn ở bước đặt đơn.
+    setQuantity((q) => (currentStock > 0 ? Math.min(currentStock, q + 1) : q));
   }, [currentStock]);
 
   // Add to cart
@@ -214,8 +289,136 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
   const lightboxNext = () => setLightboxIndex((i) => (i + 1) % galleryImages.length);
   const lightboxPrev = () => setLightboxIndex((i) => (i - 1 + galleryImages.length) % galleryImages.length);
 
+  // Lightbox là overlay tự viết (không dùng Radix Dialog) nên phải tự lo phần a11y:
+  // Escape để đóng, giữ focus bên trong, khoá scroll nền và trả focus về nút đã mở nó.
+  useEffect(() => {
+    if (!lightboxOpen) return;
+
+    // Giữ lại nút đã mở lightbox để trả focus về đúng chỗ khi đóng.
+    const triggerNode = zoomTriggerRef.current;
+
+    const getFocusable = () =>
+      Array.from(
+        lightboxRef.current?.querySelectorAll<HTMLElement>('button, video[controls]') || []
+      );
+
+    getFocusable()[0]?.focus();
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setLightboxOpen(false);
+        return;
+      }
+      if (galleryImages.length > 1 && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+        const step = e.key === 'ArrowRight' ? 1 : -1;
+        setLightboxIndex((i) => (i + step + galleryImages.length) % galleryImages.length);
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const items = getFocusable();
+      if (items.length === 0) return;
+      const first = items[0];
+      const last = items[items.length - 1];
+      const active = document.activeElement;
+      const inside = !!lightboxRef.current?.contains(active);
+
+      if (e.shiftKey && (!inside || active === first)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (!inside || active === last)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      triggerNode?.focus();
+    };
+  }, [lightboxOpen, galleryImages]);
+
+  // Structured data cho Google (rich result: giá, tiền tệ, tình trạng còn hàng).
+  // KHÔNG khai aggregateRating: đánh giá hiển thị trên trang là dữ liệu sinh tự động,
+  // gắn vào schema là vi phạm chính sách review spam của Google.
+  const productJsonLd = useMemo(() => {
+    const url = `${SITE_URL}/san-pham/${product.slug}`;
+    const images = [product.thumbnail, ...(product.image_gallery || [])].filter(Boolean);
+
+    // Giá lấy từ dữ liệu sản phẩm chứ không từ biến thể đang chọn, để schema không
+    // đổi theo thao tác của khách.
+    const variantPrices = activeVariants
+      .map((v) => v.sale_price || v.price)
+      .filter((p): p is number => typeof p === 'number' && p > 0);
+
+    const offers = isVariable && variantPrices.length > 0
+      ? {
+          '@type': 'AggregateOffer',
+          priceCurrency: 'VND',
+          lowPrice: Math.min(...variantPrices),
+          highPrice: Math.max(...variantPrices),
+          offerCount: activeVariants.length,
+          availability: activeVariants.some((v) => v.stock > 0)
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          url,
+        }
+      : {
+          '@type': 'Offer',
+          priceCurrency: 'VND',
+          price: product.sale_price || product.price,
+          availability: product.stock > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock',
+          url,
+        };
+
+    const breadcrumb = [
+      { name: 'Trang chủ', item: SITE_URL },
+      ...(product.category
+        ? [{ name: product.category.name, item: `${SITE_URL}/danh-muc/${product.category.slug}` }]
+        : []),
+      { name: product.name, item: url },
+    ];
+
+    return [
+      {
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        url,
+        image: images,
+        description: product.short_description || product.name,
+        ...(product.sku ? { sku: product.sku } : {}),
+        brand: { '@type': 'Brand', name: 'QiQi Yến Sào' },
+        ...(product.category ? { category: product.category.name } : {}),
+        offers,
+      },
+      {
+        '@context': 'https://schema.org',
+        '@type': 'BreadcrumbList',
+        itemListElement: breadcrumb.map((b, i) => ({
+          '@type': 'ListItem',
+          position: i + 1,
+          name: b.name,
+          item: b.item,
+        })),
+      },
+    ];
+  }, [product, isVariable, activeVariants]);
+
   return (
     <div className="min-h-screen bg-gradient-luxury">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(productJsonLd) }}
+      />
+
       {/* Breadcrumbs */}
       <div className="bg-white/80 backdrop-blur-sm border-b border-gold/10">
         <div className="container mx-auto px-4 py-4">
@@ -257,8 +460,11 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                     />
                   </div>
                 ) : (
-                  <div
-                    className="relative w-full aspect-square md:aspect-[4/3] cursor-zoom-in"
+                  <button
+                    type="button"
+                    ref={zoomTriggerRef}
+                    aria-label={`Phóng to ảnh ${product.name}`}
+                    className="relative block w-full aspect-square md:aspect-[4/3] cursor-zoom-in"
                     onClick={() => {
                       setLightboxIndex(mainImage);
                       setLightboxOpen(true);
@@ -277,7 +483,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                     <div className="absolute top-5 right-5 w-11 h-11 rounded-xl bg-white/80 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all shadow-sm">
                       <ZoomIn className="w-5 h-5 text-foreground/50" />
                     </div>
-                  </div>
+                  </button>
                 )
               ) : (
                 <div className="w-full aspect-square md:aspect-[4/3] flex items-center justify-center text-9xl bg-cream">
@@ -300,6 +506,8 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                   <button
                     key={i}
                     onClick={() => setMainImage(i)}
+                    aria-label={`Xem ảnh ${i + 1} của ${product.name}`}
+                    aria-current={i === mainImage}
                     className={`relative w-18 h-18 md:w-22 md:h-22 rounded-xl overflow-hidden shrink-0 transition-all duration-300 ${
                       i === mainImage
                         ? 'ring-2 ring-gold shadow-md shadow-gold/20'
@@ -558,7 +766,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                 {product.content ? (
                   <div
                     className="prose-content"
-                    dangerouslySetInnerHTML={{ __html: product.content }}
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(product.content) }}
                   />
                 ) : (
                   <p className="text-muted-foreground">Chưa có mô tả cho sản phẩm này.</p>
@@ -593,7 +801,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                   <div className="space-y-3">
                     {Array.from({ length: 5 }).map((_, idx) => {
                       const starNum = 5 - idx;
-                      const count = reviewsList.filter((r) => r.rating === starNum).length;
+                      const count = ratingCounts[starNum - 1];
                       const pct = displayCount > 0 ? (count / displayCount) * 100 : 0;
 
                       return (
@@ -620,45 +828,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                   {/* Reviews List */}
                   <div className="space-y-6">
                     {reviewsList.length > 0 ? (
-                      reviewsList.map((review) => (
-                        <div key={review.id} className="border-b border-border/40 pb-6 last:border-b-0 last:pb-0">
-                          <div className="flex items-start gap-4">
-                            {/* Initials Avatar */}
-                            <div className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm shrink-0 shadow-sm ${getAvatarColor(review.name)}`}>
-                              {getInitials(review.name)}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-1.5">
-                                <h4 className="font-semibold text-foreground">{review.name}</h4>
-                                <span className="text-xs text-muted-foreground">{review.date}</span>
-                              </div>
-                              <div className="flex text-amber-500 mb-2">
-                                {Array.from({ length: 5 }).map((_, i) => (
-                                  <Star
-                                    key={i}
-                                    className={`w-3.5 h-3.5 ${i < review.rating ? 'fill-current' : 'text-muted-foreground/20'}`}
-                                  />
-                                ))}
-                              </div>
-                              <p className="text-sm text-foreground/80 leading-relaxed">
-                                {review.content}
-                              </p>
-
-                              {/* Owner Response */}
-                              {review.reply && (
-                                <div className="mt-4 p-4 bg-cream/40 border-l-2 border-gold rounded-r-2xl text-xs space-y-1">
-                                  <p className="font-bold text-burgundy-light uppercase tracking-wider">
-                                    Phản hồi từ QiQi Yến Sào
-                                  </p>
-                                  <p className="text-foreground/70 leading-relaxed">
-                                    {review.reply}
-                                  </p>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))
+                      reviewItems
                     ) : (
                       <div className="text-center py-10 bg-cream/10 border border-dashed border-gold/15 rounded-3xl">
                         <p className="text-muted-foreground">Chưa có đánh giá nào cho sản phẩm này.</p>
@@ -668,9 +838,14 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
 
                   {/* Write a Review Form */}
                   <div className="bg-warm-white border border-gold/10 p-6 md:p-8 rounded-3xl">
-                    <h3 className="text-lg font-serif font-semibold text-burgundy mb-6">
+                    <h3 className="text-lg font-serif font-semibold text-burgundy mb-2">
                       Viết đánh giá của bạn
                     </h3>
+                    <p className="text-xs text-muted-foreground mb-6 leading-relaxed">
+                      Lưu ý: đánh giá viết ở đây hiện chỉ được lưu trên trình duyệt của bạn,
+                      shop chưa nhận được. Nếu bạn cần shop phản hồi, vui lòng liên hệ qua
+                      hotline hoặc Messenger.
+                    </p>
                     <form onSubmit={handleAddReview} className="space-y-4">
                       {/* Interactive Stars Selection */}
                       <div>
@@ -736,7 +911,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
                         type="submit"
                         className="w-full sm:w-auto py-5 px-8 bg-burgundy hover:bg-burgundy-light text-white rounded-xl font-semibold transition-all"
                       >
-                        Gửi Đánh Giá Của Bạn
+                        Lưu Đánh Giá Của Bạn
                       </Button>
                     </form>
                   </div>
@@ -768,6 +943,10 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
       <AnimatePresence>
         {lightboxOpen && galleryImages.length > 0 && (
           <motion.div
+            ref={lightboxRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={`Thư viện ảnh: ${product.name}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -777,6 +956,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
             {/* Close */}
             <button
               onClick={() => setLightboxOpen(false)}
+              aria-label="Đóng thư viện ảnh"
               className="absolute top-6 right-6 w-12 h-12 rounded-full glass-gold text-white flex items-center justify-center hover:bg-white/15 transition-colors z-10"
             >
               <X className="w-5 h-5" />
@@ -786,6 +966,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
             {galleryImages.length > 1 && (
               <button
                 onClick={(e) => { e.stopPropagation(); lightboxPrev(); }}
+                aria-label="Ảnh trước"
                 className="absolute left-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full glass-gold text-white flex items-center justify-center hover:bg-white/15 transition-colors z-10"
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -829,6 +1010,7 @@ export default function ProductDetailClient({ product, relatedProducts }: Props)
             {galleryImages.length > 1 && (
               <button
                 onClick={(e) => { e.stopPropagation(); lightboxNext(); }}
+                aria-label="Ảnh tiếp theo"
                 className="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full glass-gold text-white flex items-center justify-center hover:bg-white/15 transition-colors z-10"
               >
                 <ChevronRight className="w-5 h-5" />

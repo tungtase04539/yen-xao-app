@@ -1,38 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import ProductCard from '@/components/shared/ProductCard';
-import { supabase } from '@/lib/supabase';
 import type { ProductListItem } from '@/types';
 
-export default function FeaturedProducts() {
-  const [products, setProducts] = useState<ProductListItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function fetchFeatured() {
-      try {
-        const { data, error } = await supabase.rpc('get_products_with_min_price', {
-          p_is_featured: true,
-          p_limit: 4,
-          p_offset: 0,
-          p_sort: 'newest',
-        });
-
-        if (error) throw error;
-        setProducts(data || []);
-      } catch (err) {
-        console.error('Error fetching featured products:', err);
-      } finally {
-        setLoading(false);
-      }
-    }
-    fetchFeatured();
-  }, []);
-
+export default function FeaturedProducts({ products }: { products: ProductListItem[] }) {
   return (
     <section className="py-20 md:py-28 relative" style={{
       background: 'linear-gradient(180deg, #fffdf8 0%, #f8f4ec 50%, #fffdf8 100%)',
@@ -64,20 +38,7 @@ export default function FeaturedProducts() {
         </motion.div>
 
         {/* Product Grid */}
-        {loading ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-8">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden border border-border/30">
-                <div className="aspect-square bg-cream animate-pulse" />
-                <div className="p-5 space-y-3">
-                  <div className="h-3 bg-cream rounded-full animate-pulse w-1/3" />
-                  <div className="h-4 bg-cream rounded-full animate-pulse w-2/3" />
-                  <div className="h-5 bg-cream rounded-full animate-pulse w-1/2" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : products.length > 0 ? (
+        {products.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-5 md:gap-8">
             {products.map((product) => (
               <ProductCard key={product.id} product={product} />

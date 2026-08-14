@@ -1,46 +1,38 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Sparkles } from 'lucide-react';
 import ProductCard from '@/components/shared/ProductCard';
 import { supabase } from '@/lib/supabase';
-import type { Category, ProductListItem } from '@/types';
+import type { ProductListItem } from '@/types';
 
-export default function CategoryTabs() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [activeSlug, setActiveSlug] = useState<string>('');
-  const [products, setProducts] = useState<ProductListItem[]>([]);
-  const [loading, setLoading] = useState(true);
+export interface CategoryTab {
+  id: string;
+  name: string;
+  slug: string;
+}
 
+interface Props {
+  categories: CategoryTab[];
+  initialProducts: ProductListItem[];
+}
+
+export default function CategoryTabs({ categories, initialProducts }: Props) {
+  const [activeSlug, setActiveSlug] = useState<string>(categories[0]?.slug ?? '');
+  const [products, setProducts] = useState<ProductListItem[]>(initialProducts);
+  const [loading, setLoading] = useState(false);
+
+  // Danh mục đầu tiên đã được server render sẵn trong initialProducts,
+  // nên bỏ qua lượt chạy đầu và chỉ fetch khi khách thực sự đổi tab.
+  const skipFirstRun = useRef(true);
   useEffect(() => {
-    async function fetchCategories() {
-      // Single query with count join — replaces N+1 individual RPC calls
-      const { data } = await supabase
-        .from('categories')
-        .select('*, products(count)')
-        .eq('type', 'product');
-      if (data && data.length > 0) {
-        const categoriesWithCount = data
-          .map((cat) => ({
-            ...cat,
-            productCount: (cat.products as { count: number }[])?.[0]?.count || 0,
-          }))
-          .filter((cat) => cat.productCount > 0)
-          .sort((a, b) => b.productCount - a.productCount);
-
-        if (categoriesWithCount.length > 0) {
-          setCategories(categoriesWithCount);
-          setActiveSlug(categoriesWithCount[0].slug);
-        }
-      }
+    if (skipFirstRun.current) {
+      skipFirstRun.current = false;
+      return;
     }
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    if (!activeSlug) return;
+    let cancelled = false;
     async function fetchProducts() {
       setLoading(true);
       const { data } = await supabase.rpc('get_products_with_min_price', {
@@ -49,11 +41,17 @@ export default function CategoryTabs() {
         p_offset: 0,
         p_sort: 'popular',
       });
+      if (cancelled) return;
       setProducts(data || []);
       setLoading(false);
     }
     fetchProducts();
+    return () => { cancelled = true; };
   }, [activeSlug]);
+
+  // Không có danh mục nào còn hàng đang bán ⇒ ẩn hẳn section thay vì để skeleton
+  // nhấp nháy vĩnh viễn và link "Xem thêm" trỏ tới /danh-muc/ rỗng.
+  if (categories.length === 0) return null;
 
   return (
     <section className="py-20 md:py-28">

@@ -1,9 +1,15 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import BackgroundVideo from '@/components/common/BackgroundVideo';
 import VideoHeroSection from '@/components/common/VideoHeroSection';
 import SectionMediaGrid from '@/components/gioi-thieu/SectionMediaGrid';
+import ViewportOnly from './ViewportOnly';
+import { ogImage } from '@/lib/og';
+import { sanitizeHtml } from '@/lib/sanitize';
+
+const OG_PAGE = ogImage('/tri-an-khach-hang.jpg', 'Giới Thiệu - QiQi Yến Sào');
 
 export const revalidate = 300; // ISR: revalidate every 5 minutes
 
@@ -15,20 +21,13 @@ export const metadata: Metadata = {
     description: 'Câu chuyện thương hiệu QiQi Yến Sào - Hành trình mang tinh hoa yến sào đến mọi gia đình Việt. Cam kết yến nguyên chất 100%.',
     type: 'website',
     url: 'https://qiqiyensao.com/gioi-thieu',
-    images: [
-      {
-        url: '/tri-an-khach-hang.jpg',
-        width: 1200,
-        height: 630,
-        alt: 'Giới Thiệu - QiQi Yến Sào',
-      },
-    ],
+    images: [OG_PAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Giới Thiệu | QiQi Yến Sào',
     description: 'Câu chuyện thương hiệu QiQi Yến Sào - Hành trình mang tinh hoa yến sào đến mọi gia đình Việt. Cam kết yến nguyên chất 100%.',
-    images: ['/tri-an-khach-hang.jpg'],
+    images: [OG_PAGE.url],
   },
 };
 
@@ -37,6 +36,7 @@ async function getAboutPage() {
     .from('pages')
     .select('*')
     .eq('slug', 'gioi-thieu')
+    .eq('is_published', true)
     .single();
   return data;
 }
@@ -63,8 +63,13 @@ export default async function AboutPage() {
       {/* ── MOBILE: Video standalone at top, text below ── */}
       {hasVideo && (
         <div className="md:hidden">
-          {/* Video — full width, no overlay, no interaction */}
-          <VideoHeroSection src={page.thumbnail} fallbackSrc="/zalo-banner.jpg" />
+          {/* Video — full width, no overlay, no interaction.
+              Khung 16/9 giữ chỗ sẵn để không nhảy layout khi video mount sau hydrate. */}
+          <div className="w-full bg-black" style={{ aspectRatio: '16/9', maxHeight: '80vh' }}>
+            <ViewportOnly query="(max-width: 767.98px)">
+              <VideoHeroSection src={page.thumbnail} fallbackSrc="/zalo-banner.jpg" />
+            </ViewportOnly>
+          </div>
 
           {/* Text block below video */}
           <section className="py-10 px-4 text-center bg-white">
@@ -78,7 +83,7 @@ export default async function AboutPage() {
               {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
             </p>
             <div className="flex justify-center items-center gap-3 text-sm text-gray-400">
-              <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
+              <Link href="/" className="hover:text-gold transition-colors">Trang chủ</Link>
               <span className="text-gold/50">✦</span>
               <span className="text-gold font-medium">Giới Thiệu</span>
             </div>
@@ -92,7 +97,9 @@ export default async function AboutPage() {
         {/* Background */}
         {page?.thumbnail && (
           hasVideo ? (
-            <BackgroundVideo src={page.thumbnail} />
+            <ViewportOnly query="(min-width: 768px)">
+              <BackgroundVideo src={page.thumbnail} />
+            </ViewportOnly>
           ) : (
             <Image
               src={page.thumbnail}
@@ -125,7 +132,7 @@ export default async function AboutPage() {
             {page?.summary || 'Câu chuyện thương hiệu Yến Sào Cao Cấp — Hành trình mang tinh hoa yến sào đến mọi gia đình Việt'}
           </p>
           <div className="flex justify-center items-center gap-3 mt-8 text-sm text-white/30">
-            <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
+            <Link href="/" className="hover:text-gold transition-colors">Trang chủ</Link>
             <span className="text-gold/30">✦</span>
             <span className="text-gold/70">Giới Thiệu</span>
           </div>
@@ -139,7 +146,7 @@ export default async function AboutPage() {
             <div className="max-w-4xl mx-auto">
               <div
                 className="luxury-prose"
-                dangerouslySetInnerHTML={{ __html: page.content }}
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(page.content) }}
               />
             </div>
           ) : (

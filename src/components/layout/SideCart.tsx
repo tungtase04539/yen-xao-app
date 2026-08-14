@@ -16,8 +16,9 @@ import { useCart } from '@/store/cart';
 import { formatPrice } from '@/lib/format';
 
 export default function SideCart() {
-  const { items, isOpen, closeCart, removeItem, updateQuantity, getTotalPrice } = useCart();
+  const { items, isOpen, closeCart, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCart();
   const totalPrice = getTotalPrice();
+  const totalItems = getTotalItems();
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && closeCart()}>
@@ -26,7 +27,7 @@ export default function SideCart() {
         <SheetHeader className="px-6 py-4 border-b border-border">
           <SheetTitle className="flex items-center gap-2 text-burgundy font-serif">
             <ShoppingBag className="w-5 h-5" />
-            Giỏ hàng ({items.length} sản phẩm)
+            Giỏ hàng ({totalItems} sản phẩm)
           </SheetTitle>
         </SheetHeader>
 
@@ -46,7 +47,7 @@ export default function SideCart() {
               <Button
                 variant="outline"
                 onClick={closeCart}
-                className="border-gold text-gold hover:bg-gold hover:text-burgundy"
+                className="border-gold-dark text-gold-dark hover:bg-gold hover:text-burgundy"
               >
                 Tiếp tục mua sắm
               </Button>
@@ -101,6 +102,7 @@ export default function SideCart() {
                     {/* Quantity Controls */}
                     <div className="flex items-center justify-between mt-2">
                       <div className="flex items-center border border-border rounded-lg">
+                        {/* min-w-11/min-h-11 để vùng chạm đạt 44px — trước đây chỉ ~27px */}
                         <button
                           onClick={() =>
                             updateQuantity(
@@ -109,7 +111,8 @@ export default function SideCart() {
                               item.variant_id
                             )
                           }
-                          className="p-1.5 hover:bg-secondary transition-colors rounded-l-lg"
+                          aria-label={`Giảm số lượng ${item.product_name}`}
+                          className="flex items-center justify-center min-w-11 min-h-11 hover:bg-secondary transition-colors rounded-l-lg"
                         >
                           <Minus className="w-3 h-3" />
                         </button>
@@ -124,14 +127,16 @@ export default function SideCart() {
                               item.variant_id
                             )
                           }
-                          className="p-1.5 hover:bg-secondary transition-colors rounded-r-lg"
+                          aria-label={`Tăng số lượng ${item.product_name}`}
+                          className="flex items-center justify-center min-w-11 min-h-11 hover:bg-secondary transition-colors rounded-r-lg"
                         >
                           <Plus className="w-3 h-3" />
                         </button>
                       </div>
                       <button
                         onClick={() => removeItem(item.product_id, item.variant_id)}
-                        className="p-1.5 text-muted-foreground hover:text-destructive transition-colors"
+                        aria-label={`Xóa ${item.product_name} khỏi giỏ hàng`}
+                        className="flex items-center justify-center min-w-11 min-h-11 text-muted-foreground hover:text-destructive transition-colors"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -165,7 +170,7 @@ export default function SideCart() {
               </Link>
               <Button
                 variant="outline"
-                className="w-full border-gold text-gold hover:bg-gold hover:text-burgundy"
+                className="w-full border-gold-dark text-gold-dark hover:bg-gold hover:text-burgundy"
                 onClick={closeCart}
               >
                 Tiếp tục mua sắm

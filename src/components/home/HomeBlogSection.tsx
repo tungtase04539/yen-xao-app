@@ -10,6 +10,7 @@ interface PostItem {
   thumbnail: string | null;
   summary: string | null;
   created_at: string;
+  published_at: string | null;
   content: string | null;
   category: { name: string } | null;
 }
@@ -21,11 +22,15 @@ function estimateReadTime(content: string | null): number {
 }
 
 export default async function HomeBlogSection() {
+  // Phải khớp CHÍNH XÁC bộ lọc của trang /blog, nếu không trang chủ sẽ hiện
+  // một tập bài khác (trước đây chỉ lọc status='published' + sắp xếp theo
+  // created_at, nên bỏ sót toàn bộ bài 'scheduled' đã tới hạn đăng).
   const { data } = await supabase
     .from('posts')
-    .select('id, title, slug, thumbnail, summary, created_at, content, category:categories(name)')
-    .eq('status', 'published')
-    .order('created_at', { ascending: false })
+    .select('id, title, slug, thumbnail, summary, created_at, published_at, content, category:categories(name)')
+    .in('status', ['published', 'scheduled'])
+    .lte('published_at', new Date().toISOString())
+    .order('published_at', { ascending: false })
     .limit(3);
 
   const posts = (data as unknown as PostItem[]) || [];
@@ -103,7 +108,7 @@ export default async function HomeBlogSection() {
                 <div className="flex items-center gap-3 text-[11px] text-muted-foreground mt-auto pt-3 border-t border-border/40">
                   <span className="flex items-center gap-1">
                     <Calendar className="w-3 h-3 text-gold/70" />
-                    {new Date(post.created_at).toLocaleDateString('vi-VN')}
+                    {new Date(post.published_at || post.created_at).toLocaleDateString('vi-VN')}
                   </span>
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3 text-gold/70" />

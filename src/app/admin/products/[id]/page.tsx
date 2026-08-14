@@ -158,7 +158,7 @@ export default function ProductFormPage() {
         if (error) throw error;
         productId = data.id;
       } else {
-        const { data, error, count } = await supabase
+        const { data, error } = await supabase
           .from('products')
           .update(productData)
           .eq('id', id)
@@ -171,31 +171,48 @@ export default function ProductFormPage() {
 
       // Handle variants for variable products
       if (type === 'variable') {
-        // Delete old variants
-        if (!isNew) {
-          const { error: delErr } = await supabase.from('product_variants').delete().eq('product_id', productId);
-          if (delErr) throw new Error(`Xóa biến thể cũ thất bại: ${delErr.message}`);
+        // Ghi trước, xóa sau: biến thể cũ chỉ bị gỡ khi admin thực sự xóa khỏi form và
+        // khi các thao tác ghi đã thành công. Upsert theo id cũng giữ id biến thể ổn định
+        // cho order_items của đơn cũ và cho giỏ hàng đang nằm trong localStorage của khách.
+        const buildRow = (v: Variant, i: number) => ({
+          product_id: productId,
+          title: v.title,
+          image: v.image || null,
+          price: v.price,
+          sale_price: v.sale_price || null,
+          stock: v.stock,
+          sort_order: i,
+          is_active: v.is_active,
+        });
+
+        const indexed = variants.map((v, i) => ({ v, i }));
+        const existing = indexed.filter(({ v }) => v.id);
+        const added = indexed.filter(({ v }) => !v.id);
+
+        if (existing.length > 0) {
+          const { error } = await supabase
+            .from('product_variants')
+            .upsert(existing.map(({ v, i }) => ({ id: v.id, ...buildRow(v, i) })));
+          if (error) throw new Error(`Cập nhật biến thể thất bại: ${error.message}`);
         }
-        // Insert new
-        if (variants.length > 0) {
-          const variantData = variants.map((v, i) => ({
-            product_id: productId,
-            title: v.title,
-            image: v.image || null,
-            price: v.price,
-            sale_price: v.sale_price || null,
-            stock: v.stock,
-            sort_order: i,
-            is_active: v.is_active,
-          }));
+
+        if (added.length > 0) {
           const { data: insertedVariants, error } = await supabase
             .from('product_variants')
-            .insert(variantData)
+            .insert(added.map(({ v, i }) => buildRow(v, i)))
             .select('id');
           if (error) throw new Error(`Thêm biến thể thất bại: ${error.message}`);
           if (!insertedVariants || insertedVariants.length === 0) {
             throw new Error('Không thể thêm biến thể. Kiểm tra quyền truy cập (RLS policy).');
           }
+        }
+
+        if (!isNew) {
+          const keepIds = variants.map((v) => v.id).filter(Boolean) as string[];
+          let removeQuery = supabase.from('product_variants').delete().eq('product_id', productId);
+          if (keepIds.length > 0) removeQuery = removeQuery.not('id', 'in', `(${keepIds.join(',')})`);
+          const { error: delErr } = await removeQuery;
+          if (delErr) throw new Error(`Xóa biến thể đã gỡ thất bại: ${delErr.message}`);
         }
       }
 

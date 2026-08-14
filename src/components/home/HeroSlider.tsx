@@ -2,13 +2,11 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronRight } from 'lucide-react';
-import { supabase } from '@/lib/supabase';
-import { imgHero } from '@/lib/imageUtils';
+import { cloudinarySrcSet, isCloudinary } from '@/lib/imageUtils';
 
-interface Slide {
+export interface Slide {
   id: string;
   title: string | null;
   subtitle: string | null;
@@ -70,66 +68,79 @@ function SlideDecorations() {
   );
 }
 
-export default function HeroSlider() {
-  const [slides, setSlides] = useState<Slide[]>([]);
-  const [current, setCurrent] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const [loaded, setLoaded] = useState(false);
+/** GIF 1x1 trong suốt — `src` mặc định của <picture> khi media query không khớp. */
+const BLANK_PIXEL =
+  'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-  useEffect(() => {
-    async function fetchSlides() {
-      const { data } = await supabase
-        .from('hero_slides')
-        .select('id, title, subtitle, button_text, button_link, background_image, mobile_image, gradient')
-        .eq('is_active', true)
-        .order('sort_order');
-      setSlides(data && data.length > 0 ? data : fallbackSlides);
-      setCurrent(0);
-      setLoaded(true);
-    }
-    fetchSlides();
-  }, []);
+const HERO_WIDTHS = [480, 640, 768, 1024, 1280, 1600, 1920];
 
-  const resetTimer = useCallback(() => {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % slides.length);
-    }, 6000);
-  }, [slides.length]);
+// Điều kiện media phải khớp CHÍNH XÁC breakpoint `md:` của Tailwind (48rem).
+// Viết bằng px thì lệch: người dùng để cỡ chữ mặc định 20px sẽ thấy Tailwind đổi
+// layout ở 960px trong khi media query vẫn ở 768px ⇒ layout mobile hiển thị nhưng
+// nhánh ảnh mobile không khớp, hero rơi về BLANK_PIXEL (trống trơn).
+// Hai chuỗi dưới là phần bù của nhau nên luôn có đúng MỘT nhánh khớp.
+const MEDIA_DESKTOP = '(min-width: 48rem)';
+const MEDIA_MOBILE = 'not all and (min-width: 48rem)';
 
-  const next = useCallback(() => { setCurrent((prev) => (prev + 1) % slides.length); resetTimer(); }, [slides.length, resetTimer]);
-  const prev = useCallback(() => { setCurrent((prev) => (prev - 1 + slides.length) % slides.length); resetTimer(); }, [slides.length, resetTimer]);
-  const goTo = useCallback((index: number) => { setCurrent(index); resetTimer(); }, [resetTimer]);
+/**
+ * Ảnh hero chỉ tải khi media query khớp.
+ *
+ * Hai layout mobile/desktop cùng nằm trong DOM (một cái bị `display:none`), mà
+ * `display:none` KHÔNG ngăn trình duyệt tải một <img> eager — nên dùng
+ * <Image priority> cho cả hai thì điện thoại tải luôn cả ảnh desktop ở
+ * fetchpriority cao. <picture> + <source media> buộc trình duyệt chọn đúng MỘT
+ * nguồn; khi media không khớp thì rơi về BLANK_PIXEL, không phát sinh request.
+ */
+function HeroImage({
+  src,
+  alt,
+  media,
+  eager,
+  className,
+}: {
+  src: string;
+  alt: string;
+  media: string;
+  eager: boolean;
+  className: string;
+}) {
+  return (
+    <picture>
+      <source
+        media={media}
+        srcSet={cloudinarySrcSet(src, HERO_WIDTHS) ?? src}
+        sizes={isCloudinary(src) ? '100vw' : undefined}
+      />
+      <img
+        src={BLANK_PIXEL}
+        alt={alt}
+        className={className}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchPriority={eager ? 'high' : 'auto'}
+        decoding="async"
+      />
+    </picture>
+  );
+}
 
-  useEffect(() => {
-    if (!loaded) return;
-    resetTimer();
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [loaded, resetTimer]);
-
-  const slide = slides[current];
-
-  if (!loaded || !slide) {
-    return (
-      <>
-        {/* Mobile skeleton */}
-        <div className="md:hidden bg-burgundy-dark animate-pulse">
-          <div className="w-full aspect-square bg-burgundy/60" />
-          <div className="h-32 bg-burgundy-dark" />
-        </div>
-        {/* Desktop skeleton */}
-        <section className="hidden md:block relative min-h-[750px] lg:min-h-[100vh] lg:max-h-[950px] overflow-hidden bg-burgundy-dark" />
-      </>
-    );
-  }
-
-  // Dot indicators (shared)
-  const DotIndicators = ({ dark = false }: { dark?: boolean }) => (
-    <div className={`flex gap-3 ${dark ? '' : ''}`}>
-      {slides.map((_, i) => (
+/** Dot indicators (shared) — khai báo ngoài HeroSlider để không bị dựng lại mỗi lần render. */
+function DotIndicators({
+  count,
+  current,
+  onSelect,
+  dark = false,
+}: {
+  count: number;
+  current: number;
+  onSelect: (index: number) => void;
+  dark?: boolean;
+}) {
+  return (
+    <div className="flex gap-3">
+      {Array.from({ length: count }, (_, i) => (
         <button
           key={i}
-          onClick={() => goTo(i)}
+          onClick={() => onSelect(i)}
           className="relative h-[3px] rounded-full overflow-hidden transition-all duration-500"
           style={{ width: i === current ? '48px' : '20px' }}
           aria-label={`Go to slide ${i + 1}`}
@@ -143,6 +154,30 @@ export default function HeroSlider() {
       ))}
     </div>
   );
+}
+
+export default function HeroSlider({ slides: initialSlides }: { slides: Slide[] }) {
+  const slides = initialSlides.length > 0 ? initialSlides : fallbackSlides;
+  const [current, setCurrent] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const resetTimer = useCallback(() => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % slides.length);
+    }, 6000);
+  }, [slides.length]);
+
+  const next = useCallback(() => { setCurrent((prev) => (prev + 1) % slides.length); resetTimer(); }, [slides.length, resetTimer]);
+  const prev = useCallback(() => { setCurrent((prev) => (prev - 1 + slides.length) % slides.length); resetTimer(); }, [slides.length, resetTimer]);
+  const goTo = useCallback((index: number) => { setCurrent(index); resetTimer(); }, [resetTimer]);
+
+  useEffect(() => {
+    resetTimer();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [resetTimer]);
+
+  const slide = slides[current];
 
   return (
     <>
@@ -163,20 +198,25 @@ export default function HeroSlider() {
             >
               {/* Use mobile_image if set, otherwise fall back to background_image */}
               {(slide.mobile_image || slide.background_image) ? (
-                <Image
+                <HeroImage
                   src={slide.mobile_image ?? slide.background_image!}
-                  alt={slide.title ?? ''}
-                  fill
-                  className="object-cover object-center"
-                  priority={current === 0}
-                  fetchPriority={current === 0 ? 'high' : 'auto'}
-                  sizes="100vw"
-                  quality={85}
+                  alt=""
+                  media={MEDIA_MOBILE}
+                  eager={current === 0}
+                  className="absolute inset-0 w-full h-full object-cover object-center"
                 />
               ) : (
                 /* Fallback: show hero-birds centered */
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <img src="/hero-birds.png" alt="" className="w-48 h-48 object-contain opacity-70" />
+                  <img
+                    src="/hero-birds.png"
+                    alt=""
+                    width={192}
+                    height={192}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-48 h-48 object-contain opacity-70"
+                  />
                 </div>
               )}
 
@@ -232,7 +272,7 @@ export default function HeroSlider() {
 
             {/* Dots */}
             <div className="mt-6">
-              <DotIndicators dark />
+              <DotIndicators count={slides.length} current={current} onSelect={goTo} dark />
             </div>
           </motion.div>
         </AnimatePresence>
@@ -252,27 +292,23 @@ export default function HeroSlider() {
             className={`absolute inset-0 bg-gradient-to-br ${slide.gradient}`}
           >
             {slide.background_image && (
-              <Image
+              <HeroImage
                 src={slide.background_image}
                 alt=""
-                fill
-                className="object-cover"
-                priority={current === 0}
-                fetchPriority={current === 0 ? 'high' : 'auto'}
-                sizes="100vw"
-                quality={85}
+                media={MEDIA_DESKTOP}
+                eager={current === 0}
+                className="absolute inset-0 w-full h-full object-cover"
               />
             )}
 
             {/* Preload next slide image (hidden) */}
             {slides[current + 1]?.background_image && (
-              <Image
+              <HeroImage
                 src={slides[current + 1].background_image!}
                 alt=""
-                fill
-                sizes="100vw"
-                className="opacity-0 pointer-events-none absolute"
-                aria-hidden
+                media={MEDIA_DESKTOP}
+                eager={false}
+                className="opacity-0 pointer-events-none absolute inset-0 w-full h-full"
               />
             )}
 
@@ -355,7 +391,15 @@ export default function HeroSlider() {
                 className="w-60 h-60 rounded-full flex items-center justify-center"
                 style={{ background: 'radial-gradient(circle, rgba(212,175,55,0.15) 0%, rgba(212,175,55,0.05) 60%, transparent 100%)', boxShadow: '0 0 80px rgba(212,175,55,0.1)' }}
               >
-                <img src="/hero-birds.png" alt="" className="w-72 h-72 object-contain opacity-80" />
+                <img
+                  src="/hero-birds.png"
+                  alt=""
+                  width={288}
+                  height={288}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-72 h-72 object-contain opacity-80"
+                />
               </motion.div>
             </div>
           </div>
@@ -363,7 +407,7 @@ export default function HeroSlider() {
 
         {/* Desktop dots */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex gap-3 z-10">
-          <DotIndicators />
+          <DotIndicators count={slides.length} current={current} onSelect={goTo} />
         </div>
       </section>
     </>

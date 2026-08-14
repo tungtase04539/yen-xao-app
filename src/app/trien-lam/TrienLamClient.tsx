@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useMemo, useRef } from 'react';
 import NextImage from 'next/image';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Calendar, X, ChevronLeft, ChevronRight, Image, Video } from 'lucide-react';
+import { MapPin, Calendar, X, ChevronLeft, ChevronRight, Image as ImageIcon, Video } from 'lucide-react';
 import { destroyLenis, restoreLenis } from '@/components/layout/SmoothScroll';
 import { imgCard, imgHero } from '@/lib/imageUtils';
 
@@ -61,16 +62,45 @@ export default function ExhibitionsPageClient() {
     })();
   }, []);
 
+  const galleryRef = useRef<HTMLDivElement>(null);
+  const lightboxRef = useRef<HTMLDivElement>(null);
+  // Phần tử đã mở overlay — dùng để trả focus về đúng chỗ khi đóng
+  const triggerRef = useRef<HTMLElement | null>(null);
+
   const openGallery = (ex: Exhibition) => {
+    triggerRef.current = document.activeElement as HTMLElement | null;
     setSelectedExhibition(ex);
     setLightboxIndex(null);
     setMediaFilter('all');
   };
 
   const openLightbox = (index: number) => setLightboxIndex(index);
-  const closeLightbox = () => setLightboxIndex(null);
-  const closeGallery = () => { setSelectedExhibition(null); setLightboxIndex(null); };
-  const galleryRef = useRef<HTMLDivElement>(null);
+  const closeLightbox = () => {
+    setLightboxIndex(null);
+    galleryRef.current?.focus();
+  };
+  const closeGallery = () => {
+    setSelectedExhibition(null);
+    setLightboxIndex(null);
+    triggerRef.current?.focus();
+  };
+
+  // Đổi bộ lọc thì chỉ số cũ không còn ý nghĩa trên danh sách mới
+  const changeMediaFilter = (filter: 'all' | 'image' | 'video') => {
+    setMediaFilter(filter);
+    setLightboxIndex(null);
+  };
+
+  // Lưới và lightbox phải dùng CHUNG danh sách đã lọc — trước đây lưới map trên
+  // danh sách đã lọc còn lightbox index vào mảng gốc, nên đổi bộ lọc là mở nhầm ảnh.
+  const visibleMedia = useMemo(() => {
+    const all = selectedExhibition?.exhibition_images ?? [];
+    if (mediaFilter === 'all') return all;
+    return all.filter(m => (mediaFilter === 'video' ? m.media_type === 'video' : m.media_type !== 'video'));
+  }, [selectedExhibition, mediaFilter]);
+
+  const lightboxItem = lightboxIndex !== null ? visibleMedia[lightboxIndex] : null;
+  const lightboxOpen = lightboxItem != null;
 
   // Destroy Lenis entirely when gallery is open + attach mini smooth scroll
   useEffect(() => {
@@ -119,13 +149,63 @@ export default function ExhibitionsPageClient() {
   }, [selectedExhibition]);
 
   const prevImage = () => {
-    if (lightboxIndex === null || !selectedExhibition) return;
-    setLightboxIndex(lightboxIndex > 0 ? lightboxIndex - 1 : selectedExhibition.exhibition_images.length - 1);
+    if (lightboxIndex === null) return;
+    setLightboxIndex(lightboxIndex > 0 ? lightboxIndex - 1 : visibleMedia.length - 1);
   };
   const nextImage = () => {
-    if (lightboxIndex === null || !selectedExhibition) return;
-    setLightboxIndex(lightboxIndex < selectedExhibition.exhibition_images.length - 1 ? lightboxIndex + 1 : 0);
+    if (lightboxIndex === null) return;
+    setLightboxIndex(lightboxIndex < visibleMedia.length - 1 ? lightboxIndex + 1 : 0);
   };
+
+  // Overlay tự viết nên phải tự lo bàn phím: Escape đóng lớp trên cùng trước,
+  // Tab bị giữ quẩn trong lớp đó thay vì đi lang thang xuống trang phía dưới.
+  useEffect(() => {
+    if (!selectedExhibition) return;
+
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        if (lightboxOpen) closeLightbox();
+        else closeGallery();
+        return;
+      }
+      if (e.key !== 'Tab') return;
+
+      const container = lightboxOpen ? lightboxRef.current : galleryRef.current;
+      if (!container) return;
+
+      const focusable = Array.from(
+        container.querySelectorAll<HTMLElement>('a[href], button:not([disabled]), video[controls], [tabindex]:not([tabindex="-1"])')
+      );
+      if (focusable.length === 0) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      // Ngay sau khi mở, focus nằm trên chính panel (tabIndex=-1) — coi như đang
+      // ở ngoài vòng, nếu không Shift+Tab đầu tiên sẽ tuột xuống trang phía dưới.
+      const outside = !container.contains(active) || active === container;
+
+      if (e.shiftKey && (outside || active === first)) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && (outside || active === last)) {
+        e.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [selectedExhibition, lightboxOpen]);
+
+  // Đưa focus vào overlay ngay khi mở
+  useEffect(() => {
+    if (selectedExhibition) galleryRef.current?.focus();
+  }, [selectedExhibition]);
+
+  useEffect(() => {
+    if (lightboxOpen) lightboxRef.current?.focus();
+  }, [lightboxOpen]);
 
   return (
     <div className="min-h-screen">
@@ -146,7 +226,7 @@ export default function ExhibitionsPageClient() {
             Dấu chân QiQi Yến qua các sự kiện triển lãm trên khắp cả nước
           </p>
           <div className="flex justify-center items-center gap-3 mt-8 text-sm text-white/30">
-            <a href="/" className="hover:text-gold transition-colors">Trang chủ</a>
+            <Link href="/" className="hover:text-gold transition-colors">Trang chủ</Link>
             <span className="text-gold/30">✦</span>
             <span className="text-gold/70">Triển Lãm</span>
           </div>
@@ -251,18 +331,28 @@ export default function ExhibitionsPageClient() {
                           <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4 text-gold" />{date.toLocaleDateString('vi-VN')}</span>
                         </div>
                         {ex.description && <p className="text-base text-muted-foreground line-clamp-2">{ex.description}</p>}
-                        {ex.exhibition_images?.length > 0 && (() => {
-                          const imgCount = ex.exhibition_images.filter(i => i.media_type !== 'video').length;
-                          const vidCount = ex.exhibition_images.filter(i => i.media_type === 'video').length;
-                          return (
-                            <p className="text-sm text-gold mt-3 font-medium">
-                              {imgCount > 0 && <span>📸 {imgCount} ảnh</span>}
-                              {imgCount > 0 && vidCount > 0 && <span> · </span>}
-                              {vidCount > 0 && <span>🎬 {vidCount} video</span>}
-                              <span className="text-muted-foreground font-normal"> — Click để xem</span>
-                            </p>
-                          );
-                        })()}
+                        <div className="mt-3 flex items-center gap-3 flex-wrap">
+                          {ex.exhibition_images?.length > 0 && (() => {
+                            const imgCount = ex.exhibition_images.filter(i => i.media_type !== 'video').length;
+                            const vidCount = ex.exhibition_images.filter(i => i.media_type === 'video').length;
+                            return (
+                              <p className="text-sm text-gold font-medium">
+                                {imgCount > 0 && <span>📸 {imgCount} ảnh</span>}
+                                {imgCount > 0 && vidCount > 0 && <span> · </span>}
+                                {vidCount > 0 && <span>🎬 {vidCount} video</span>}
+                              </p>
+                            );
+                          })()}
+                          {/* Trigger thật để mở được bằng bàn phím — cả thẻ vẫn click được bằng chuột */}
+                          <button
+                            type="button"
+                            onClick={() => openGallery(ex)}
+                            aria-label={`Xem thư viện triển lãm ${ex.title}`}
+                            className="text-sm font-semibold text-burgundy hover:text-gold transition-colors rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
+                          >
+                            Xem thư viện →
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </motion.div>
@@ -282,19 +372,23 @@ export default function ExhibitionsPageClient() {
         >
             <div
               ref={galleryRef}
-              className="bg-white rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-y-auto overscroll-contain"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="gallery-title"
+              tabIndex={-1}
+              className="bg-white rounded-2xl max-w-4xl w-full max-h-[85vh] overflow-y-auto overscroll-contain focus:outline-none"
               style={{ WebkitOverflowScrolling: 'touch' }}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="px-6 py-4 border-b flex items-center justify-between">
                 <div>
-                  <h2 className="text-xl font-bold">{selectedExhibition.title}</h2>
+                  <h2 id="gallery-title" className="text-xl font-bold">{selectedExhibition.title}</h2>
                   <div className="flex items-center gap-3 text-sm text-muted-foreground mt-1">
                     <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{selectedExhibition.location}</span>
                     <span className="flex items-center gap-1"><Calendar className="w-3.5 h-3.5" />{new Date(selectedExhibition.event_date).toLocaleDateString('vi-VN')}</span>
                   </div>
                 </div>
-                <button onClick={closeGallery} className="w-9 h-9 rounded-full hover:bg-secondary flex items-center justify-center transition-colors">
+                <button onClick={closeGallery} aria-label="Đóng thư viện" className="w-9 h-9 rounded-full hover:bg-secondary flex items-center justify-center transition-colors">
                   <X className="w-5 h-5" />
                 </button>
               </div>
@@ -310,7 +404,7 @@ export default function ExhibitionsPageClient() {
                 return hasFilter ? (
                   <div className="px-6 pt-4 flex items-center gap-2">
                     <button
-                      onClick={() => setMediaFilter('all')}
+                      onClick={() => changeMediaFilter('all')}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
                         mediaFilter === 'all' ? 'bg-gold text-white' : 'bg-secondary text-muted-foreground hover:text-foreground'
                       }`}
@@ -318,15 +412,15 @@ export default function ExhibitionsPageClient() {
                       Tất cả ({selectedExhibition.exhibition_images.length})
                     </button>
                     <button
-                      onClick={() => setMediaFilter('image')}
+                      onClick={() => changeMediaFilter('image')}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
                         mediaFilter === 'image' ? 'bg-gold text-white' : 'bg-secondary text-muted-foreground hover:text-foreground'
                       }`}
                     >
-                      <Image className="w-3.5 h-3.5" /> Ảnh ({imgs.length})
+                      <ImageIcon className="w-3.5 h-3.5" /> Ảnh ({imgs.length})
                     </button>
                     <button
-                      onClick={() => setMediaFilter('video')}
+                      onClick={() => changeMediaFilter('video')}
                       className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all flex items-center gap-1.5 ${
                         mediaFilter === 'video' ? 'bg-gold text-white' : 'bg-secondary text-muted-foreground hover:text-foreground'
                       }`}
@@ -338,13 +432,13 @@ export default function ExhibitionsPageClient() {
               })()}
 
               <div className="p-6 grid grid-cols-2 md:grid-cols-3 gap-3">
-                {selectedExhibition.exhibition_images
-                  ?.filter(img => mediaFilter === 'all' ? true : mediaFilter === 'video' ? img.media_type === 'video' : img.media_type !== 'video')
-                  .map((img, idx) => (
-                  <div
+                {visibleMedia.map((img, idx) => (
+                  <button
                     key={img.id}
-                    className="rounded-xl overflow-hidden cursor-pointer group"
+                    type="button"
                     onClick={() => openLightbox(idx)}
+                    aria-label={img.caption || (img.media_type === 'video' ? `Xem video ${idx + 1}` : `Xem ảnh ${idx + 1}`)}
+                    className="w-full text-left rounded-xl overflow-hidden cursor-pointer group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold"
                   >
                     {img.media_type === 'video' ? (
                       <div className="relative aspect-[4/3] bg-black">
@@ -367,8 +461,8 @@ export default function ExhibitionsPageClient() {
                         />
                       </div>
                     )}
-                    {img.caption && <p className="text-xs text-center text-muted-foreground mt-1 px-1">{img.caption}</p>}
-                  </div>
+                    {img.caption && <span className="block text-xs text-center text-muted-foreground mt-1 px-1">{img.caption}</span>}
+                  </button>
                 ))}
             </div>
           </div>
@@ -377,25 +471,30 @@ export default function ExhibitionsPageClient() {
 
       {/* Lightbox */}
       <AnimatePresence>
-        {lightboxIndex !== null && selectedExhibition && (
+        {lightboxItem && lightboxIndex !== null && (
           <motion.div
+            ref={lightboxRef}
+            role="dialog"
+            aria-modal="true"
+            aria-label={lightboxItem.caption || selectedExhibition?.title || 'Xem ảnh triển lãm'}
+            tabIndex={-1}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center"
+            className="fixed inset-0 z-[60] bg-black/95 flex items-center justify-center focus:outline-none"
             onClick={closeLightbox}
           >
-            <button onClick={closeLightbox} className="absolute top-4 right-4 text-white/60 hover:text-white z-10">
+            <button onClick={closeLightbox} aria-label="Đóng" className="absolute top-4 right-4 text-white/60 hover:text-white z-10">
               <X className="w-7 h-7" />
             </button>
-            <button onClick={(e) => { e.stopPropagation(); prevImage(); }} className="absolute left-4 text-white/60 hover:text-white z-10">
+            <button onClick={(e) => { e.stopPropagation(); prevImage(); }} aria-label="Mục trước" className="absolute left-4 text-white/60 hover:text-white z-10">
               <ChevronLeft className="w-10 h-10" />
             </button>
-            <button onClick={(e) => { e.stopPropagation(); nextImage(); }} className="absolute right-4 text-white/60 hover:text-white z-10">
+            <button onClick={(e) => { e.stopPropagation(); nextImage(); }} aria-label="Mục tiếp theo" className="absolute right-4 text-white/60 hover:text-white z-10">
               <ChevronRight className="w-10 h-10" />
             </button>
 
-            {selectedExhibition.exhibition_images[lightboxIndex].media_type === 'video' ? (
+            {lightboxItem.media_type === 'video' ? (
               <motion.div
                 key={lightboxIndex}
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -405,7 +504,7 @@ export default function ExhibitionsPageClient() {
                 onClick={(e) => e.stopPropagation()}
               >
                 <video
-                  src={selectedExhibition.exhibition_images[lightboxIndex].image_url}
+                  src={lightboxItem.image_url}
                   controls
                   autoPlay
                   className="max-w-[90vw] max-h-[85vh] rounded-lg"
@@ -417,18 +516,16 @@ export default function ExhibitionsPageClient() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                src={imgHero(selectedExhibition.exhibition_images[lightboxIndex].image_url)}
-                alt=""
+                src={imgHero(lightboxItem.image_url)}
+                alt={lightboxItem.caption || ''}
                 className="max-w-[90vw] max-h-[85vh] object-contain rounded-lg"
                 onClick={(e) => e.stopPropagation()}
               />
             )}
 
             <div className="absolute bottom-4 left-1/2 -translate-x-1/2 text-white/60 text-sm">
-              {lightboxIndex + 1} / {selectedExhibition.exhibition_images.length}
-              {selectedExhibition.exhibition_images[lightboxIndex].caption && (
-                <span className="ml-3">{selectedExhibition.exhibition_images[lightboxIndex].caption}</span>
-              )}
+              {lightboxIndex + 1} / {visibleMedia.length}
+              {lightboxItem.caption && <span className="ml-3">{lightboxItem.caption}</span>}
             </div>
           </motion.div>
         )}

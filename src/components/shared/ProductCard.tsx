@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -38,7 +38,10 @@ export default function ProductCard({ product }: ProductCardProps) {
     setHasMounted(true);
   }, [product.slug]);
 
-  const staticSummary = getProductRatingSummary(product.slug);
+  // Giữ lời gọi này ở lần render đầu để HTML server-render có sẵn điểm đánh giá,
+  // nhưng bọc useMemo: mỗi card nằm trong motion.div nên re-render liên tục khi
+  // hover/scroll, mà mỗi lời gọi lại duyệt hết 80-200 review.
+  const staticSummary = useMemo(() => getProductRatingSummary(product.slug), [product.slug]);
   const displayRating = hasMounted ? ratingSummary.rating : staticSummary.rating;
   const displayCount = hasMounted ? ratingSummary.count : staticSummary.count;
 

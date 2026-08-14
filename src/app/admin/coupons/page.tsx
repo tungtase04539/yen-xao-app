@@ -15,6 +15,7 @@ interface CouponRow {
   discount_type: string;
   discount_amount: number;
   min_order_amount: number;
+  max_discount: number | null;
   max_uses: number;
   current_uses: number;
   is_active: boolean;
@@ -32,11 +33,13 @@ export default function AdminCouponsPage() {
   const [discountType, setDiscountType] = useState('percent');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [minOrder, setMinOrder] = useState(0);
+  const [maxDiscount, setMaxDiscount] = useState(0);
   const [maxUses, setMaxUses] = useState(100);
   const [endDate, setEndDate] = useState('');
 
   const fetchCoupons = async () => {
-    const { data } = await supabase.from('coupons').select('*').order('created_at', { ascending: false });
+    const { data, error } = await supabase.from('coupons').select('*').order('created_at', { ascending: false });
+    if (error) toast.error(`Không tải được danh sách mã: ${error.message}`);
     setCoupons(data || []);
     setLoading(false);
   };
@@ -45,13 +48,14 @@ export default function AdminCouponsPage() {
 
   const resetForm = () => {
     setCode(''); setDiscountType('percent'); setDiscountAmount(0);
-    setMinOrder(0); setMaxUses(100); setEndDate('');
+    setMinOrder(0); setMaxDiscount(0); setMaxUses(100); setEndDate('');
     setEditId(null); setShowForm(false);
   };
 
   const startEdit = (c: CouponRow) => {
     setEditId(c.id); setCode(c.code); setDiscountType(c.discount_type);
     setDiscountAmount(c.discount_amount); setMinOrder(c.min_order_amount);
+    setMaxDiscount(c.max_discount || 0);
     setMaxUses(c.max_uses); setEndDate(c.end_date?.split('T')[0] || '');
     setShowForm(true);
   };
@@ -63,16 +67,21 @@ export default function AdminCouponsPage() {
       discount_type: discountType,
       discount_amount: discountAmount,
       min_order_amount: minOrder,
+      // 0 ⇒ không giới hạn. Chủ yếu dùng để chặn mã phần trăm giảm quá tay
+      // trên đơn lớn (vd giảm 20% nhưng tối đa 200.000₫).
+      max_discount: maxDiscount > 0 ? maxDiscount : null,
       max_uses: maxUses,
       end_date: endDate ? new Date(endDate).toISOString() : new Date(Date.now() + 30 * 86400000).toISOString(),
       is_active: true,
     };
 
     if (editId) {
-      await supabase.from('coupons').update(data).eq('id', editId);
+      const { error } = await supabase.from('coupons').update(data).eq('id', editId);
+      if (error) { toast.error(`Cập nhật thất bại: ${error.message}`); return; }
       toast.success('Đã cập nhật mã giảm giá');
     } else {
-      await supabase.from('coupons').insert({ ...data, start_date: new Date().toISOString(), current_uses: 0 });
+      const { error } = await supabase.from('coupons').insert({ ...data, start_date: new Date().toISOString(), current_uses: 0 });
+      if (error) { toast.error(`Tạo mã thất bại: ${error.message}`); return; }
       toast.success('Đã tạo mã giảm giá mới');
     }
     resetForm();
@@ -81,12 +90,16 @@ export default function AdminCouponsPage() {
 
   const handleDelete = async (id: string) => {
     if (!confirm('Xóa mã giảm giá này?')) return;
-    await supabase.from('coupons').delete().eq('id', id);
+    const { error } = await supabase.from('coupons').delete().eq('id', id);
+    if (error) { toast.error(`Xóa thất bại: ${error.message}`); return; }
+    toast.success('Đã xóa mã giảm giá');
     fetchCoupons();
   };
 
   const toggleActive = async (id: string, active: boolean) => {
-    await supabase.from('coupons').update({ is_active: !active }).eq('id', id);
+    const { error } = await supabase.from('coupons').update({ is_active: !active }).eq('id', id);
+    if (error) { toast.error(`Cập nhật thất bại: ${error.message}`); return; }
+    toast.success(active ? 'Đã tắt mã giảm giá' : 'Đã bật mã giảm giá');
     fetchCoupons();
   };
 
@@ -121,6 +134,11 @@ export default function AdminCouponsPage() {
             <div>
               <label className="block text-xs font-medium mb-1">Đơn tối thiểu (₫)</label>
               <Input type="number" value={minOrder} onChange={(e) => setMinOrder(Number(e.target.value))} />
+            </div>
+            <div>
+              <label className="block text-xs font-medium mb-1">Giảm tối đa (₫)</label>
+              <Input type="number" value={maxDiscount} onChange={(e) => setMaxDiscount(Number(e.target.value))} />
+              <p className="text-[11px] text-muted-foreground mt-1">0 = không giới hạn</p>
             </div>
             <div>
               <label className="block text-xs font-medium mb-1">Số lần sử dụng tối đa</label>
