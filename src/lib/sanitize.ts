@@ -1,4 +1,4 @@
-import DOMPurify from 'isomorphic-dompurify';
+import sanitize from 'sanitize-html';
 
 /**
  * Làm sạch HTML trước khi đưa vào `dangerouslySetInnerHTML`.
@@ -9,6 +9,11 @@ import DOMPurify from 'isomorphic-dompurify';
  * nằm sẵn trong bundle JS phía client) cũng ghi được vào đó. Nếu render thẳng
  * thì đây là stored XSS: kẻ tấn công chèn <script> hoặc <img onerror=...>,
  * chiếm session của admin đang đăng nhập rồi thao tác trên toàn bộ CMS.
+ *
+ * Dùng `sanitize-html` chứ không dùng DOMPurify: DOMPurify phía server kéo theo
+ * jsdom, mà jsdom 30 gọi `webidl.util.markAsUncloneable` — API chỉ có từ Node 22.
+ * Server production đang chạy Node 20 nên build sẽ chết. sanitize-html là thuần
+ * JavaScript, không cần DOM giả lập, chạy được từ Node 18.
  *
  * Whitelist dưới đây phủ đúng những thẻ TipTap có thể sinh ra (StarterKit +
  * Image + Link + TextAlign + Underline), không hơn.
@@ -23,13 +28,6 @@ const ALLOWED_TAGS = [
   'table', 'thead', 'tbody', 'tfoot', 'tr', 'th', 'td',
 ];
 
-const ALLOWED_ATTR = [
-  'href', 'target', 'rel',
-  'src', 'alt', 'title', 'width', 'height', 'loading',
-  'class', 'style',
-  'colspan', 'rowspan',
-];
-
 /**
  * @param html HTML thô lấy từ database
  * @returns HTML đã loại bỏ script, event handler và các URI nguy hiểm
@@ -37,16 +35,29 @@ const ALLOWED_ATTR = [
 export function sanitizeHtml(html: string | null | undefined): string {
   if (!html) return '';
 
-  return DOMPurify.sanitize(html, {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR,
-    // Chặn javascript:, data: (trừ ảnh), vbscript:
-    ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i,
-    // Không cho phép <form>, <input>… kể cả khi lọt whitelist qua namespace lạ
-    FORBID_TAGS: ['script', 'style', 'iframe', 'object', 'embed', 'form', 'input', 'button'],
-    FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'formaction', 'srcdoc'],
-    // Giữ nội dung text của thẻ bị loại thay vì xoá trắng cả đoạn
-    KEEP_CONTENT: true,
+  return sanitize(html, {
+    allowedTags: ALLOWED_TAGS,
+    allowedAttributes: {
+      a: ['href', 'target', 'rel'],
+      img: ['src', 'alt', 'title', 'width', 'height', 'loading'],
+      '*': ['class', 'style', 'title'],
+      td: ['colspan', 'rowspan'],
+      th: ['colspan', 'rowspan'],
+    },
+    // Chặn javascript:, vbscript:, data: (trừ ảnh inline)
+    allowedSchemes: ['http', 'https', 'mailto', 'tel'],
+    allowedSchemesByTag: { img: ['http', 'https', 'data'] },
+    // Link ra ngoài luôn kèm rel an toàn, tránh tabnabbing
+    transformTags: {
+      a: (tagName, attribs) => ({
+        tagName,
+        attribs: attribs.target === '_blank'
+          ? { ...attribs, rel: 'noopener noreferrer' }
+          : attribs,
+      }),
+    },
+    // Bỏ hẳn nội dung bên trong các thẻ nguy hiểm thay vì giữ lại text
+    nonTextTags: ['script', 'style', 'textarea', 'option', 'noscript', 'iframe'],
   });
 }
 
