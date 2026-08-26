@@ -141,11 +141,11 @@ export default function Header() {
           <div className="hidden lg:flex items-center gap-4 text-xs">
             <div className="w-px h-3 bg-white/20" />
             <a
-              href="tel:0843623986"
+              href="tel:0762936286"
               className="flex items-center gap-1.5 text-white/80 hover:text-gold transition-colors"
             >
               <Phone className="w-3 h-3" />
-              <span className="tracking-wide">Hotline: 0843.623986</span>
+              <span className="tracking-wide">Hotline: 0762.936.286</span>
             </a>
           </div>
         </div>

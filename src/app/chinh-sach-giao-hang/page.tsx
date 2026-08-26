@@ -112,9 +112,9 @@ export default function ChinhSachGiaoHangPage() {
                 vui lòng liên hệ ngay với chúng tôi để được hỗ trợ kịp thời:
               </p>
               <ul>
-                <li>📞 Hotline: <strong>0843.623986</strong> (hỗ trợ 7:00 — 22:00 hằng ngày)</li>
+                <li>📞 Hotline: <strong>0762.936.286</strong> (hỗ trợ 7:00 — 22:00 hằng ngày)</li>
                 <li>✉️ Email: <strong>tp.phucthinh.co@gmail.com</strong></li>
-                <li>💬 Zalo: <strong>0843.623986</strong></li>
+                <li>💬 Zalo: <strong>0762.936.286</strong></li>
               </ul>
             </section>
 

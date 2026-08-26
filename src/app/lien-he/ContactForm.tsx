@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Mail, MessageCircle, Phone } from 'lucide-react';
 
 const EMAIL = 'tp.phucthinh.co@gmail.com';
-const ZALO_URL = 'https://zalo.me/0843623986';
+const ZALO_URL = 'https://zalo.me/0762936286';
 
 const SUBJECTS = [
   'Tư vấn sản phẩm',
@@ -141,11 +141,11 @@ export default function ContactForm() {
         <p className="text-sm font-semibold text-foreground mb-3">Hoặc liên hệ nhanh hơn</p>
         <div className="flex flex-wrap gap-3">
           <a
-            href="tel:0843623986"
+            href="tel:0762936286"
             className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-burgundy text-white text-sm font-semibold hover:bg-burgundy-light transition-colors"
           >
             <Phone className="w-4 h-4" />
-            Gọi 0843.623986
+            Gọi 0762.936.286
           </a>
           <a
             href={ZALO_URL}

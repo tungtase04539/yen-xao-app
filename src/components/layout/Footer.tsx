@@ -142,11 +142,11 @@ export default async function Footer() {
             {/* Phone & Email */}
             <div className="flex flex-col gap-2.5 pt-3 border-t border-white/10">
               <a
-                href="tel:0843623986"
+                href="tel:0762936286"
                 className="flex items-center gap-2.5 text-sm text-white/55 hover:text-gold transition-colors"
               >
                 <Phone className="w-3.5 h-3.5 text-gold/60 shrink-0" />
-                0843.623986
+                0762.936.286
               </a>
               <a
                 href="mailto:tp.phucthinh.co@gmail.com"

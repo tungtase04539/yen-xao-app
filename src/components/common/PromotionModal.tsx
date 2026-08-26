@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import Image from 'next/image';
 import {
@@ -11,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 
 export default function PromotionModal() {
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
@@ -32,8 +34,10 @@ export default function PromotionModal() {
 
   const handleRedirect = () => {
     sessionStorage.setItem('qiqi_promo_seen', 'true');
-    window.open('https://www.messenger.com/t/392451147265403', '_blank', 'noopener,noreferrer');
     setIsOpen(false);
+    // Dẫn vào danh mục yến chưng sẵn thay vì Messenger: đơn đặt qua website mới
+    // vào bảng orders và mới được server tính lại giá, kiểm tồn kho.
+    router.push('/danh-muc/yen-chung-san');
   };
 
   return (
@@ -46,10 +50,10 @@ export default function PromotionModal() {
         className="z-[100] w-full max-w-[calc(100%-2rem)] sm:max-w-lg md:max-w-2xl p-0 gap-0 overflow-hidden rounded-[24px] border-[#C9A55A]/30 text-white shadow-[0_25px_60px_rgba(0,0,0,0.8)] bg-gradient-to-b from-[#42060f] to-[#1a0205]"
       >
         <DialogTitle className="sr-only">
-          Đại tiệc tri ân: Combo Mix 6 Vị — Mua 6 Tặng 6 chỉ 360.000₫
+          Yến Tươi Chưng Sẵn — Mua 10 Tặng 1, chỉ 85.000₫ mỗi hũ
         </DialogTitle>
         <DialogDescription className="sr-only">
-          Nhắn tin qua Messenger để nhận combo 12 hũ yến chưng với giá ưu đãi và miễn phí vận chuyển toàn quốc.
+          Hũ 75ml chứa 8g tổ yến thật, chưng thủ công mỗi ngày. Sáu vị để chọn: đường phèn, táo đỏ, hạt sen, đông trùng, kỷ tử, hạt chia. Mua 10 tặng 1 áp dụng cho cả hũ 75ml và 150ml.
         </DialogDescription>
 
         {/* Popmake Overlapping Close Button */}
@@ -66,12 +70,12 @@ export default function PromotionModal() {
         <button
           type="button"
           onClick={handleRedirect}
-          aria-label="Xem ưu đãi Mua 6 Tặng 6 trên Messenger"
+          aria-label="Xem các vị Yến Tươi chưng sẵn"
           className="relative aspect-[16/9] w-full cursor-pointer overflow-hidden"
         >
           <Image
             src="/tri-an-khach-hang.jpg"
-            alt="QiQi Yến Chưng Thượng Hạng - Tri Ân Khách Hàng Mua 6 Tặng 6 chỉ 360K"
+            alt="Yến Tươi QiQi chưng sẵn - 8g tổ yến thật mỗi hũ, mua 10 tặng 1"
             fill
             className="object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
             sizes="(max-width: 768px) 100vw, 800px"
@@ -96,7 +100,7 @@ export default function PromotionModal() {
             <svg className="w-5 h-5 fill-current shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.14 2 11.25c0 2.91 1.45 5.51 3.71 7.24.19.15.31.38.31.62l.01 2.15c0 .49.52.81.96.58l2.4-1.28c.18-.1.38-.13.58-.08 1.25.32 2.6.5 4.03.5 5.52 0 10-4.14 10-9.25S17.52 2 12 2zm1.09 12.3L10.5 11.7l-4.5 3 4.91-5.22 2.59 2.6 4.5-3-4.91 5.22z"/>
             </svg>
-            INBOX NGAY ĐỂ NHẬN ƯU ĐÃI (360K)
+            XEM CÁC VỊ YẾN TƯƠI — TỪ 85.000₫
           </button>
 
           <button

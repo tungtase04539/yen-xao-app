@@ -8,10 +8,10 @@ const OG_PAGE = ogImage('/zalo-banner.jpg', 'Liên Hệ - QiQi Yến Sào');
 
 export const metadata: Metadata = {
   title: 'Liên Hệ',
-  description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
+  description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0762.936.286, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
   openGraph: {
     title: 'Liên Hệ | QiQi Yến Sào',
-    description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
+    description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0762.936.286, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
     type: 'website',
     url: 'https://qiqiyensao.com/lien-he',
     images: [OG_PAGE],
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'Liên Hệ | QiQi Yến Sào',
-    description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0843.623986, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
+    description: 'Liên hệ với QiQi Yến Sào - Hệ thống cửa hàng, Hotline 0762.936.286, địa chỉ, email và mạng xã hội hỗ trợ 24/7.',
     images: [OG_PAGE.url],
   },
 };
@@ -36,8 +36,8 @@ const contactInfo = [
   {
     icon: Phone,
     label: 'Hotline',
-    value: '0843.623986',
-    href: 'tel:0843623986',
+    value: '0762.936.286',
+    href: 'tel:0762936286',
   },
   {
     icon: Mail,

@@ -41,8 +41,8 @@ export default function NotFound() {
 
         <p className="mt-8 text-sm text-muted-foreground">
           Cần hỗ trợ? Gọi hotline{' '}
-          <a href="tel:0843623986" className="text-burgundy font-semibold hover:text-burgundy-light">
-            0843.623986
+          <a href="tel:0762936286" className="text-burgundy font-semibold hover:text-burgundy-light">
+            0762.936.286
           </a>
         </p>
       </div>

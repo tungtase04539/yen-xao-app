@@ -13,7 +13,7 @@ import {
 } from '@/lib/checkout-schema';
 import type { CouponValidation } from '@/types';
 
-const SUPPORT_PHONE = '0843 623 986';
+const SUPPORT_PHONE = '0762.936.286';
 
 type PlaceOrderResult =
   | { success: true; order_id: string; order_number: string }
