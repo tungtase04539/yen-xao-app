@@ -71,13 +71,13 @@ export default function PromotionModal() {
           type="button"
           onClick={handleRedirect}
           aria-label="Xem các vị Yến Tươi chưng sẵn"
-          className="relative aspect-[16/9] w-full cursor-pointer overflow-hidden"
+          className="relative aspect-[3/4] w-full cursor-pointer overflow-hidden bg-[#8a0f18]"
         >
           <Image
-            src="/tri-an-khach-hang.jpg"
+            src="https://res.cloudinary.com/dmjrk2fov/image/upload/q_auto,f_auto,w_900/v1787742599/qiqi-yen/2026-moi/poster-bang-gia.jpg"
             alt="Yến Tươi QiQi chưng sẵn - 8g tổ yến thật mỗi hũ, mua 10 tặng 1"
             fill
-            className="object-cover transition-transform duration-700 ease-out hover:scale-[1.03]"
+            className="object-contain transition-transform duration-700 ease-out hover:scale-[1.02]"
             sizes="(max-width: 768px) 100vw, 800px"
             priority
           />
