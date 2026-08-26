@@ -1,6 +1,7 @@
 'use client';
 
 import { create } from 'zustand';
+import { useEffect } from 'react';
 import { persist } from 'zustand/middleware';
 import type { CartItem } from '@/types';
 
@@ -110,6 +111,11 @@ export const useCart = create<CartState>()(
       name: CART_STORAGE_KEY,
       // Only persist items, not isOpen state
       partialize: (state) => ({ items: state.items }),
+      // Không tự hydrate lúc import: server luôn dựng giỏ rỗng, còn client đọc
+      // localStorage ra số khác nên cây DOM hai bên lệch nhau và React vứt bỏ
+      // kết quả hydrate (lỗi #418). Để rỗng ở lần render đầu cho khớp server,
+      // rồi mới nạp giỏ thật trong effect — xem useCartHydration bên dưới.
+      skipHydration: true,
     }
   )
 );
@@ -122,4 +128,16 @@ if (typeof window !== 'undefined') {
       useCart.persist.rehydrate();
     }
   });
+}
+
+/**
+ * Nạp giỏ hàng từ localStorage SAU khi hydrate xong.
+ *
+ * Gọi một lần ở component bọc toàn site. Trước khi effect chạy, mọi nơi đọc giỏ
+ * đều thấy rỗng — trùng với HTML do server dựng — nên không còn lệch hydrate.
+ */
+export function useCartHydration() {
+  useEffect(() => {
+    useCart.persist.rehydrate();
+  }, []);
 }

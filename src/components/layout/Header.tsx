@@ -112,30 +112,26 @@ export default function Header() {
         <div className="container mx-auto px-4 flex justify-between items-center relative">
 
           {/* Desktop Announcement */}
-          <a
-            href="https://www.messenger.com/t/392451147265403"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/danh-muc/yen-chung-san"
             className="hidden lg:flex items-center gap-2 hover:brightness-110 transition-all duration-300"
           >
             <Sparkles className="w-3.5 h-3.5 text-gold animate-pulse" />
             <p className="text-gold-light text-xs font-bold tracking-wider uppercase">
-              🎉 Đại tiệc tri ân: Combo Mix 6 Vị — Mua 6 Tặng 6 (Nhận 12 hũ) Chỉ 360.000₫ + Miễn phí vận chuyển toàn quốc!
+              🎉 Yến Tươi chưng sẵn — 8g tổ yến thật mỗi hũ, chỉ 85.000₫. Mua 10 tặng 1, đủ 6 vị!
             </p>
-          </a>
+          </Link>
 
           {/* Mobile/Tablet Announcement */}
-          <a
-            href="https://www.messenger.com/t/392451147265403"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/danh-muc/yen-chung-san"
             className="lg:hidden flex items-center justify-center gap-1.5 w-full hover:brightness-110 transition-all duration-300"
           >
             <Sparkles className="w-3.5 h-3.5 text-gold shrink-0 animate-pulse" />
             <p className="text-gold-light text-[11px] font-bold tracking-widest text-center uppercase animate-pulse">
-              🎉 Mua 6 Tặng 6 (Mix 6 Vị) Chỉ 360k + Free Ship! Click nhận ngay
+              🎉 Yến Tươi 85.000₫/hũ — Mua 10 Tặng 1, đủ 6 vị
             </p>
-          </a>
+          </Link>
 
           {/* Hotline — hidden on mobile to prioritize the promo text */}
           <div className="hidden lg:flex items-center gap-4 text-xs">
