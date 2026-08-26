@@ -47,7 +47,7 @@ export default function PromotionModal() {
       <DialogContent
         showCloseButton={false}
         overlayClassName="z-[100] bg-black/75 backdrop-blur-md"
-        className="z-[100] w-full max-w-[calc(100%-2rem)] sm:max-w-lg md:max-w-2xl p-0 gap-0 overflow-hidden rounded-[24px] border-[#C9A55A]/30 text-white shadow-[0_25px_60px_rgba(0,0,0,0.8)] bg-gradient-to-b from-[#42060f] to-[#1a0205]"
+        className="z-[100] w-full max-w-[calc(100%-2rem)] sm:max-w-[380px] p-0 gap-0 overflow-hidden max-h-[92dvh] overflow-y-auto rounded-[24px] border-[#C9A55A]/30 text-white shadow-[0_25px_60px_rgba(0,0,0,0.8)] bg-gradient-to-b from-[#42060f] to-[#1a0205]"
       >
         <DialogTitle className="sr-only">
           Yến Tươi Chưng Sẵn — Mua 10 Tặng 1, chỉ 85.000₫ mỗi hũ
@@ -71,7 +71,7 @@ export default function PromotionModal() {
           type="button"
           onClick={handleRedirect}
           aria-label="Xem các vị Yến Tươi chưng sẵn"
-          className="relative aspect-[3/4] w-full cursor-pointer overflow-hidden bg-[#8a0f18]"
+          className="relative aspect-[2/3] max-h-[62dvh] w-full cursor-pointer overflow-hidden bg-[#8a0f18]"
         >
           <Image
             src="https://res.cloudinary.com/dmjrk2fov/image/upload/q_auto,f_auto,w_900/v1787742599/qiqi-yen/2026-moi/poster-bang-gia.jpg"
