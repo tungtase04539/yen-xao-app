@@ -87,6 +87,22 @@ export default function PromotionModal() {
 
         {/* Bottom Call-To-Action (CTA) */}
         <div className="p-5 md:p-6 bg-gradient-to-b from-black/40 to-black/80 flex flex-col items-center">
+          {/* Chu hien thi: DialogTitle/Description o tren la sr-only nen mat nguoi
+              khong doc duoc — uu dai phai duoc noi ro ngay tren nut bam. */}
+          <p className="text-[#C9A55A] text-[11px] font-bold tracking-[0.2em] uppercase mb-1.5">
+            Ưu đãi đang áp dụng
+          </p>
+          <p className="text-white text-center text-lg md:text-xl font-extrabold leading-snug mb-1">
+            MUA 10 TẶNG 1
+          </p>
+          <p className="text-white/85 text-center text-sm leading-relaxed mb-4">
+            Yến Tươi chưng sẵn <strong className="text-[#e8d48b]">85.000₫</strong>/hũ 75ml
+            <span className="text-white/60"> · </span>
+            <strong className="text-[#e8d48b]">135.000₫</strong>/hũ 150ml
+            <br />
+            <span className="text-white/70 text-xs">8g tổ yến thật mỗi hũ · 6 vị để chọn</span>
+          </p>
+
           <button
             type="button"
             onClick={handleRedirect}
@@ -97,10 +113,7 @@ export default function PromotionModal() {
             }}
           >
             <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity animate-pulse pointer-events-none" />
-            <svg className="w-5 h-5 fill-current shrink-0 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.14 2 11.25c0 2.91 1.45 5.51 3.71 7.24.19.15.31.38.31.62l.01 2.15c0 .49.52.81.96.58l2.4-1.28c.18-.1.38-.13.58-.08 1.25.32 2.6.5 4.03.5 5.52 0 10-4.14 10-9.25S17.52 2 12 2zm1.09 12.3L10.5 11.7l-4.5 3 4.91-5.22 2.59 2.6 4.5-3-4.91 5.22z"/>
-            </svg>
-            XEM CÁC VỊ YẾN TƯƠI — TỪ 85.000₫
+            XEM 6 VỊ YẾN TƯƠI
           </button>
 
           <button
